@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Création d'un Product {% endblock %}
+
+{% block stylesheets %}
+
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="dripicons-shopping-bag mr-2"></i>Product</h4>  
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Products</li>
+            <li class="breadcrumb-item active">New</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block body %}
+<div class="row ">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body mx-5">        
+                <h4 class="mt-2 mb-4 header-title">Create Product</h4>
+                {{ form_start(form) }}
+                {#{{ form_widget(form) }}#}
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            {{ form_label(form.name, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                        </div>
+                        {{ form_widget(form.name, {'attr': {'class': "form-control"}}) }}
+                        
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            {{ form_label(form.sku, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                        </div>
+                        {{ form_widget(form.sku, {'attr': {'class': "form-control"}}) }}
+                        
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            {{ form_label(form.price, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                        </div>
+                        {{ form_widget(form.price, {'attr': {'class': "form-control"}}) }}
+                        
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            {{ form_label(form.type, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                        </div>
+                        {{ form_widget(form.type, {'attr': {'class': "form-control"}}) }}
+                        
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            {{ form_label(form.description, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                        </div>
+                        {{ form_widget(form.description, {'attr': {'class': "form-control"}}) }}
+                        
+                    </div>
+                </div>
+                
+                {# <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            {{ form_label(form.age, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                        </div>
+                        {{ form_widget(form.age, {'attr': {'class': "form-control"}}) }}
+                        
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            {{ form_label(form.instant, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                        </div>
+                        {{ form_widget(form.instant, {'attr': {'class': "form-control"}}) }}
+                        
+                    </div>
+                </div> #}
+                
+                <button type="submit" class="btn btn-primary" id="saveBtn">
+                    <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                    Save
+                </button>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $('#saveBtn').click(function(){
+        //block of code that runs when the click event triggers
+        $(this).children('i').addClass('d-none');
+        $(this).children('span').removeClass('d-none');
+        //$('#saveBtn').prop('disabled', true);
+    });
+    $('#product_price').attr('type', 'number');
+</script>
+
+{% endblock %}

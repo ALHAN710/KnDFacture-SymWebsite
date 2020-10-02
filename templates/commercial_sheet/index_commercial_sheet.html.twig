@@ -1,0 +1,443 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Commercial Sheets Dashboard  {% endblock %}
+
+{% block stylesheets %}
+<!-- DataTables -->
+<link href="/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<!-- Responsive datatable examples -->
+<link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />  
+
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="mdi mdi-file-table-outline mr-2"></i>Commercial Sheets</h4>  
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">{{inventory.name}}</li>
+            <li class="breadcrumb-item active">Commercial Sheets</li>
+            <li class="breadcrumb-item active">{{type|capitalize}}</li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block body %}
+    
+    <div class="row">
+        <div class="col-lg-12 col-sm-12">
+            <div class="card">
+                <div class="card-body table-responsive">
+                    <h5 class="header-title">{{inventory.name ~ " " ~ type ~ "s" }} lists</h5>
+                    {% if type != 'quote' %}
+                    <div class="row ">
+                        <div class="col"></div>
+                        <div class="col text-right">
+                            {# <div class="mt-2 mb-2">
+                                <a href="{{path('customers_index')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New product"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-cart-outline"></i></a>
+                            </div> #}
+                            <div class="mt-2 mb-2">
+                                <button type="button" class="btn btn-primary" id="saveBtn" data-toggle="tooltip" data-placement="top" title="Save the Orders Status">
+                                    <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                                    Save
+                                </button>
+                            </div>
+                        
+                        </div>
+                    
+                    </div>
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#delivery" role="tab">Delivery On Pending</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#payment" role="tab">Payment On Pending</a>
+                        </li>                                                
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#completed" role="tab">Completed</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes mdi mdi-dump-truck mdi mdi-truck-check -->
+                    <div class="">    
+                    {# {% autoescape %}{{ '<span class="badge bg">on pending</span>'|raw }}{% endautoescape %} #}
+                        <div class="tab-content">
+                            <div class="tab-pane active p-3" id="delivery" role="tabpanel">    
+                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Delivery Journal"><i class="fa fa-print"></i></button>
+                                <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button>  
+                                <table id="datatableDelivery" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th style="width:0.5em"></th>
+                                            <th>N° {{type|capitalize}}</th>
+                                            <th>Customer</th>
+                                            <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
+                                            <th>Payment Date</th>
+                                            <th>Amount (XAF)</th>
+                                            <th>Delivered</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for commercialSheet in commercialSheets %}
+                                        {% set itemsAmount = 0 %}
+                                        {% set promoAmount = 0 %}
+                                        {% set total = 0 %}
+                                        {% for orderItem in commercialSheet.orderItems %}
+                                            {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
+                                        
+                                        {% endfor %}
+                                        {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
+                                        {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
+                                        {% if commercialSheet.deliveryStatus == false %}
+                                        <tr class="text-center">
+                                            <td style="width:5px">
+                                                <div class="checkbox checkbox-primary">
+                                                    <input id="Journal{{commercialSheet.id}}" type="checkbox" name="journal" value="{{commercialSheet.id}}">
+                                                    <label for="Journal{{commercialSheet.id}}"></label>
+                                                </div>
+                                            </td>
+                                            <td>{{commercialSheet.number}}</td>
+                                            <td>{{commercialSheet.businessContact.socialReason}}</td>
+                                            <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
+                                            <td>
+                                            {% if commercialSheet.payAt is empty %} 
+                                            {% autoescape %}{{ '<span class="badge badge-soft-info">on pending</span>'|raw }}{% endautoescape %}
+                                            {% else %}
+                                            {{commercialSheet.payAt|date("d/m/Y") }}
+                                            {% endif %}
+                                            </td>
+                                            <td>{{total}}</td>
+                                            <td>
+                                                <div class="checkbox checkbox-primary">
+                                                    <input id="checkbox{{commercialSheet.id}}" type="checkbox" name="delivered" value="{{commercialSheet.id}}">
+                                                    <label for="checkbox{{commercialSheet.id}}"></label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {{commercialSheet.type|capitalize}}"><i class="far fa-edit"></i> </a>
+                                                </a>
+                                                <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {{commercialSheet.type|capitalize}}"><i class="fas fa-trash"></i> </a>
+                                                <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline "></i> </a>
+                                                
+                                            </td>
+                                            
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>                    
+                            </div>
+
+                            <div class="tab-pane p-3" id="payment" role="tabpanel">
+                                <div class="float-right">
+                                    
+                                </div>
+                                <div class="">
+                                    <table id="datatablePayment" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr class="text-center">
+                                                {# <th style="width:0.5em"></th> #}
+                                                <th>N° {{type|capitalize}}</th>
+                                                <th>Customer</th>
+                                                <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
+                                                <th>Delivery Date</th>
+                                                <th>Amount (XAF)</th>
+                                                <th>Paid</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {% for commercialSheet in commercialSheets %}
+                                            {{ commercialSheet.deliverAt|date("d/m/Y") }}
+                                            {% set itemsAmount = 0 %}
+                                            {% set promoAmount = 0 %}
+                                            {% set total = 0 %}
+                                            {% for orderItem in commercialSheet.orderItems %}
+                                                {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
+                                            
+                                            {% endfor %}
+                                            {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
+                                            {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
+                                            {% if commercialSheet.paymentStatus == false %}
+                                            <tr class="text-center align-items-center">
+                                                <td>{{commercialSheet.number}}</td>
+                                                <td>{{commercialSheet.businessContact.socialReason}}</td>
+                                                <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
+                                                <td>{{ commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td>
+                                                <td>{{total}}</td>
+                                                <td class="align-items-center">
+                                                    <div class="checkbox checkbox-primary">
+                                                        <input id="paidCheckbox{{commercialSheet.id}}" type="checkbox" name="paid" value="{{commercialSheet.id}}">
+                                                        <label for="paidCheckbox{{commercialSheet.id}}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {{commercialSheet.type|capitalize}}"><i class="far fa-edit"></i> </a>
+                                                    </a>
+                                                    <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {{commercialSheet.type|capitalize}}"><i class="fas fa-trash"></i> </a>
+                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline"></i> </a>
+                                                    
+                                                </td>
+                                                
+                                            </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>  
+
+                            <div class="tab-pane p-3" id="completed" role="tabpanel">
+                                <div class="">
+                                    <table id="datatable4" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th>N° {{type|capitalize}}</th>
+                                                <th>Customer</th>
+                                                <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
+                                                <th>Delivery Date</th>
+                                                <th>Payment Date</th>
+                                                <th>Amount (XAF)</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {% for commercialSheet in commercialSheets %}
+                                            {% set itemsAmount = 0 %}
+                                            {% set promoAmount = 0 %}
+                                            {% set total = 0 %}
+                                            {% for orderItem in commercialSheet.orderItems %}
+                                                {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
+                                            
+                                            {% endfor %}
+                                            {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
+                                            {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
+                                            {% if commercialSheet.completedStatus == true %}
+                                            <tr class="text-center">
+                                                <td>{{commercialSheet.number}}</td>
+                                                <td>{{commercialSheet.businessContact.socialReason}}</td>
+                                                <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
+                                                <td>{{ commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td>
+                                                <td>{{ commercialSheet.payAt is empty ? "-" : commercialSheet.payAt|date("d/m/Y") }}</td>
+                                                <td>{{total}}</td>
+                                                <td>
+                                                    <a href="{{path('commercila_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline"></i> </a>    
+                                                </td>
+                                                
+                                            </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        {#<div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                            <!-- Then put toasts within -->
+                            <div class="toast fade hide" role="alert" aria-live="assertive" aria-atomic="true" data-toggle="toast">
+                                <div class="toast-header">
+                                    <i class="mdi mdi-circle-slice-8 font-18 mr-1 text-secondary"></i>
+                                    <strong class="mr-auto">Frogetor</strong>
+                                    <small>11 mins ago</small>
+                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="toast-body">
+                                Hello, world! This is a toast message.
+                                </div>
+                            </div> <!--end toast-->
+                        </div>#}
+                    </div> <!--end div-->
+                    {% else %}
+                    <div class="">
+                        <table id="datatable2" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr class="text-center">
+                                    {# <th style="width:0.5em"></th> #}
+                                    <th>N° Quote</th>
+                                    <th>Customer</th>
+                                    <th>Date of Issue</th>
+                                    <th>Expiry Date</th>
+                                    <th>Invalidity Alert</th>
+                                    <th>Amount (XAF)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for commercialSheet in commercialSheets %}
+                                {% set itemsAmount = 0 %}
+                                {% set promoAmount = 0 %}
+                                {% set total = 0 %}
+                                {% for orderItem in commercialSheet.orderItems %}
+                                    {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
+                                
+                                {% endfor %}
+                                {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
+                                {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
+                                {% if order.deliveryStatus == false %}
+                                <tr class="text-center">
+                                    {# <td style="width:5px">
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="Journal{{commercialSheet.id}}" type="checkbox" name="journal" value="{{commercialSheet.id}}">
+                                            <label for="Journal{{commercialSheet.id}}"></label>
+                                        </div>
+                                    </td> #}
+                                    <td>{{commercialSheet.number}}</td>
+                                    <td>{{commercialSheet.businessContact.socialReason}}</td>
+                                    <td>{{commercialSheet.createdAt|date("d/m/Y")}}</td>
+                                    <td>{{commercialSheet.periodofvalidity|date("d/m/Y")}}</td>
+                                    <td>
+                                        {{"Evaluate"}}
+                                        {% if date(commercialSheet.periodofvalidity) <= date() %}
+                                        <span class="badge badge-success text-muted">valid</span>  
+                                        {% else %}  
+                                        <span class="badge badge-danger text-muted">invalid</span>  
+                                        {% endif %}
+                                    </td>
+                                    <td>{{total}}</td>
+                                    {# <td>
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="checkbox{{order.id}}" type="checkbox" name="delivered" value="{{order.id}}">
+                                            <label for="checkbox{{order.id}}"></label>
+                                        </div>
+                                    </td> #}
+                                    <td>
+                                        <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Quote"><i class="far fa-edit"></i> </a>
+                                        </a>
+                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete Quote"><i class="fas fa-trash"></i> </a>
+                                        <a href="{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Convert Quote To Bill"><i class="fas fa-exchange-alt"></i> </a>
+                                        
+                                    </td>
+                                    
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>                    
+                        
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div><!--end row-->
+{% endblock %}
+
+{% block javascripts %}
+<!-- Required datatable js -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/jszip.min.js"></script>
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+<script src="/plugins/datatables/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="/plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="/pages/jquery.datatable.init.js"></script>   
+<script src="/js/jquery.redirect.js"></script> 
+
+<script>
+    $('#saveBtn').click(function(){
+        var tabDelivered = [];
+        var tabPaid      = [];
+        var _url = "{{path('commercial_sheet_change_status')}}";
+        //block of code that runs when the click event triggers
+        $(this).children('i').addClass('d-none');
+        $(this).children('span').removeClass('d-none');
+        //$('#saveBtn').prop('disabled', true);
+        $("input:checkbox[name=delivered]:checked").each(function(){
+            tabDelivered.push($(this).val());
+        });
+        $("input:checkbox[name=paid]:checked").each(function(){
+            tabPaid.push($(this).val());
+        });
+        console.log('Tab Mark Delivered : ' + tabDelivered)
+        console.log('Tab Mark Paid : ' + tabPaid)
+
+        var $data = JSON.stringify({
+            "commercialSheetDeliveredIds": tabDelivered,//tabGridId,
+            "commercialSheetPaidIds": tabPaid,//tabFuelId,
+            //"selectedDate": $date
+        });
+
+        $.ajax({
+            type: "POST",//method type
+            contentType: "application/json; charset=utf-8",
+            url: _url,///Target function that will be return result
+            data: $data,//parameter pass data is parameter name param is value 
+            dataType: "json",
+            timeout: 120000,//64241
+            success: function (data) {
+                //alert("Success");
+                console.log(data);  
+                function reload_() {
+                    //window.location.replace("https://waytolearnx.com");
+                    location.reload(true);
+                }      
+                setTimeout(reload_, 5000);  
+                
+            },
+            error: function (result) {
+                console.log("Error");
+                console.log(result);
+            }
+        });
+    });
+    $('#deliveryJournalBtn').click(function(){
+        console.log('Delivery Journal Btn clicked');
+        var tabJournal = [];
+        $("input:checkbox[name=journal]:checked").each(function(){
+            tabJournal.push($(this).val());
+        });
+        console.log('Tab Journal : ' + tabJournal);
+        if (tabJournal.length === 0){
+
+        }
+        else{
+            $.redirect("{{path('print_journal',{'journal':'delivery','town':inventory.id})}}",
+                {
+                    commercialSheetIds: {'commercialSheetIds':tabJournal},
+                },
+            "POST", "_blank");
+
+        }
+    });
+    $('#inventoryExitJournalBtn').click(function(){
+        console.log('Inventory Exit Journal Btn clicked');
+        var tabJournal = [];
+        $("input:checkbox[name=journal]:checked").each(function(){
+            tabJournal.push($(this).val());
+        });
+        console.log('Tab Journal : ' + tabJournal);
+        if (tabJournal.length === 0){
+
+        }
+        else{
+            $.redirect("{{path('print_journal',{'journal':'inventory','town':inventory.id})}}",
+                {
+                    commercialSheetIds: {'commercialSheetIds':tabJournal},
+                },
+            "POST", "_blank");
+
+        }
+    });
+</script>
+{% endblock %}

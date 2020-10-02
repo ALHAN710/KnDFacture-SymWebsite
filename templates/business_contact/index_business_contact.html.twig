@@ -1,0 +1,253 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% if type == 'customer' %}Customers{% elseif type == 'supplier' %}Suppliers{% endif %} Dashboard  {% endblock %}
+
+{% block stylesheets %}
+
+<link href="/plugins/custombox/custombox.min.css" rel="stylesheet" type="text/css">
+
+<!-- DataTables -->
+<link href="/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<!-- Responsive datatable examples -->
+<link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />  
+
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="mdi mdi-account-multiple mr-2"></i>{% if type == 'customer' %}Customers{% elseif type == 'supplier' %}Suppliers{% endif %}</h4>  
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">{% if type == 'customer' %}Customers{% elseif type == 'supplier' %}Suppliers{% endif %}</li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block body %}
+    {#<div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body">
+
+                    {% if customers|length > 0 %}
+                    <h4 class="mt-0 header-title">List of Customers</h4>
+                    <div class="mt-2 mr-5 text-right">
+                        <a href="{{path('customer_create')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New Customer"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-sm-12">
+                            <div class="card-box table-responsive">
+                                <table id="datatable-responsive1" class="table dt-responsive nowrap gridTabReport" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Tel</th>
+                                            <th>Address</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for customer in customers %}
+                                        <tr class="text-center">
+                                            <td>{{customer.id}}</td>
+                                            <td>{{customer.fullName}}</td>
+                                            <td>{{customer.phoneNumber}}</td>
+                                            <td>{{customer.address}}</td>
+                                            <td>
+                                                <a href="{{path('customer_edit', {'id':customer.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Customer"><i class="far fa-edit"></i> </a>
+                                                <a href="#" class="btn btn-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Place Order"><i class="mdi mdi-cart-outline"></i> 
+                                                </a>
+                                                <a href="{{path('customer_delete', {'id':customer.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete Customer"><i class="fas fa-trash"></i> </a>
+                                            
+                                            </td>
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+                    </div>
+                        
+                    {% else %}
+        
+                    {% endif %}                                           
+                    </div>        
+                </div>
+            </div>
+        </div>
+    </div>#}   
+    
+    <div class="row">
+        <div class="col-lg-12 col-sm-12">
+            <div class="card">
+                <div class="card-body table-responsive">
+                    <h5 class="header-title">List of {% if type == 'customer' %}Customers{% elseif type == 'supplier' %}Suppliers{% endif %}</h5>
+                    <div class="mt-2 mb-2 mr-5 text-right">
+                        <a href="{{path('business_contact_create',{'type':type})}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
+                    </div>
+                    <div class="">
+                        <table id="datatable2" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr class="text-center">
+                                    {# <th>#</th> #}
+                                    <th>Name</th>
+                                    {# <th>Tel</th> #}
+                                    <th>Address</th>
+                                    <th>Created At</th>
+                                    <th>{% if type == 'customer' %}Revenues Generated (XAF){% elseif type == 'supplier' %}Total Expenses (XAF){% endif %}</th>
+                                    <th>{% if type == 'customer' %}Order Number{% elseif type == 'supplier' %}Number of Purchase Orders{% endif %}</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for businessContact in businessContacts %}
+                                <tr class="text-center">
+                                    {# <td>{{businessContact.id}}</td> #}
+                                    <td>{{businessContact.socialReason}}</td>
+                                    {# <td>{{businessContact.phoneNumber}}</td> #}
+                                    <td>{{businessContact.address}}</td>
+                                    <td>{{businessContact.createdAt|date("d/m/Y") }}</td>
+                                    <td>{{"Compute" }}</td>
+                                    <td>{{"Compute" }}</td>
+                                    <td>
+                                        <a href="{{path('business_contact_edit', {'id':businessContact.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="far fa-edit"></i> </a>
+                                        {% if type == 'customer' %}
+                                        {# <a href="{{ path('commercial_sheet_create', {'id':businessContact.id}) }}" class="btn btn-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Place Order"><i class="mdi mdi-cart-outline"></i></a> #}
+                                        {# <div class="animation-modal"> #}
+                                            <a href="#custom-modal{{businessContact.id}}" class="btn btn-primary btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Place Document"><i class="mdi mdi-file-table-outline"></i></a>
+                                            {# 
+                                                <a href="#custom-modal" class="btn btn-primary btn-xs rounded waves-effect" data-animation="fadein" data-plugin="custommodal" data-overlayColor="#38414a"><i class="mdi mdi-file-table-outline"></i></a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="slide" data-plugin="custommodal" data-overlayColor="#38414a">Slide</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="newspaper" data-plugin="custommodal" data-overlayColor="#38414a">Newspaper</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="blur" data-plugin="custommodal" data-overlayColor="#38414a">Blur</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="superscaled" data-plugin="custommodal" data-overlayColor="#38414a">Super Scaled</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="rotate" data-plugin="custommodal" data-overlayColor="#38414a">Rotate</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="slip" data-plugin="custommodal" data-overlayColor="#38414a">Slip</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a">Corner</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="slidetogether" data-plugin="custommodal" data-overlayColor="#38414a">Slide Together</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="scale" data-plugin="custommodal" data-overlayColor="#38414a">Scale</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="door" data-plugin="custommodal" data-overlayColor="#38414a">Door</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="push" data-plugin="custommodal" data-overlayColor="#38414a">Push</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="contentscale" data-plugin="custommodal" data-overlayColor="#38414a">Content Scale</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="swell" data-plugin="custommodal" data-overlayColor="#38414a">Swell</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="rotatedown" data-plugin="custommodal" data-overlayColor="#38414a">Rotate Down</a>
+                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="flash" data-plugin="custommodal" data-overlayColor="#38414a">Flash</a> #}
+                                        {# </div><!--end animation modal-->  #}
+                                        {% if inventories|length > 0 %}
+                                        <!-- Custom Modal -->
+                                        <div id="custom-modal{{businessContact.id}}" class="modal-demo">
+                                            <button type="button" class="close" onclick="Custombox.modal.close();">
+                                                <span>&times;</span><span class="sr-only">Close</span>
+                                            </button>
+                                            <h4 class="custom-modal-title">Choose the document type</h4>
+                                            <div class="custom-modal-text">
+                                                {# <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'quote'}) }}" class="btn btn-primary btn-lg rounded text-left">Quote</a> 
+                                                <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'bill'}) }}" class="btn btn-info btn-lg rounded float-right">Bill</a> #}
+
+                                                <div class="radio radio-info form-check-inline">
+                                                    <input type="radio" id="inlineRadio1{{businessContact.id}}" value="quote" name="documentType{{businessContact.id}}" checked="">
+                                                    <label for="inlineRadio1{{businessContact.id}}"> Quote </label>
+                                                    {# <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'quote'}) }}" class="btn btn-primary btn-lg rounded text-left">Quote</a>  #}
+                                                
+                                                </div>
+                                                <div class="radio form-check-inline float-right">
+                                                    <input type="radio" id="inlineRadio2{{businessContact.id}}" value="bill" name="documentType{{businessContact.id}}">
+                                                    <label for="inlineRadio2{{businessContact.id}}"> Bill </label>
+                                                    {# <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'bill'}) }}" class="btn btn-info btn-lg rounded text-right">Bill</a> #}
+
+                                                </div>
+                                                <div class="form-group row mt-4">
+                                                    <label class="col-sm-4 col-form-label text-left mt-2">Select PF stock provider</label>
+                                                    <div class="col-sm-8 mt-2">
+                                                        <select class="custom-select" id="stockId{{businessContact.id}}">
+                                                            {% for inventory in inventories %}
+                                                            <option value="{{inventory.id}}" {% if loop.first %}selected=""{% endif %}>{{inventory.name}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row my-2 mx-2 float-right">
+                                                    <button type="button" data-action="place" data-target="{{businessContact.id}}" class="btn btn-success btn-lg">
+                                                        <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                                                        OK
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div> <!--end custom modal--> 
+                                        {% endif %}
+                                        {% elseif type == 'supplier' %}
+                                        <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'purchase_order'}) }}" class="btn btn-secondary btn-lg rounded text-right" data-toggle="tooltip" data-placement="top" title="Place Purchase Order"><i class="mdi mdi-file-table-outline"></i></a>
+                                        {% endif %}
+                                        <a href="{{path('business_contact_delete', {'id':businessContact.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="fas fa-trash"></i> </a>
+                                    
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>           
+                </div>
+            </div>
+        </div>
+    </div><!--end row-->
+
+{% endblock %}
+
+{% block javascripts %}
+<!-- Required datatable js -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/jszip.min.js"></script>
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+<script src="/plugins/datatables/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="/plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="/pages/jquery.datatable.init.js"></script>    
+
+<script src="/plugins/custombox/custombox.min.js"></script>
+<script src="/plugins/custombox/custombox.legacy.min.js"></script>
+
+<script src="/pages/jquery.modal-animation.js"></script>
+<script src="/js/jquery.redirect.js"></script> 
+
+<script>
+    $('button[data-action="place"]').click(function(){
+        console.log('OK Btn clicked');
+        //block of code that runs when the click event triggers
+        var id_ = this.dataset.target;
+        var stockId = '#stockId' + id_;
+        var stock = $(stockId).val();
+        var type;
+        var documentType = "input:checkbox[name=documentType" + id_ + "]:checked";
+        console.log('documentType = ' + documentType);
+        $("input:radio[name=documentType" + id_ + "]:checked").each(function(){
+            type = $(this).val();
+        });
+        console.log('Type = ' + type);
+        var _url = "/commercial/sheet/new/" + id_ + "/" + type + "/" + stock;
+        console.log('Url = ' + _url);
+        
+        window.location.replace(_url);
+
+        $(this).children('i').addClass('d-none');
+        $(this).children('span').removeClass('d-none');
+    }); 
+</script>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% block _customer_deliveryAddress_widget %}
+
+    
+    {{form_widget(form)}}
+
+    <input type="hidden" id="widgets-count">
+    <div class="form-group mt-4">
+        <button type="button" id="add-deliveryAddress" class="btn btn-primary ">
+            <i class="fas fa-plus-circle mr-2"></i> <i class="mdi mdi-map-marker-outline"></i>
+        </button>
+                    
+{% endblock %}
+
+{% block _customer_deliveryAddress_entry_row %}
+    {{form_widget(form)}}
+{% endblock %} 
+
+{% block _customer_deliveryAddress_entry_widget %}
+    {#<div class="form-group" id = "block_{{id}}">
+        <div class="row align-items-center">
+            <div class="col-10">
+                <div class="row ">
+                    <div class="col">
+                        {{ form_label(form.town) }}
+                        {{ form_widget(form.town) }}
+                        {{ form_errors(form.town) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form.fees) }}
+                        {{ form_widget(form.fees) }}
+                        {{ form_errors(form.fees) }}
+                    </div>
+                    
+                </div>
+            </div>
+
+            
+        </div>
+    </div>#}
+
+    <div class="row form-group mb-0 align-items-center" id = "block_{{id}}">
+        {#<label for="exampleInputPassword1">Password</label> mdi mdi-google-maps mdi mdi-map-marker  mdi mdi-map-marker-outline#}
+        <div class="col-10 mt-4">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <i class="mdi mdi-map-marker-outline"></i>
+                        
+                    </span>
+                    {#{{ form_label(form.town, null, {'label_attr': {'class': 'input-group-text'}}) }}#}
+                </div>
+                {#<input type="text" class="form-control">#}
+                {{ form_widget(form.town, {'attr': {'class': "form-control"}}) }}
+                <div class="input-group-prepend">
+                    {#<span class="input-group-text">Last name</span>#}
+                    {{ form_label(form.fees, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                </div>
+                {#<input type="text" class="form-control">#}
+                {{ form_widget(form.fees, {'attr': {'class': "form-control"}}) }}
+            </div>
+        
+        </div>
+
+        <div class="col-2 ">
+            <button type="button" data-action="delete" data-target="#block_{{id}}" class="mt-4 btn btn-danger">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Creation of {{commercialSheet.type|capitalize}} {% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+<style>
+    .datepicker table tr td.disabled, .datepicker table tr td.disabled:hover{
+        color: firebrick;
+    }
+</style>
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="mdi mdi-cart-outline mr-2"></i>{{commercialSheet.type|capitalize}}</h4>  
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">{{commercialSheet.type|capitalize ~ "s"}}</li>
+            <li class="breadcrumb-item active">New</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% form_theme form 'commercial_sheet/_collection.html.twig' %}
+
+{% block body %}
+{#{{dump(availabilities)}}#}
+
+<div class="row ">
+    <div class="col-12">       
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 header-title">{{commercialSheet.type|capitalize}} informations</h4>
+                {{ form_start(form) }}
+                <div class="card border mb-0 text-center">
+                    <div class="card-header">
+                        {% if commercialSheet.type != 'Purchase order' %}Customer{% else %}Supplier{% endif %} Details
+                    </div>
+                    <div class="card-body text-left">
+                        <h5 class="card-title"></h5>
+                        <p class="card-text">{% if commercialSheet.type != 'Purchase order' %}Name :{% else %}Social Reason :{% endif %} {{commercialSheet.businessContact.socialReason}}</p>
+                        {% if commercialSheet.type == 'Purchase order' %}
+                        <p class="card-text">NIU : {{commercialSheet.businessContact.niu}}</p>
+                        <p class="card-text">RCCM : {{commercialSheet.businessContact.rccm}}</p>
+                        {% endif %}
+                        <p class="card-text">Tel : {{commercialSheet.businessContact.phoneNumber}}</p>
+                        <p class="card-text">{% if commercialSheet.type != 'Purchase order' %}Delivery Address :{% else %}Address :{% endif %} {{commercialSheet.businessContact.address}}</p>
+                        {# <p class="card-text">Delivery Town : {{order.customer.deliveryAddress.town}}</p> #}
+                        
+                    </div>
+                </div>
+                <div class="card border mb-0 text-center">
+                    <div class="card-header">
+                        Order Items Details
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                        <div class="row text-center">
+                            {# <div class="col">SKU</div> #}
+                            <div class="col">Designation</div>
+                            <div class="col">P.U (XAF)</div>
+                            <div class="col">Available</div>
+                            <div class="col">Qty</div>
+                            <div class="col">Amount (XAF)</div>
+                            <div class="col"></div>
+                        </div>
+                        {{form_widget(form.orderItems)}}
+                        <p class="card-text">Items quantity Total  : <span id="itemsqtytotal">0</span></p>
+                        <p class="card-text">Items amount Subtotal : <span id="itemsAmountSubtotal">0</span> FCFA</p>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    {{ form_label(form.deliveryFees, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                </div>
+                                {{ form_widget(form.deliveryFees, {'attr': {'class': "form-control text-center"}}) }}
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!--end card-->
+                <div class="card border mb-0 text-center">
+                    <div class="card-header">
+                        Promotion Details
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                        {# {{form_widget(form.reductions)}} #}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    {{ form_label(form.itemsReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                </div>
+                                {{ form_widget(form.itemsReduction, {'attr': {'class': "form-control text-center"}}) }}
+                                
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    {{ form_label(form.fixReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                </div>
+                                {{ form_widget(form.fixReduction, {'attr': {'class': "form-control text-center"}}) }}
+                                
+                            </div>
+                        </div>
+                        </br>
+                        <p class="card-text">Promotion amount Subtotal : <span id="totalPromoAmount">0</span> FCFA</p>
+                    </div>
+                    
+                </div>
+                <!--end card-->
+                <div class="card border mb-0 text-center">
+                    <div class="card-header">Payment Details</div>
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                        <p class="card-text">Total Net to paid : <span id="totalAmount">0</span> FCFA</p>
+                        {% if commercialSheet.type != 'quote' %}
+                        {% set dnone = "" %}
+                        {% else %}
+                        {% set dnone = "d-none" %}
+                        {% endif %}
+                        {{form_widget(form.paymentStatus, {'attr': {'class': dnone}}) }}
+                        {{form_label(form.paymentStatus, null, {'label_attr': {'class': dnone}}) }}
+                        {{form_widget(form.deliveryStatus, {'attr': {'class': dnone}}) }}
+                        {{form_widget(form.completedStatus, {'attr': {'class': dnone}}) }}
+                        
+                                                
+                        <div class="form-group mt-3 {% if commercialSheet.type != 'quote' %}d-none{% endif %}">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    {{ form_label(form.periodofvalidity, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                </div>
+                                {{ form_widget(form.periodofvalidity, {'attr': {'class': "form-control text-center"}}) }}
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <!--end card-->
+
+                <div class="text-right mt-4">
+                    <button type="submit" class="btn btn-primary" id="saveBtn">
+                        <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                        Save
+                    </button>
+                </div>
+                {# {{ form_widget(form.save, { 'label': 'Save' }) }} #}
+
+                {{ form_end(form) }}
+            </div>
+            <!--end card-body-->
+        </div>
+        <!--end card-->
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+<script>
+    /*$('#saveBtn').click(function(){
+        //block of code that runs when the click event triggers
+        $(this).children('i').addClass('d-none');
+        $(this).children('span').removeClass('d-none');
+        //$('#saveBtn').prop('disabled', true);
+    });*/
+    $('#commercial_sheet_itemsReduction').attr('type', 'number');
+    $('#commercial_sheet_deliveryFees').attr('type', 'number');
+    $('#commercial_sheet_fixReduction').attr('type', 'number');
+    {# var availabilities = {{availabilities}}; #}
+    {# $('.form-check').addClass('radio-info form-check-inline'); #}
+    var availabilities = JSON.parse('{{ availabilities | json_encode | raw }}');
+    var availabilitiesTab = JSON.parse('{{ availabilities | json_encode | raw }}');
+    $(document).ready(function(){
+        $('#commercial_sheet_periodofvalidity').datepicker({
+            format: 'dd/mm/yyyy',
+            startDate: '+0d',
+            todayBtn: "linked",
+            todayHighlight: true,
+            clearBtn: true,
+        });
+
+    });
+    {# console.log(availabilities);  #}
+</script>
+<script src="/js/commercial_sheet.js" type="text/javascript"></script>
+
+
+{% endblock %}

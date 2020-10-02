@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block suptitle %}LBF Daily Out Of Stock | Date : {{"now"|date('d/m/Y')}} | Town : {{town}}{% endblock %}{% block title %}{% endblock %}
+
+{% block stylesheets %}
+<!-- DataTables -->
+<link href="/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<!-- Responsive datatable examples -->
+<link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />  
+
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="dripicons-exit mr-2"></i>Products Out From Stock</h4>  
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Products</li>
+            <li class="breadcrumb-item active">Out</li>
+            <li class="breadcrumb-item active">Stock</li>
+            <li class="breadcrumb-item active">{{town}}</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block body %}
+    
+    <div class="row">
+        <div class="col-lg-12 col-sm-12">
+            <div class="card">
+                <div class="card-body table-responsive">
+                    <h5 class="header-title">List Of Products To Be Removed From Stock Of {{town}}</h5>
+                    
+                    <table id="datatable-buttons" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr class="text-center">
+                                <th>SKU</th>
+                                <th>Name</th>
+                                <th>Qty to remove</th>
+                                <th>Signature of Inventory Manager</th>
+                                
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for product in products %}
+                            {% set qty = 0 %}
+                            {% for order in orders %}
+                            {% for orderItem in order.orderItems %}
+                                {% if orderItem.product.id == product.id %}
+                                {% set qty = qty + orderItem.quantity %}
+                                {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                            {% if qty > 0 %}
+                            <tr class="text-center">
+                                <td>{{product.sku}}</td>
+                                <td>{{product.name}}</td>
+                                <td>{{qty}}</td>
+                                <td><br><br><br></td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>                    
+                            
+                </div>
+            </div>
+        </div>
+    </div><!--end row-->
+{% endblock %}
+
+{% block javascripts %}
+<!-- Required datatable js -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/jszip.min.js"></script>
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+<script src="/plugins/datatables/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="/plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="/pages/jquery.datatable.init.js"></script>   
+
+<script>
+    $(document).ready(function(){
+        $('.buttons-pdf').children('span').html('<i class="mdi mdi-download mr-2"></i>PDF')
+
+    });
+    
+</script>
+
+{% endblock %}

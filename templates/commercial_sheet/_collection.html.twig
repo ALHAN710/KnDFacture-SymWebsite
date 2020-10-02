@@ -1,0 +1,240 @@
+
+{% block _commercial_sheet_orderItems_widget %}
+
+    
+    {{form_widget(form)}}
+
+    <input type="hidden" id="orderItems-widgets-count">
+    
+    <div class="form-group mt-4 text-right">
+        <button type="button" id="add-orderItems" class="btn btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Add Product">
+            <i class="fas fa-plus-circle mr-2"></i><i class="dripicons-shopping-bag"></i>
+        </button>
+    
+        <button type="button" id="add-servItems" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Add Service">
+            <i class="fas fa-plus-circle mr-2"></i><i class="fas fa-wrench"></i>
+        </button>
+    
+    </div>
+                    
+{% endblock %}
+
+{% block _commercial_sheet_orderItems_entry_row %}
+    {{form_widget(form)}}
+{% endblock %} 
+
+{% block _commercial_sheet_orderItems_entry_widget %}
+    
+    <div class="row form-group mb-0 align-items-center nbItems" id = "block_{{id}}">
+        <div class="col-10 mt-4">
+            <div class="row text-center">
+                {# <div class="col">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                {{ form_label(form.sku, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div>
+                            {{ form_widget(form.sku, {'attr': {'class': "form-control"}}) }}
+                            
+                        </div>
+                    </div>
+                </div> #}
+
+                <div class="col col1_{{id}}">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.product, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.product, {'attr': {'class': "form-control"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col col2_{{id}} d-none">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.offerIn, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.offerIn, {'attr': {'class': "form-control"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col col3_{{id}}">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.price, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.price, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col colpriceView_{{id}} d-none">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.price, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.priceView, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col col4_{{id}} d-none">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.priceIn, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.priceIn, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col colavai_{{id}}">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.available, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.available, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+            
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.quantity, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.quantity, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.amount, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.amount, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-none">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.offerType, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.offerTypeIn, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-none">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.offerType, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.offerType, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+
+            </div>       
+        </div>
+
+        <div class="col">
+            <button type="button" data-action="delete" data-target="#block_{{id}}" class="mt-1 btn btn-danger">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+{# {% block _commercial_sheet_reductions_widget %}
+
+    
+    {{form_widget(form)}}
+
+    <input type="hidden" id="reductions-widgets-count">
+    <div class="form-group mt-4 text-right">
+        <button type="button" id="add-reductions" class="btn btn-primary ">
+            <i class="fas fa-plus-circle mr-2"></i>Returned Pots</i>
+        </button>
+    </div>
+                    
+{% endblock %}
+
+{% block _commercial_sheet_reductions_entry_row %}
+    {{form_widget(form)}}
+{% endblock %} 
+
+{% block _commercial_sheet_reductions_entry_widget %}
+    
+    <div class="row form-group mb-0 align-items-center" id = "block_{{id}}">
+        <div class="col-10 mt-4">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                {{ form_label(form.returnedJars, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div>
+                            {{ form_widget(form.returnedJars, {'attr': {'class': "form-control"}}) }}
+                            
+                        </div>
+                    </div>
+            
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                {{ form_label(form.quantity, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div>
+                            {{ form_widget(form.quantity, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-none">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                {{ form_label(form.price, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div>
+                            {{ form_widget(form.price, {'attr': {'class': "form-control"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+                        
+        </div>
+
+        <div class="col-2 ">
+            <button type="button" data-action="delete" data-target="#block_{{id}}" class="mt-1 btn btn-danger">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+
+    </div>
+
+
+{% endblock %} #}
