@@ -85,12 +85,39 @@ class Enterprise
      */
     private $logo;
 
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $tva;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Subscription::class, inversedBy="enterprises")
+     * 
+     */
+    private $subscription;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $subscriptionDuration;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $subscribeAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Category::class, mappedBy="entreprise", orphanRemoval=true)
+     */
+    private $categories;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->inventories = new ArrayCollection();
         $this->businesscontacts = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     /**
@@ -324,6 +351,85 @@ class Enterprise
     public function setLogo(?string $logo): self
     {
         $this->logo = $logo;
+
+        return $this;
+    }
+
+    public function getTva(): ?float
+    {
+        return $this->tva;
+    }
+
+    public function setTva(float $tva): self
+    {
+        $this->tva = $tva;
+
+        return $this;
+    }
+
+    public function getSubscription(): ?Subscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?Subscription $subscription): self
+    {
+        $this->subscription = $subscription;
+
+        return $this;
+    }
+
+    public function getSubscriptionDuration(): ?int
+    {
+        return $this->subscriptionDuration;
+    }
+
+    public function setSubscriptionDuration(?int $subscriptionDuration): self
+    {
+        $this->subscriptionDuration = $subscriptionDuration;
+
+        return $this;
+    }
+
+    public function getSubscribeAt(): ?\DateTimeInterface
+    {
+        return $this->subscribeAt;
+    }
+
+    public function setSubscribeAt(?\DateTimeInterface $subscribeAt): self
+    {
+        $this->subscribeAt = $subscribeAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
+            $category->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        if ($this->categories->contains($category)) {
+            $this->categories->removeElement($category);
+            // set the owning side to null (unless already changed)
+            if ($category->getEntreprise() === $this) {
+                $category->setEntreprise(null);
+            }
+        }
 
         return $this;
     }

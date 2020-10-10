@@ -1,0 +1,704 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{app.user.enterprise.socialReason}} Dashboard  {% endblock %}
+
+{% block stylesheets %}
+<!-- Clock css -->
+<link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />  
+
+<!-- Sweet Alert -->
+<link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2">{{app.user.enterprise.socialReason}}</h4>  
+{% endblock %}
+
+{% set iconStock = true %}
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">{{app.user.enterprise.socialReason}}</li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            {# <h4 class="mt-0 header-title">Date Range Picker</h4>  
+            <P class="mt-0 text-muted mb-4">A JavaScript component for choosing date ranges, dates and times.</P>  #}
+            <div class="row">
+                <div class="col-lg-6">
+                    <label class="my-3">Select Date Ranges</label>
+                    <div class="input-group">  
+                        <input type="text"  id="reportrange" class="form-control" value="10/24/1984">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div><!--end card-body-->
+    </div><!--end card-->
+
+    <div class="row">
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body mb-0">
+                    <div class="row">                                            
+                        <div class="col-8 align-self-center">
+                            <div class="">
+                                <h4 class="mt-0 header-title">Total Revenue</h4>
+                                <h2 class="mt-0 font-weight-bold text-dark"><span id="turnOver">0</span> XAF</h2> 
+                                {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                            </div>
+                        </div><!--end col-->
+                        <div class="col-4 align-self-center">
+                            <div class="icon-info text-right">
+                                <i class="dripicons-wallet bg-soft-success"></i>
+                            </div>
+                        </div><!--end col-->
+                    </div><!--end row-->
+                </div><!--end card-body-->
+                <div class="card-body overflow-hidden p-0 mt-4">
+                    <div class="d-flex mb-0 h-100 dash-info-box">
+                        <div class="w-100">                                                
+                            <div class="apexchart-wrapper">
+                                <div id="turnOverColumnChart" class="chart-gutters"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end card-body-->                                                                    
+            </div><!--end card-->
+        </div><!--end col-->
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body mb-0">
+                    <div class="row">                                            
+                        <div class="col-8 align-self-center">
+                            <div class="">
+                                <h4 class="mt-0 header-title">purchase order amount paid</h4>
+                                <h2 class="mt-0 font-weight-bold text-dark"><span id="expenses">0</span> XAF</h2> 
+                                {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                            </div>
+                        </div><!--end col-->
+                        <div class="col-4 align-self-center">
+                            <div class="icon-info text-right">
+                                <i class="dripicons-wallet bg-soft-danger"></i>
+                            </div>
+                        </div><!--end col-->
+                    </div><!--end row-->
+                </div><!--end card-body-->
+                <div class="card-body overflow-hidden p-0">
+                    <div class="d-flex mb-0 h-100 dash-info-box">
+                        <div class="w-100">                                                
+                            <div class="apexchart-wrapper">
+                                <div id="expensesColumnChart" class="chart-gutters"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end card-body-->                                                                    
+            </div><!--end card-->
+        </div><!--end col-->
+        
+        {# <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body mb-0">
+                    <div class="row">                                            
+                        <div class="col-8 align-self-center">
+                            <div class="">
+                                <h4 class="mt-0 header-title">Total Sales</h4>
+                                <h2 class="mt-0 font-weight-bold text-dark">40k</h2> 
+                                <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up From Last Week</p>
+                            </div>
+                        </div><!--end col-->
+                        <div class="col-4 align-self-center">
+                            <div class="icon-info text-right">
+                                <i class="dripicons-cart bg-soft-warning"></i>
+                            </div>
+                        </div><!--end col-->
+                    </div><!--end row-->
+                </div><!--end card-body-->
+                <div class="card-body overflow-hidden p-0">
+                    <div class="d-flex mb-0 h-100 dash-info-box">
+                        <div class="w-100">                                                
+                            <div class="apexchart-wrapper">
+                                <div id="dash_spark_1" class="chart-gutters"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end card-body-->                                                                    
+            </div><!--end card-->
+        </div><!--end col--> #}
+
+        <div class="col-lg-4">
+            <div class="card carousel-bg-img">
+                <div class="card-body dash-info-carousel mb-0">
+                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="row">                                            
+                                    <div class="col-12 align-self-center">
+                                        <div class="text-center">
+                                            <h4 class="mt-0 header-title text-left">Number Of Edited Invoices</h4>
+                                            <div class="icon-info my-3">
+                                                <i class="mdi mdi-file-table-outline bg-soft-pink"></i>
+                                            </div>
+                                            <h2 class="mt-0 font-weight-bold text-dark"><span id="nbBill">0</span></h2> 
+                                            {#<p class="mb-1 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>35.5%</span> Last 100 Subscriptions</p> #}
+                                        </div>
+                                    </div><!--end col-->                                                        
+                                </div><!--end row-->                                                    
+                            </div><!--end carousel-item-->
+                            <div class="carousel-item">
+                                <div class="row">                                            
+                                    <div class="col-12 align-self-center">
+                                        <div class="text-center">
+                                            <h4 class="mt-0 header-title text-left">Number Of Edited Purchase Orders</h4>
+                                            <div class="icon-info my-3">
+                                                <i class="mdi mdi-file-table-outline bg-soft-info"></i>
+                                            </div>
+                                            <h2 class="mt-0 font-weight-bold text-dark"><span id="nbPurchaseOrder">0</span></h2> 
+                                            {# <p class="mb-1 text-muted"><span class="text-danger"><i class="mdi mdi-arrow-down"></i>1.5%</span> Down From Last week</p> #}
+                                        </div>
+                                    </div><!--end col-->                                                        
+                                </div><!--end row-->                                                    
+                            </div><!--end carousel-item-->
+
+                            <div class="carousel-item">
+                                <div class="row">                                            
+                                    <div class="col-12 align-self-center">
+                                        <div class="text-center">
+                                            <h4 class="mt-0 header-title text-left">Number of Edited Quotes</h4>
+                                            <div class="icon-info my-3">
+                                                <i class="mdi mdi-file-table-outline bg-soft-primary"></i>
+                                            </div>
+                                            <h2 class="mt-0 font-weight-bold text-dark"><span id="nbQuote">0</span></h2> 
+                                            {# <p class="mb-1 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>11.1%</span> Up from Last Month</p> #}
+                                        </div>
+                                    </div><!--end col-->                                                        
+                                </div><!--end row-->                                                    
+                            </div><!--end carousel-item-->
+                            <div class="carousel-item">
+                                <div class="row">                                            
+                                    <div class="col-12 align-self-center">
+                                        <div class="text-center">
+                                            <h4 class="mt-0 header-title text-left">number of quotes converted</h4>
+                                            <div class="icon-info my-3">
+                                                <i class="mdi mdi-file-table-outline bg-soft-warning"></i>
+                                            </div>
+                                            <h2 class="mt-0 font-weight-bold text-dark"><span id="nbConvertedQuote">0</span></h2> 
+                                            {# <p class="mb-1 text-muted">All International Brands</p> #}
+                                        </div>
+                                    </div><!--end col-->                                                        
+                                </div><!--end row-->                                                    
+                            </div><!--end carousel-item-->
+                            {#<div class="carousel-item">
+                                <div class="row">                                            
+                                    <div class="col-12 align-self-center">
+                                        <div class="text-center">
+                                            <h4 class="mt-0 header-title text-left">Total Visits</h4>
+                                            <div class="icon-info my-3">
+                                                <i class="dripicons-user-group bg-soft-success"></i>
+                                            </div>
+                                            <h2 class="mt-0 font-weight-bold text-dark">35k</h2> 
+                                            <p class="mb-1 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>11.1%</span> Up from yesterday</p>
+                                        </div>
+                                    </div><!--end col-->                                                        
+                                </div><!--end row-->                                                    
+                            </div><!--end carousel-item--> #}
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div><!--end card-body-->                                                                                                        
+            </div><!--end card-->
+        </div><!--end col--> 
+
+    </div><!--end row-->
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card overflow-hidden">
+                <div class="card-body bg-gradient1">
+                    <div class="">
+                        <div class="card-icon">
+                            <i class="mdi mdi-google-pages"></i>
+                        </div>
+                        <h2 class="font-weight-bold text-white">10</h2>
+                        <p class="text-white mb-0 font-16">Top 10 Best Selling Products</p>                                            
+                    </div>
+                </div>
+                <div class="card-body dash-info-carousel">                                        
+                    <div id="carousel_best_saler" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="text-center">
+                                    <img src="/images/users/user-4.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
+                                    <h5><span id="ref_0">Ref0</span></h5>
+                                    <p class="font-12 text-muted"><span id="designation_0"></span></p>
+                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_0"></span> XAF</p>
+                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_0"></span></p>
+                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
+                                    <div class="mt-2 align-item-center">
+                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_0">0</span> XAF</h5>
+                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center">
+                                    <img src="/images/users/user-2.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
+                                    <h5><span id="ref_1">Ref1</span></h5>
+                                    <p class="font-12 text-muted"><span id="designation_1"></span></p>
+                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_1"></span> XAF</p>
+                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_1"></span></p>
+                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
+                                    <div class="mt-2 align-item-center">
+                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_1">0</span> XAF</h5>
+                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item ">
+                                <div class="text-center">
+                                    <img src="/images/users/user-1.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
+                                    <h5><span id="ref_2">Ref2</span></h5>
+                                    <p class="font-12 text-muted"><span id="designation_2"></span></p>
+                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_2"></span> XAF</p>
+                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_2"></span></p>
+                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
+                                    <div class="mt-2 align-item-center">
+                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_2">0</span> XAF</h5>
+                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#carousel_best_saler" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carousel_best_saler" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div><!--end card-body-->
+            </div><!--end card-->
+        </div><!--end col-->
+
+        {# <div class="col-lg-4">
+            <div class="card overflow-hidden">
+                <div class="card-body bg-gradient3">
+                    <div class="">
+                        <div class="card-icon">
+                            <i class="far fa-smile"></i>
+                        </div>
+                        <h2 class="font-weight-bold text-white">58</h2>
+                        <p class="text-white mb-0 font-16">Stores Very Good Review</p>                                            
+                    </div>
+                </div><!--end card-body-->
+                <div class="card-body dash-info-carousel">                                        
+                    <div id="carousel_review" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="media">
+                                    <img src="assets/images/flags/us_flag.jpg" class="mr-2 thumb-xs rounded-circle" alt="...">
+                                    <div class="media-body align-self-center">                                                                                                                       
+                                        <h6 class="m-0">USA Store</h6>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p class="review-data mb-0">4.8<span>/ 5.0</span></p>
+                                    <p class="px-4 py-1 bg-soft-success d-inline-block rounded">Very Good</p>
+                                    <ul class="list-inline mb-1">
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                    </ul>
+                                    <p class="mb-1 text-muted">There are many variations of passages of Lorem Ipsum available, 
+                                        but the majority have suffered alteration in some form, by injected humour, or randomised
+                                        variations of passages of Lorem Ipsum available.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="media">
+                                    <img src="assets/images/flags/spain_flag.jpg" class="mr-2 thumb-xs rounded-circle" alt="...">
+                                    <div class="media-body align-self-center">                                                                                                                       
+                                        <h6 class="m-0">Spain Store</h6>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p class="review-data mb-0">4.6<span>/ 5.0</span></p>
+                                    <p class="px-4 py-1 bg-soft-success d-inline-block rounded">Very Good</p>
+                                    <ul class="list-inline mb-1">
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                    </ul>
+                                    <p class="mb-1 text-muted">There are many variations of passages of Lorem Ipsum available, 
+                                        but the majority have suffered alteration in some form, by injected humour, or randomised
+                                        variations of passages of Lorem Ipsum available.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="media">
+                                    <img src="assets/images/flags/russia_flag.jpg" class="mr-2 thumb-xs rounded-circle" alt="...">
+                                    <div class="media-body align-self-center">                                                                                                                       
+                                        <h6 class="m-0">Russia Store</h6>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p class="review-data mb-0">5.0<span>/ 5.0</span></p>
+                                    <p class="px-4 py-1 bg-soft-success d-inline-block rounded">Exellent</p>
+                                    <ul class="list-inline mb-1">
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
+                                    </ul>
+                                    <p class="mb-1 text-muted">There are many variations of passages of Lorem Ipsum available, 
+                                        but the majority have suffered alteration in some form, by injected humour, or randomised
+                                        variations of passages of Lorem Ipsum available.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#carousel_review" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carousel_review" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div><!--end card-body-->
+            </div><!--end card-->
+        </div><!--end col--> #}
+        <div class="col-lg-4">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card overflow-hidden">
+                        <div class="card-body bg-gradient3">
+                            <div class="">
+                                <div class="card-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <h2 class="font-weight-bold text-white"><span id="outstandingClaim">0</span> XAF</h2>
+                                <p class="text-white mb-0 font-16">Outstanding Claims</p>                                            
+                            </div>
+                        </div><!--end card-body-->
+                        {# <div class="card-body">
+                            <div class="">
+                                <div id="d1_payment" class="apex-charts"></div>
+                            </div> 
+                        </div><!--end card-body--> #}
+                    </div><!--end card-->
+                </div><!--end col-->
+
+                <div class="col-sm-12">
+                    <div class="card overflow-hidden">
+                        <div class="card-body bg-gradient2">
+                            <div class="">
+                                <div class="card-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <h2 class="font-weight-bold text-white"><span id="outstandingDebt">0</span> XAF</h2>
+                                <p class="text-white mb-0 font-16">Outstanding Debts</p>                                            
+                            </div>
+                        </div><!--end card-body-->
+                        {# <div class="card-body">
+                            <div class="">
+                                <div id="d1_payment" class="apex-charts"></div>
+                            </div> 
+                        </div><!--end card-body--> #}
+                    </div><!--end card-->
+                </div><!--end col-->
+
+                <div class="col-sm-12">
+                    <div class="card overflow-hidden">
+                        <div class="card-body bg-gradient1">
+                            <div class="">
+                                <div class="card-icon">
+                                    <i class="mdi mdi-google-pages"></i>
+                                </div>
+                                <h2 class="font-weight-bold text-white"><span id="nbProductsSold">0</span></h2>
+                                <p class="text-white mb-0 font-16">Number Of Products Sold</p>                                            
+                            </div>
+                        </div><!--end card-body-->
+                        {# <div class="card-body">
+                            <div class="">
+                                <div id="d1_payment" class="apex-charts"></div>
+                            </div> 
+                        </div><!--end card-body--> #}
+                    </div><!--end card-->
+                </div><!--end col-->
+            
+            </div>
+        </div>
+
+    </div><!--end row-->
+    
+{% endblock %}
+
+{% block javascripts %}
+<!-- Required datatable js -->
+{#
+<div class="form-group my-2">
+    <h6 class=" input-title mt-lg-3">Specify the Date Range</h6>
+    <div class="row">
+        <div class="input-daterange input-group col-6" id="date-range">
+            <input type="text" class="form-control" name="start" placeholder="Start Date (dd/mm/yyyy)" />
+            <input type="text" class="form-control" name="end" placeholder="End Date (dd/mm/yyyy)" />
+            <span class="input-group-append">
+                <button type="button" id="reloadBtn" class="btn btn-soft-primary"><i class="fas fa-sync"></i> </button>
+            </span>
+        </div>
+    </div>
+</div>
+
+#}
+<script src="/plugins/moment/moment.js"></script>
+<script src="/plugins/apexcharts/apexcharts.min.js"></script>
+{# <script src="https://apexcharts.com/samples/assets/irregular-data-series.js"></script>
+<script src="https://apexcharts.com/samples/assets/series1000.js"></script>
+<script src="https://apexcharts.com/samples/assets/ohlc.js"></script> #}
+<script src="/pages/jquery.dashboard.init.js"></script>
+
+<!-- Plugins js -->
+{# <script src="/plugins/moment/moment.js"></script> #}
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+{# <script src="/plugins/timepicker/tempusdominus-bootstrap-4.js"></script>
+<script src="/plugins/timepicker/bootstrap-material-datetimepicker.js"></script>
+<script src="/plugins/clockpicker/jquery-clockpicker.min.js"></script>
+<script src="/plugins/colorpicker/jquery-asColor.js"></script>
+<script src="/plugins/colorpicker/jquery-asGradient.js"></script>
+<script src="/plugins/colorpicker/jquery-asColorPicker.min.js"></script>
+<script src="/plugins/select2/select2.min.js"></script> #}
+
+{# <script src="/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+<script src="/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+<script src="/plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js"></script> #}
+
+{# <script src="/pages/jquery.clock-img.init.js"></script> #}
+<script src="/pages/jquery.forms-advanced.js"></script>
+
+<!-- Sweet-Alert  -->
+<script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
+
+<script>
+    var ent = {{ app.user.enterprise.id }};
+    //var start = moment().subtract(29, 'days');
+    //var end = moment();
+    //console.log('start = ' + start);
+    //console.log('end = ' + end);
+
+    //change the selected date range of that picker
+    //$('#reportrange').data('daterangepicker').setStartDate(start);
+    //$('#reportrange').data('daterangepicker').setEndDate(end);
+
+    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+        console.log(picker.startDate.format('YYYY-MM-DD'));
+        console.log(picker.endDate.format('YYYY-MM-DD'));
+    
+        $('.fa-sync').addClass('fa-spin');
+        var startDate = picker.startDate.format('YYYY-MM-DD');
+        var endDate = picker.endDate.format('YYYY-MM-DD');
+        
+        console.log('startDate = ' + startDate);
+        console.log('endDate = ' + endDate);
+        var _url = "{{path('enterprise_dash_update')}}";
+        //block of code that runs when the click event triggers
+        
+        var $data = JSON.stringify({
+            "startDate": startDate,//tabGridId,
+            "endDate": endDate,//tabFuelId,
+            "ent": ent
+        });   
+
+        //Danger
+        
+        swal.queue([{
+            title: 'The Dashboard Will Be Updated for this date range',
+            confirmButtonText: 'Confirm',
+            text: 'From ' + startDate + ' To ' + endDate,
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            confirmButtonClass: 'btn btn-primary',
+            cancelButtonClass: 'btn btn-info ml-2',
+            preConfirm: function () {
+                return new Promise(function (resolve) {
+                    /*$.get('https://api.ipify.org?format=json')
+                        .done(function (data) {
+                            swal.insertQueueStep(data.ip)
+                            resolve()
+                        })*/
+                    $.ajax({
+                        type: "POST",//method type
+                        contentType: "application/json; charset=utf-8",
+                        url: _url,///Target function that will be return result
+                        data: $data,//parameter pass data is parameter name param is value 
+                        dataType: "json",
+                        timeout: 120000,//64241
+                        success: function (data) {
+                            //$('.fa-sync').removeClass('fa-spin');                                  
+                            console.log(data);
+                            $('#turnOver').text(data['turnOver']);
+                            $('#expenses').text(data['expenses']);
+                            $('#nbBill').text(data['billNb']);
+                            $('#nbPurchaseOrder').text(data['purchaseNb']);
+                            $('#nbQuote').text(data['quoteNb']);
+                            $('#nbConvertedQuote').text(data['converted']);
+                            $('#outstandingDebt').text(data['outstandingDebt']);
+                            $('#outstandingClaim').text(data['outstandingClaim']);
+                            $('#nbProductsSold').text(data['nbProductsSold']);
+
+                            //console.log('Type of best : ' + typeof data['bestSellingProducts'] );
+                            data['bestSellingProducts'].forEach(function(item, index){
+                                $('#ref_' + index).text(item['ref']);
+                                $('#designation_' + index).text(item['designation']);
+                                $('#pu_' + index).text(item['pu']);
+                                $('#totalSale_' + index).text(item['totalSale']);
+                                $('#amount_' + index).text(item['amount']);
+                            });
+                            
+                            displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
+                            displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']);
+
+                            swal({
+                                type: 'success',
+                                title: 'The Dashboard has been updated !',
+                                //html: 'Submitted email: ' + email
+                            });
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 2000);
+                        },
+                        error: function (result) {
+                            //console.log("Error");
+                            //console.log(result);
+                            swal(
+                                'Oops...',
+                                'Something went wrong!',
+                                'error'
+                                //footer: '<a href>Why do I have this issue?</a>'
+                            );
+
+                            /*Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Something went wrong!',
+                                footer: '<a href>Why do I have this issue?</a>'
+                            });*/
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 5000);
+                        }
+                    });
+                })
+            },
+            allowOutsideClick: false
+        }]);
+        
+
+    });
+    
+    function displayNewData1(chart, label, data, /*dateopt, */multiple, xscale){
+            //chart.data.labels = [];
+            chart.updateOptions({
+                xaxis: {
+                    categories: []
+                },
+            });
+            /*chart.updateOptions({
+                xaxis: {
+                    categories: label
+                },
+            });*/
+            //chart.opts.labels = label;
+            chart.updateOptions({
+                labels: label
+                
+            });
+            if(multiple > 1){
+                var i = 0;
+                chart.opts.series.forEach((dataset) => {
+                    if( i < multiple){
+                        dataset.data = [];
+                        dataset.data = data[i++];
+                        console.log(dataset.name);
+                    }
+                });
+            }
+            else if(multiple == 1){
+                chart.updateSeries([{
+                    data: []
+                }]);
+            
+                chart.updateSeries([{
+                    data: data
+                }]);
+            }
+            if(xscale === 'day'){
+                chart.updateOptions({
+                    /*xaxis: {
+                        title: {
+                            text: moment(dateopt).format('DD MMMM').toString(),
+                        }
+                    },*/
+                });
+            }
+            else if( xscale === 'month'){
+                chart.updateOptions({
+                    /*xaxis: {
+                        title: {
+                            text: moment(dateopt).format('MMMM').toString(),
+                        }
+                    },*/
+                });
+            }
+            else if( xscale === 'hour'){
+                chart.updateOptions({
+                    /*xaxis: {
+                        title: {
+                            text: moment(dateopt).format('MMMM').toString(),
+                        }
+                    },*/
+                    tooltip: {
+                        x: {
+                            formatter: function (val) {
+                                return val + "h"
+                            },
+                        },
+                    }
+                });
+            }
+            //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
+            //preloaderChart(id, false);
+            //chart.render();
+        }
+</script>
+{% endblock %}

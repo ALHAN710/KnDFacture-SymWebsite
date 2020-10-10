@@ -3,14 +3,26 @@
 namespace App\Entity;
 
 use DateTime;
+use DateInterval;
 use DateTimeZone;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\LotRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\PositiveOrZero;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=LotRepository::class)
+ * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity(
+ *  fields={"number","quantity","dlc"},
+ *  message="Another Lot is already saved with this informations, please change it"
+ * )
  */
 class Lot
 {
@@ -23,11 +35,13 @@ class Lot
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\Positive
      */
     private $quantity;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Veuillez la désignation de l'élément")
      */
     private $number;
 
@@ -58,9 +72,75 @@ class Lot
      */
     private $stockMovements;
 
+    /**
+     * Durée de consommation du lot
+     * @Assert\PositiveOrZero
+     */
+    private $duration;
+
     public function __construct()
     {
         $this->stockMovements = new ArrayCollection();
+    }
+
+    public function getAlert()
+    {
+
+        $nowDate = new DateTime("now");
+        $this->periodofvalidity = new DateTime($this->dlc->format('Y/m/d'));
+        $interval = $nowDate->diff($this->periodofvalidity);
+        //$interval = $this->periodofvalidity->diff($nowDate);
+        if ($interval) {
+            //return gettype($interval->format('d'));
+            //return $interval->format('%R%a days');// '+29 days'
+            //return $interval->days; //Nombre de jour total de différence entre les dates 
+            return !$interval->invert; // 
+        }
+        return null;
+    }
+
+    /**
+     * Permet d'initialiser la date limite de consommation du lot
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * 
+     * @return void
+     */
+    public function initializeDlc()
+    {
+        if (!empty($this->duration)) {
+            $this->dlc = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
+            $this->dlc->add(new DateInterval('P' . $this->duration . 'D'));
+        }
+    }
+    /**
+     * Permet d'initialiser la date limite de consommation du lot
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * 
+     * @return void
+     */
+    public function initializeProduct()
+    {
+        // if (!empty($this->productId)) {
+        //     $this->setProduct($this->productId);
+        // }
+    }
+    /**
+     * Permet d'initialiser l'inventaire associé au lot
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * 
+     * @return void
+     */
+    public function initializeInventory()
+    {
+        // if (!empty($this->inventory)) {
+        //     $this->setInventory($this->inventoryId);
+        // }
     }
 
     /**
@@ -182,6 +262,43 @@ class Lot
                 $stockMovement->setLot(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of duration
+     */
+    public function getDuration(): ?int
+    {
+        //return $this->duration;
+        if (!empty($this->createdAt) && !empty($this->dlc)) {
+            $interval = $this->createdAt->diff($this->dlc);
+            //$interval = $this->dlc->diff($this->createdAt);
+            if ($interval) {
+                // dump($interval->invert);
+                //dump($interval->format('%R%a days'));
+                // dd(gettype($interval->days));
+                //dd(gettype($interval->format('d')));
+                //return $interval->format('%R%a days');// '+29 days'
+                //return $interval->days; //Nombre de jour total de différence entre les dates 
+                //return !$interval->invert; // 
+
+                return $interval->days;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Set the value of duration
+     *
+     * @return  self
+     */
+    public function setDuration(int $duration)
+    {
+
+        $this->duration = $duration;
 
         return $this;
     }

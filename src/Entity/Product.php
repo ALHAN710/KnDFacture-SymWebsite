@@ -38,15 +38,10 @@ class Product
     private $price;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
      * @Assert\NotBlank(message="Please enter the SKU of product")
      */
     private $sku;
-
-    /**
-     * @ORM\OneToMany(targetEntity=OrderItem::class, mappedBy="product")
-     */
-    private $orderItems;
 
     /**
      * 
@@ -84,11 +79,28 @@ class Product
      */
     private $lots;
 
+    /**
+     * @ORM\OneToMany(targetEntity=CommercialSheetItem::class, mappedBy="product")
+     */
+    private $commercialSheetItems;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $hasStock;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Category::class, mappedBy="products")
+     */
+    private $categories;
+
     public function __construct()
     {
-        $this->orderItems = new ArrayCollection();
+        //$this->orderItems = new ArrayCollection();
         $this->inventoryAvailabilities = new ArrayCollection();
         $this->lots = new ArrayCollection();
+        $this->commercialSheetItems = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -128,37 +140,6 @@ class Product
     public function setSku(string $sku): self
     {
         $this->sku = $sku;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|OrderItem[]
-     */
-    public function getOrderItems(): Collection
-    {
-        return $this->orderItems;
-    }
-
-    public function addOrderItem(OrderItem $orderItem): self
-    {
-        if (!$this->orderItems->contains($orderItem)) {
-            $this->orderItems[] = $orderItem;
-            $orderItem->setProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrderItem(OrderItem $orderItem): self
-    {
-        if ($this->orderItems->contains($orderItem)) {
-            $this->orderItems->removeElement($orderItem);
-            // set the owning side to null (unless already changed)
-            if ($orderItem->getProduct() === $this) {
-                $orderItem->setProduct(null);
-            }
-        }
 
         return $this;
     }
@@ -280,6 +261,77 @@ class Product
             if ($lot->getProduct() === $this) {
                 $lot->setProduct(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommercialSheetItem[]
+     */
+    public function getCommercialSheetItems(): Collection
+    {
+        return $this->commercialSheetItems;
+    }
+
+    public function addCommercialSheetItem(CommercialSheetItem $commercialSheetItem): self
+    {
+        if (!$this->commercialSheetItems->contains($commercialSheetItem)) {
+            $this->commercialSheetItems[] = $commercialSheetItem;
+            $commercialSheetItem->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommercialSheetItem(CommercialSheetItem $commercialSheetItem): self
+    {
+        if ($this->commercialSheetItems->contains($commercialSheetItem)) {
+            $this->commercialSheetItems->removeElement($commercialSheetItem);
+            // set the owning side to null (unless already changed)
+            if ($commercialSheetItem->getProduct() === $this) {
+                $commercialSheetItem->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getHasStock(): ?bool
+    {
+        return $this->hasStock;
+    }
+
+    public function setHasStock(?bool $hasStock): self
+    {
+        $this->hasStock = $hasStock;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
+            $category->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        if ($this->categories->contains($category)) {
+            $this->categories->removeElement($category);
+            $category->removeProduct($this);
         }
 
         return $this;

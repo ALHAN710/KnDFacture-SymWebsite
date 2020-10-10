@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Lots Dashboard  {% endblock %}
+
+{% block stylesheets %}
+<!-- DataTables -->
+<link href="/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<!-- Responsive datatable examples -->
+<link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />  
+
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="dripicons-shopping-bag mr-2"></i>Lots</h4>  
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            {% if isProd %}
+            <li class="breadcrumb-item active">Product</li>
+            {% else %}
+            <li class="breadcrumb-item active">Inventory</li>
+            {% endif %}
+            <li class="breadcrumb-item active">Lots</li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block body %}
+    
+    <div class="row">
+        <div class="col-lg-12 col-sm-12">
+            <div class="card">
+                <div class="card-body table-responsive">
+                    <h5 class="header-title">List of lots</h5>
+                    <div class="mt-2 mb-2 mr-5 text-right">
+                        {% if isProd %}
+                        <a href="{{path('lot_create', {'prod':isProd, 'inv':0})}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New Lot for Product"><i class="fa fa-plus-circle"></i></a>
+                        {% else %}
+                        <a href="{{path('lot_create', {'prod':0, 'inv':inv})}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New Lot In Inventory"><i class="fa fa-plus-circle"></i></a>
+                        {% endif %}
+                    </div>
+                    <div class="">
+                        <table id="datatable2" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2" class="text-center font-14">Product details</th>
+                                    <th colspan="3" class="text-center font-14">Lot details</th>
+                                </tr>
+                                <tr class="text-center">
+                                    {# <th>#</th> #}
+                                    <th>SKU</th>
+                                    <th class="text-left">Name</th>
+                                    <th>N° Lot</th>
+                                    <th>Quantity</th>
+                                    <th>DLC</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for lot in lots %}
+                                <tr class="text-center">
+                                    {# <td>{{product.id}}</td> #}
+                                    <td>{{lot.product.sku}}</td>
+                                    <td class="text-left">{{lot.product.name}}</td>
+                                    <td>{{lot.number}}</td>
+                                    <td>{{lot.quantity}}</td>
+                                    <td>{{lot.dlc|date('d-m-Y')}}</td>
+                                    <td>
+                                        <a href="{{path('lot_edit', {'id':lot.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify lot"><i class="far fa-edit"></i> </a></a>
+                                        {# <a href="{{path('lot_delete', {'id':lot.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete lot"><i class="fas fa-trash"></i> </a>    #}
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>           
+                </div>
+            </div>
+        </div>
+    </div><!--end row-->
+{% endblock %}
+
+{% block javascripts %}
+<!-- Required datatable js -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/jszip.min.js"></script>
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+<script src="/plugins/datatables/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="/plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="/pages/jquery.datatable.init.js"></script>    
+{% endblock %}

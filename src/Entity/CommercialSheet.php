@@ -3,11 +3,14 @@
 namespace App\Entity;
 
 use DateTime;
+use DateInterval;
 use DateTimeZone;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\CommercialSheetRepository;
 use Doctrine\Common\Collections\Collection;
+use App\Repository\CommercialSheetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Component\Validator\Constraints as Assert;
 
 //use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -57,11 +60,13 @@ class CommercialSheet
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\PositiveOrZero
      */
     private $itemsReduction;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\PositiveOrZero
      */
     private $fixReduction;
 
@@ -69,11 +74,6 @@ class CommercialSheet
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $completedAt;
-
-    /** 
-     * @ORM\ManyToMany(targetEntity=OrderItem::class, mappedBy="commercialSheets")
-     */
-    private $orderItems;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -87,17 +87,15 @@ class CommercialSheet
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Please enter the type of commercial sheet")
      */
     private $type;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Assert\Date(message="La date d'échéance n'est pas valide")
-     */
     private $periodofvalidity;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\PositiveOrZero
      */
     private $deliveryFees;
 
@@ -117,25 +115,84 @@ class CommercialSheet
      */
     private $stockMovements;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Assert\PositiveOrZero
+     */
+    private $duration;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=CommercialSheetItem::class, mappedBy="commercialSheet")
+     * @Assert\Valid()
+     */
+    private $commercialSheetItems;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $convertFlag;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $convertAt;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $advancePayment;
+
     public function __construct()
     {
-        $this->orderItems = new ArrayCollection();
+        //$this->orderItems = new ArrayCollection();
         //$this->reductions = new ArrayCollection();
         $this->stockMovements = new ArrayCollection();
+        $this->commercialSheetItems = new ArrayCollection();
+    }
+
+    public function getAmount(): float
+    {
+        //totalAmount = itemsAmountSubTotal + deliveryFees + taxes - totalPromoAmount;
+        $totalPromoAmount = $this->getItemsReduction() + $this->getFixReduction();
+        $itemsAmountSubTotal = 0.0;
+        $items = $this->getCommercialSheetItems();
+        foreach ($items as $item) {
+            $itemsAmountSubTotal += ($item->getQuantity() * $item->getPu());
+        }
+
+        $taxes = ($this->getUser()->getEnterprise()->getTva() * $itemsAmountSubTotal) / 100.0;
+        $totalAmount = $itemsAmountSubTotal + $this->getDeliveryFees() + $taxes - $totalPromoAmount - $this->getAdvancePayment();
+
+        return $totalAmount;
     }
 
     /**
-     * Permet d'initialiser le numéro de la commande 
+     * Permet d'initialiser le status de livraison de la commande à false
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
      * 
      * @return void
      */
-    public function initializeOrderNumber()
+    public function initializeAdvancePayment()
     {
-        if (empty($this->number)) {
-            $this->number = date('Y') . date('m') . date('d');
+        if ($this->getCompletedStatus() == true) {
+            $this->setAdvancePayment($this->getAmount());
+        }
+    }
+
+    /**
+     * Permet d'initialiser le status de livraison de la commande à false
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * 
+     * @return void
+     */
+    public function initializeConvertFlag()
+    {
+        if (empty($this->convertFlag)) {
+            $this->convertFlag = false;
         }
     }
 
@@ -314,34 +371,6 @@ class CommercialSheet
         return $this;
     }
 
-    /**
-     * @return Collection|OrderItem[]
-     */
-    public function getOrderItems(): Collection
-    {
-        return $this->orderItems;
-    }
-
-    public function addOrderItem(OrderItem $orderItem): self
-    {
-        if (!$this->orderItems->contains($orderItem)) {
-            $this->orderItems[] = $orderItem;
-            $orderItem->addCommercialSheet($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrderItem(OrderItem $orderItem): self
-    {
-        if ($this->orderItems->contains($orderItem)) {
-            $this->orderItems->removeElement($orderItem);
-            $orderItem->removeCommercialSheet($this);
-        }
-
-        return $this;
-    }
-
     public function getDeliverAt(): ?\DateTimeInterface
     {
         return $this->deliverAt;
@@ -380,14 +409,29 @@ class CommercialSheet
 
     public function getPeriodofvalidity(): ?\DateTimeInterface
     {
-        return $this->periodofvalidity;
+        if (!empty($this->duration)) {
+            $this->periodofvalidity = new DateTime($this->createdAt->format('Y/m/d'));
+            $this->periodofvalidity->add(new DateInterval('P' . $this->duration . 'D'));
+            if ($this->periodofvalidity) return $this->periodofvalidity;
+        }
+        return null;
     }
 
-    public function setPeriodofvalidity(\DateTimeInterface $periodofvalidity): self
+    public function getAlert()
     {
-        $this->periodofvalidity = $periodofvalidity;
 
-        return $this;
+        $nowDate = new DateTime("now");
+        $this->periodofvalidity = new DateTime($this->createdAt->format('Y/m/d'));
+        $this->periodofvalidity->add(new DateInterval('P' . $this->duration . 'D'));
+        $interval = $nowDate->diff($this->periodofvalidity);
+        //$interval = $this->periodofvalidity->diff($nowDate);
+        if ($interval) {
+            //return gettype($interval->format('d'));
+            //return $interval->format('%R%a days');// '+29 days'
+            //return $interval->days; //Nombre de jour total de différence entre les dates 
+            return !$interval->invert; // 
+        }
+        return null;
     }
 
     public function getDeliveryFees(): ?float
@@ -453,6 +497,82 @@ class CommercialSheet
                 $stockMovement->setCommercialSheet(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDuration(): ?int
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(?int $duration): self
+    {
+        $this->duration = $duration;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommercialSheetItem[]
+     */
+    public function getCommercialSheetItems(): Collection
+    {
+        return $this->commercialSheetItems;
+    }
+
+    public function addCommercialSheetItem(CommercialSheetItem $commercialSheetItem): self
+    {
+        if (!$this->commercialSheetItems->contains($commercialSheetItem)) {
+            $this->commercialSheetItems[] = $commercialSheetItem;
+            $commercialSheetItem->addCommercialSheet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommercialSheetItem(CommercialSheetItem $commercialSheetItem): self
+    {
+        if ($this->commercialSheetItems->contains($commercialSheetItem)) {
+            $this->commercialSheetItems->removeElement($commercialSheetItem);
+            $commercialSheetItem->removeCommercialSheet($this);
+        }
+
+        return $this;
+    }
+
+    public function getConvertFlag(): ?bool
+    {
+        return $this->convertFlag;
+    }
+
+    public function setConvertFlag(bool $convertFlag): self
+    {
+        $this->convertFlag = $convertFlag;
+
+        return $this;
+    }
+
+    public function getConvertAt(): ?\DateTimeInterface
+    {
+        return $this->convertAt;
+    }
+
+    public function setConvertAt(?\DateTimeInterface $convertAt): self
+    {
+        $this->convertAt = $convertAt;
+
+        return $this;
+    }
+
+    public function getAdvancePayment(): ?float
+    {
+        return $this->advancePayment;
+    }
+
+    public function setAdvancePayment(float $advancePayment): self
+    {
+        $this->advancePayment = $advancePayment;
 
         return $this;
     }

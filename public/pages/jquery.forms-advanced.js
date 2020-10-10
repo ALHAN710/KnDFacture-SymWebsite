@@ -34,11 +34,16 @@
             clearBtn: true,
             multidate: true,
             multidateSeparator: ","
-        });
+        });*/
         jQuery('#date-range').datepicker({
-            toggleActive: true
-        });
+            toggleActive: true,
+            format: "yyyy-mm-dd",
+            clearBtn: true,
+            endDate: "0d",
+            calendarWeeks: true,
 
+        });
+        /*
         //Bootstrap-MaxLength
         $('input#defaultconfig').maxlength({
             warningClass: "badge badge-info",
@@ -175,13 +180,13 @@
 
         $(".complex-colorpicker").asColorPicker({
             mode: 'complex'
-        });*/
+        });
         // Select2
         $(".select2").select2({
             width: '100%'
         });
 
-        /*$('input[name="dates"]').daterangepicker({
+        $('input[name="dates"]').daterangepicker({
             "alwaysShowCalendars": true,
         });
         $('.open_picker').show();
@@ -210,7 +215,7 @@
             var years = moment().diff(start, 'years');
             alert("You are " + years + " years old!");
         });
-
+*/
         var start = moment().subtract(29, 'days');
         var end = moment();
 
@@ -221,6 +226,9 @@
         $('#reportrange').daterangepicker({
             startDate: start,
             endDate: end,
+            maxSpan: {
+                "days": 30
+            },
             ranges: {
                 'Today': [moment(), moment()],
                 'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -231,7 +239,7 @@
             }
         }, cb);
 
-        cb(start, end);*/
+        cb(start, end);
     },
         //init
         $.AdvancedForm = new AdvancedForm, $.AdvancedForm.Constructor = AdvancedForm

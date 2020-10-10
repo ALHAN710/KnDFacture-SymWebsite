@@ -121,14 +121,14 @@
                                     {% set price = 0 %}
                                     {% set promoAmount = 0 %}
                                     {% set total = 0 %}
-                                    {% for orderItem in commercialSheet.orderItems %}
+                                    {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
                                     <tr>
-                                        <th>{{orderItem.product.sku}}</th>
-                                        <td>{{orderItem.product.name}}</td>
-                                        <td class="text-center">{{orderItem.product.price}}</td>
-                                        <td class="text-center">{{orderItem.quantity}}</td>
-                                        <td class="text-center">{{orderItem.quantity * orderItem.product.price}}</td>
-                                        {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
+                                        <th>{{commercialSheetItem.reference}}</th>
+                                        <td>{{commercialSheetItem.designation}}</td>
+                                        <td class="text-center">{{commercialSheetItem.pu}}</td>
+                                        <td class="text-center">{{commercialSheetItem.quantity}}</td>
+                                        <td class="text-center">{{commercialSheetItem.quantity * commercialSheetItem.pu}}</td>
+                                        {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
                                     </tr>
                                     {% endfor %}
                                     {#<tr>
@@ -216,14 +216,25 @@
                                     <tr>
                                         {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
                                         <th colspan="2" class="border-0"></th>
-                                        <td colspan="3" class="border-0 font-14"><b>Promotion amount Subtotal : {{promoAmount}} FCFA</b></td>
+                                        <td colspan="3" class="border-0 font-14 text-right pr-4"><b>Promotion amount Subtotal : {{promoAmount}} FCFA</b></td>
+                                        {#<td class="border-0 font-14"><b>{{promoAmount}} FCFA</b></td>#}
+                                    </tr>
+                                    <tr>
+                                        {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
+                                        <th colspan="2" class="border-0"></th>
+                                        <td colspan="3" class="border-0 font-14 text-right pr-4"><b>Taxes : {{taxes}} FCFA</b></td>
+                                        {#<td class="border-0 font-14"><b>{{promoAmount}} FCFA</b></td>#}
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2" class="border-0"></th>
+                                        <td colspan="3" class="border-0 font-14 text-right pr-4"><b>Advance Payment : {{commercialSheet.advancePayment}} FCFA</b></td>
                                         {#<td class="border-0 font-14"><b>{{promoAmount}} FCFA</b></td>#}
                                     </tr>
                                                     
                                     <tr class="bg-dark text-white">
-                                        {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
+                                        {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount - commercialSheet.advancePayment %}
                                         <th colspan="3" class="border-0"></th>
-                                        <td class="border-0 font-14"><b>Total</b></td>
+                                        <td class="border-0 font-14"><b>Total Net To Paid</b></td>
                                         <td class="border-0 font-14"><b>{{total}} FCFA</b></td>
                                     </tr>
                                 </tbody>
@@ -274,7 +285,7 @@
                             printJS('docs/printjs.pdf')
                             javascript:window.print()
                             #}
-                            <a href="{{path('commercial_sheet_index',{'id':commercialSheet.inventory.id,'type':commercialSheet.type})}}" class="btn btn-danger text-light"><i
+                            <a href="{{path('commercial_sheet_index',{'type':commercialSheet.type})}}" class="btn btn-danger text-light"><i
                                     class="fa fa-arrow-circle-left mr-2"></i>Back</a>
                         </div>
                     </div>

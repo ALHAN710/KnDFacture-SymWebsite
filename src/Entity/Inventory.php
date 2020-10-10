@@ -83,6 +83,11 @@ class Inventory
         $this->commercialSheets = new ArrayCollection();
     }
 
+    public function getConst(): ?float
+    {
+        return $this->getTxOfService() * sqrt($this->getApprovDelay());
+    }
+
     public function getId(): ?int
     {
         return $this->id;

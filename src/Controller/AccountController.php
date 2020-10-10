@@ -9,13 +9,14 @@ use App\Entity\User;
 use App\Form\AccountType;
 use Cocur\Slugify\Slugify;
 use App\Entity\PasswordUpdate;
+use App\Form\RegistrationType;
 use App\Repository\UserRepository;
 use Symfony\Component\Form\FormError;
 use App\Repository\InventoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
-use Symfony\Component\Filesystem\Filesystem;
 //use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -70,7 +71,7 @@ class AccountController extends ApplicationController
     {
         $user = new User();
         $slugify = new Slugify();
-        $form = $this->createForm(AdminRegistration1Type::class, $user);
+        $form = $this->createForm(RegistrationType::class, $user);
         $inventories = $inventoryRepo->findAll();
         $form->handleRequest($request);
 
@@ -239,7 +240,7 @@ class AccountController extends ApplicationController
         return $this->render('account/password.html.twig', [
             'form' => $form->createView(),
             'user' => $user,
-            'inventories' => $inventories,
+            //'inventories' => $inventories,
         ]);
     }
 
@@ -254,7 +255,7 @@ class AccountController extends ApplicationController
     {
         $inventories = $inventoryRepo->findAll();
         return $this->render('account/recoverpw.html.twig', [
-            'inventories' => $inventories,
+            //'inventories' => $inventories,
         ]);
     }
 
@@ -267,9 +268,9 @@ class AccountController extends ApplicationController
      */
     public function codeVerification(InventoryRepository $inventoryRepo)
     {
-        $inventories = $inventoryRepo->findAll();
+        //$inventories = $inventoryRepo->findAll();
         return $this->render('account/codeverification.html.twig', [
-            'inventories' => $inventories,
+            //'inventories' => $inventories,
         ]);
     }
 
@@ -305,7 +306,7 @@ class AccountController extends ApplicationController
             //dump($code);
             $object = "PASSWORD RESET";
             $message = 'Your verification code is ' . $code;
-            $message = "We heard that you lost your LBF password. Sorry about that !
+            $message += "We heard that you lost your LBF password. Sorry about that !
 
 But don’t worry! You can use the following code to reset your password: " . $code . "
 
@@ -398,7 +399,7 @@ The LBF Team";
 
         return $this->render('account/resetpassword.html.twig', [
             'form' => $form->createView(),
-            'inventories' => $inventories,
+            //'inventories' => $inventories,
         ]);
     }
 }

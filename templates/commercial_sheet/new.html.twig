@@ -27,7 +27,7 @@
 {% form_theme form 'commercial_sheet/_collection.html.twig' %}
 
 {% block body %}
-{#{{dump(availabilities)}}#}
+{# {{dump(app.user.enterprise.subscription.tarifs['' ~ app.user.enterprise.subscriptionDuration])}} #}
 
 <div class="row ">
     <div class="col-12">       
@@ -37,17 +37,17 @@
                 {{ form_start(form) }}
                 <div class="card border mb-0 text-center">
                     <div class="card-header">
-                        {% if commercialSheet.type != 'Purchase order' %}Customer{% else %}Supplier{% endif %} Details
+                        {% if commercialSheet.type != 'purchaseorder' %}Customer{% else %}Supplier{% endif %} Details
                     </div>
                     <div class="card-body text-left">
                         <h5 class="card-title"></h5>
-                        <p class="card-text">{% if commercialSheet.type != 'Purchase order' %}Name :{% else %}Social Reason :{% endif %} {{commercialSheet.businessContact.socialReason}}</p>
-                        {% if commercialSheet.type == 'Purchase order' %}
+                        <p class="card-text">{% if commercialSheet.type != 'purchaseorder' %}Name :{% else %}Social Reason :{% endif %} {{commercialSheet.businessContact.socialReason}}</p>
+                        {% if commercialSheet.type == 'purchaseorder' %}
                         <p class="card-text">NIU : {{commercialSheet.businessContact.niu}}</p>
                         <p class="card-text">RCCM : {{commercialSheet.businessContact.rccm}}</p>
                         {% endif %}
                         <p class="card-text">Tel : {{commercialSheet.businessContact.phoneNumber}}</p>
-                        <p class="card-text">{% if commercialSheet.type != 'Purchase order' %}Delivery Address :{% else %}Address :{% endif %} {{commercialSheet.businessContact.address}}</p>
+                        <p class="card-text">{% if commercialSheet.type != 'purchaseorder' %}Delivery Address :{% else %}Address :{% endif %} {{commercialSheet.businessContact.address}}</p>
                         {# <p class="card-text">Delivery Town : {{order.customer.deliveryAddress.town}}</p> #}
                         
                     </div>
@@ -59,15 +59,15 @@
                     <div class="card-body">
                         <h5 class="card-title"></h5>
                         <div class="row text-center">
-                            {# <div class="col">SKU</div> #}
+                            <div class="col">Ref</div>
                             <div class="col">Designation</div>
                             <div class="col">P.U (XAF)</div>
-                            <div class="col">Available</div>
+                            <div class="col {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Available</div>
                             <div class="col">Qty</div>
                             <div class="col">Amount (XAF)</div>
                             <div class="col"></div>
                         </div>
-                        {{form_widget(form.orderItems)}}
+                        {{form_widget(form.commercialSheetItems)}}
                         <p class="card-text">Items quantity Total  : <span id="itemsqtytotal">0</span></p>
                         <p class="card-text">Items amount Subtotal : <span id="itemsAmountSubtotal">0</span> FCFA</p>
                         <div class="form-group">
@@ -75,6 +75,7 @@
                                 <div class="input-group-prepend">
                                     {{ form_label(form.deliveryFees, null, {'label_attr': {'class': 'input-group-text'}}) }}
                                 </div>
+                                {{ form_errors(form.deliveryFees) }}
                                 {{ form_widget(form.deliveryFees, {'attr': {'class': "form-control text-center"}}) }}
                                 
                             </div>
@@ -95,6 +96,7 @@
                                 <div class="input-group-prepend">
                                     {{ form_label(form.itemsReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
                                 </div>
+                                {{ form_errors(form.itemsReduction) }}
                                 {{ form_widget(form.itemsReduction, {'attr': {'class': "form-control text-center"}}) }}
                                 
                             </div>
@@ -104,6 +106,7 @@
                                 <div class="input-group-prepend">
                                     {{ form_label(form.fixReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
                                 </div>
+                                {{ form_errors(form.fixReduction) }}
                                 {{ form_widget(form.fixReduction, {'attr': {'class': "form-control text-center"}}) }}
                                 
                             </div>
@@ -118,24 +121,55 @@
                     <div class="card-header">Payment Details</div>
                     <div class="card-body">
                         <h5 class="card-title"></h5>
+                        <p class="card-text">Taxes : <span id="taxes">0</span> FCFA</p>
+
+                        <div class="form-group {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    {{ form_label(form.advancePayment, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                </div>
+                                {{ form_errors(form.advancePayment) }}
+                                {{ form_widget(form.advancePayment, {'attr': {'class': "form-control text-center"}}) }}
+                                
+                            </div>
+                        </div>
+
                         <p class="card-text">Total Net to paid : <span id="totalAmount">0</span> FCFA</p>
-                        {% if commercialSheet.type != 'quote' %}
+                        {# {% if commercialSheet.type != 'quote' %}
                         {% set dnone = "" %}
                         {% else %}
                         {% set dnone = "d-none" %}
                         {% endif %}
                         {{form_widget(form.paymentStatus, {'attr': {'class': dnone}}) }}
-                        {{form_label(form.paymentStatus, null, {'label_attr': {'class': dnone}}) }}
                         {{form_widget(form.deliveryStatus, {'attr': {'class': dnone}}) }}
-                        {{form_widget(form.completedStatus, {'attr': {'class': dnone}}) }}
+                        {{form_widget(form.completedStatus, {'attr': {'class': dnone}}) }} #}
                         
-                                                
+                        <div class=" {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                            {# {{ form_errors(form.periodofvalidity) }}                        #}
+                                {# {{ form_label(form.paymentStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
+                                {{ form_widget(form.paymentStatus) }}
+                            
+                        </div>
+                        <div class=" {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                            {# {{ form_errors(form.periodofvalidity) }}                        #}
+                                {# {{ form_label(form.deliveryStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
+                                {{ form_widget(form.deliveryStatus) }}
+                            
+                        </div>
+                        <div class=" {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                            {# {{ form_errors(form.periodofvalidity) }}                        #}
+                                {# {{ form_label(form.completedStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
+                                {{ form_widget(form.completedStatus) }}
+                            
+                        </div>
+                        
                         <div class="form-group mt-3 {% if commercialSheet.type != 'quote' %}d-none{% endif %}">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    {{ form_label(form.periodofvalidity, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    {{ form_label(form.duration, null, {'label_attr': {'class': 'input-group-text'}}) }}
                                 </div>
-                                {{ form_widget(form.periodofvalidity, {'attr': {'class': "form-control text-center"}}) }}
+                                {{ form_errors(form.duration) }}                       
+                                {{ form_widget(form.duration, {'attr': {'class': "form-control text-center"}}) }}
                                 
                             </div>
                         </div>
@@ -147,7 +181,7 @@
 
                 <div class="text-right mt-4">
                     <button type="submit" class="btn btn-primary" id="saveBtn">
-                        <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                        {# <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span> #}
                         Save
                     </button>
                 </div>
@@ -163,7 +197,7 @@
 {% endblock %}
 
 {% block javascripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script> #}
 <script>
     /*$('#saveBtn').click(function(){
         //block of code that runs when the click event triggers
@@ -174,11 +208,17 @@
     $('#commercial_sheet_itemsReduction').attr('type', 'number');
     $('#commercial_sheet_deliveryFees').attr('type', 'number');
     $('#commercial_sheet_fixReduction').attr('type', 'number');
+    $('#commercial_sheet_advancePayment').attr('type', 'number');
+    
+    {# var val = $('#commercial_sheet_duration').val(); #}
+    {# if($('#commercial_sheet_duration').val()) console.log('duration val = ' + val);
+    else $('#commercial_sheet_duration').val(0); #}
+    
     {# var availabilities = {{availabilities}}; #}
     {# $('.form-check').addClass('radio-info form-check-inline'); #}
     var availabilities = JSON.parse('{{ availabilities | json_encode | raw }}');
     var availabilitiesTab = JSON.parse('{{ availabilities | json_encode | raw }}');
-    $(document).ready(function(){
+    {# $(document).ready(function(){
         $('#commercial_sheet_periodofvalidity').datepicker({
             format: 'dd/mm/yyyy',
             startDate: '+0d',
@@ -187,8 +227,18 @@
             clearBtn: true,
         });
 
-    });
-    {# console.log(availabilities);  #}
+    }); #}
+    //$('#saveBtn').attr('disabled', true);
+    var tva = {{ app.user.enterprise.tva }}/100.0;
+    console.log(availabilities);
+    var type = '{{commercialSheet.type}}';
+    if (type !== 'quote'){
+        $('#commercial_sheet_duration').attr('required', false); 
+    }
+    else{
+        $('#commercial_sheet_advancePayment').attr('required', false); 
+
+    }
 </script>
 <script src="/js/commercial_sheet.js" type="text/javascript"></script>
 

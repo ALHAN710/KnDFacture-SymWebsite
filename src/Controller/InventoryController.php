@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use DateTime;
+use DateInterval;
+use App\Entity\Lot;
+use App\Form\LotType;
 use App\Entity\Inventory;
 use App\Form\InventoryType;
 use App\Entity\InventoryAvailability;
@@ -13,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class InventoryController extends AbstractController
+class InventoryController extends ApplicationController
 {
     /**
      * @Route("/inventory/dashboard", name="inventories_index")
@@ -24,51 +28,7 @@ class InventoryController extends AbstractController
     public function index(InventoryRepository $inventoryRepo)
     {
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
-        return $this->render('inventory/index_inventory.html.twig', [
-            'inventories' => $inventories,
-        ]);
-    }
-
-    /**
-     * @Route("/inventory/{id<\d+>}/dashboard", name="inventory_index")
-     * 
-     * @IsGranted("ROLE_MANAGER")
-     * 
-     */
-    public function inventoryDash(Inventory $inventory, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
-    {
-        /*$dataGrid = $manager->createQuery("SELECT SUM(d.kWh) AS EA, SUM(d.kVarh) AS ER, MAX(d.dateTime) AS DateTimeMax,
-                                            MAX(d.s3ph) AS Smax, AVG(d.s3ph) AS Smoy, SUM(d.kWh) / SQRT( (SUM(d.kWh)*SUM(d.kWh)) + (SUM(d.kVarh)*SUM(d.kVarh)) ) AS Cosphi
-                                            FROM App\Entity\Order d
-                                            JOIN d.smartMod sm 
-                                            WHERE d.dateTime LIKE :selDate
-                                            AND sm.id = :modId
-                                                                                                                                
-                                            ")
-            ->setParameters(array(
-                //'selDate' => $dat,
-                //'modId'   => $gridId
-            ))
-            ->getResult();*/
-
-        /*$Energy = $manager->createQuery("SELECT SUBSTRING(d.dateTime, 1, 10) AS jour, SUM(d.kWh) AS kWh, SUM(d.kVarh) AS kVarh 
-                                        FROM App\Entity\DataMod d
-                                        JOIN d.smartMod sm 
-                                        WHERE d.dateTime LIKE :selDate
-                                        AND sm.id = :smartModId
-                                        GROUP BY jour
-                                        ORDER BY jour ASC
-                                                                                
-                                        ")
-            ->setParameters(array(
-                //'selDate'      => $dat,
-                //'smartModId'   => $id
-            ))
-            ->getResult();*/
-
-        $inventories = $inventoryRepo->findAll();
-
-        return $this->render('inventory/index_inventory.html.twig', [
+        return $this->render('inventory/index_inventories.html.twig', [
             'inventories' => $inventories,
         ]);
     }
@@ -97,7 +57,7 @@ class InventoryController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             //Création de la disponibilité de stock pour le nouvel inventaire de tous les produits existants
-            $products = $productRepo->findBy(['enterprise' => $inventory->getEnterprise()]);
+            $products = $productRepo->findBy(['enterprise' => $inventory->getEnterprise(), 'hasStock' => 1]);
             $available = 0;
             $inventoryAvailability = new InventoryAvailability();
             foreach ($products as $product) {
@@ -173,7 +133,7 @@ class InventoryController extends AbstractController
     /**
      * Permet de supprimer un inventaire
      * 
-     * @Route("/inventory/{id}/delete", name="inventory_delete")
+     * @Route("/inventory/{id<\d+>}/delete", name="inventory_delete")
      *
      * @IsGranted("ROLE_MANAGER")
      * 
@@ -192,5 +152,135 @@ class InventoryController extends AbstractController
         );
 
         return $this->redirectToRoute("inventories_index");
+    }
+
+    /**
+     * @Route("/inventory/{id<\d+>}/dashboard", name="inventory_dashboard")
+     * 
+     * @IsGranted("ROLE_MANAGER")
+     * 
+     */
+    public function inventoryDash(Inventory $inventory, Request $request, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
+    {
+        $productStats          = [];
+        $inventoryAvailability = [];
+        $products = $manager->createQuery("SELECT p
+                                           FROM App\Entity\Product p, App\Entity\Lot l
+                                           JOIN l.inventory inv
+                                           WHERE inv.id = :invId
+                                           AND p.hasStock = 1
+                                           AND l.product = p.id
+        ")
+            ->setParameters(array(
+                'invId'   => $inventory->getId(),
+            ))
+            ->getResult();
+        //dd($products);
+
+        $to_ = new DateTime("now");
+        //dump($to_);
+        $from_ = $to_;
+        $from_->sub(new DateInterval('P30D'));
+        //dd($from_);
+        foreach ($products as $product) {
+            //dd($product->getId());
+            $productStats['' . $product->getId()] = $manager->createQuery("SELECT AVG(st.quantity) AS qtyAVG, 
+                                                                        SUM(st.quantity) AS qtyTotal, MAX(st.quantity) AS qtyMax, 
+                                                                        MIN(st.quantity) AS qtyMin, STD(st.quantity) AS ET
+                                                                        FROM App\Entity\StockMovement st
+                                                                        JOIN st.lot l 
+                                                                        JOIN l.product p
+                                                                        JOIN st.commercialSheet cms
+                                                                        WHERE st.createdAt >= :from_
+                                                                        AND st.createdAt <= :to_
+                                                                        AND cms.completedStatus = 1
+                                                                                                                                                            
+                                                                    ")
+                ->setParameters(array(
+                    'from_'    => $from_->format('Y-m-d H:i:s'),
+                    'to_'      => $to_->format('Y-m-d H:i:s'),
+                    //'prodId'   => $product->getId()
+                ))
+                ->getResult();
+            $inventoryAvailabilityRepo = $manager->getRepository("App:InventoryAvailability");
+            $inventoryAvailability['' . $product->getId()] = $inventoryAvailabilityRepo->findOneBy(['inventory' => $inventory, 'product' => $product]);
+        }
+        //dump($inventoryAvailability);
+        //dd($productStats);
+
+        $inventories = $inventoryRepo->findAll();
+
+        return $this->render('inventory/inventory_dashboard.html.twig', [
+            'inventories'  => $inventories,
+            'inventory'    => $inventory,
+            'available'    => $inventoryAvailability,
+            'productStats' => $productStats,
+            'products'     => $products,
+
+        ]);
+    }
+
+    /**
+     * Permet la MAJ du tableau des mouvements de stock
+     * 
+     * @Route("/stock/movement/table/update/", name="stock_movement_update") 
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @return void
+     */
+    public function updateStockMovementTable(Request $request, EntityManagerInterface $manager)
+    {
+        $paramJSON = $this->getJSONRequest($request->getContent());
+        if ((array_key_exists("startDate", $paramJSON) && !empty($paramJSON['startDate'])) && (array_key_exists("endDate", $paramJSON) && !empty($paramJSON['endDate'])) && (array_key_exists("inv", $paramJSON) && !empty($paramJSON['inv']))) {
+            $startDate = new DateTime($paramJSON['startDate']);
+            $endDate = new DateTime($paramJSON['endDate']);
+
+            $nowTime = new DateTime("now");
+            $nowTime = $nowTime->format('d/m/Y');
+            //$nowTime = $nowTime->format('H:m:i');
+            dump($endDate);
+            dump($endDate->format('d-m-Y'));
+            dump($nowTime);
+
+            if ($endDate->format('d/m/Y') == $nowTime) {
+                $nowTime = new DateTime("now");
+                $nowTime = $nowTime->format('H:m:i');
+                $endDate = new DateTime($paramJSON['endDate'] . ' ' . $nowTime);
+                dump($nowTime);
+            } else {
+                $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
+            }
+            // $startDate = new DateTime("yesterday");
+            // $endDate = new DateTime("now");
+            $inv = $paramJSON['inv'];
+            dump($endDate);
+            $stockMovements = $manager->createQuery("SELECT st.createdAt AS dat, p.sku AS sku, p.name AS nam, 
+                                                    l.number AS numLot, l.dlc AS dlc, st.type AS typ, st.quantity AS qty
+                                                    FROM App\Entity\StockMovement st
+                                                    INNER JOIN st.lot l 
+                                                    LEFT JOIN l.inventory inv
+                                                    JOIN l.product p
+                                                    WHERE st.createdAt >= :startDate
+                                                    AND st.createdAt <= :endDate
+                                                    AND inv.id = :invId
+                                                                                                                                        
+                                                ")
+                ->setParameters(array(
+                    'startDate'    => $startDate->format('Y-m-d H:i:s'),
+                    'endDate'      => $endDate->format('Y-m-d H:i:s'),
+                    'invId'        => $inv
+                ))
+                ->getResult();
+            dump($stockMovements);
+            return $this->json([
+                'code'           => 200,
+                'stockMovements' => $stockMovements,
+            ], 200);
+        }
+        return $this->json([
+            'code' => 403,
+            'message' => 'Empty Array or Not existss !',
+        ], 200);
     }
 }

@@ -21,6 +21,10 @@
 
         
     </head>
+    {% set iconStock = true %}
+    {% if app.user.enterprise.subscription.productRefNumber == 0 %}
+    {% set iconStock = false %}
+    {% endif %}
     <body>
         <!-- Top Bar Start -->
         {% include 'partials/topBar.html.twig' %}
@@ -62,7 +66,7 @@
         <div class="page-wrapper">
             <div class="page-wrapper-inner">
                 <!-- Navbar Custom Menuv -->
-                {% include 'partials/horizontalMenu.html.twig' with {'inventories': inventories}  %}
+                {% include 'partials/horizontalMenu.html.twig' %}
                 <!-- end Navbar Custom Menu -->
             </div>
 

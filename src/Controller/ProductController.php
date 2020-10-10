@@ -45,7 +45,8 @@ class ProductController extends AbstractController
     public function create(Request $request, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
     { //
         $product = new Product();
-        $product->setEnterprise($this->getUser()->getEnterprise());
+        $product->setEnterprise($this->getUser()->getEnterprise())
+            ->setType('Product');
 
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         //Permet d'obtenir un constructeur de formulaire
@@ -55,30 +56,58 @@ class ProductController extends AbstractController
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
         //dump($site);
-
+        $valid = true;
         if ($form->isSubmitted() && $form->isValid()) {
-            //Création de la disponibilité de stock pour le nouveau produit dans tous les inventaires(ou stock) existants
-            //$inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
-            foreach ($inventories as $inventory) {
-                $available = 0;
-                $inventoryAvailability = new InventoryAvailability();
-                $inventoryAvailability->setAvailable($available);
+            if ($product->getHasStock() == true) {
+                //Vérification de l'abonnement pour autoriser l'enregistrement de la référence en stock
+                $iconStock = true;
+                //$iconCombination = true;
+                $productRefNumber = $this->getUser()->getEnterprise()->getSubscription()->getProductRefNumber();
+                $sheetNumber = $this->getUser()->getEnterprise()->getSubscription()->getSheetNumber();
+                if ($productRefNumber == 0) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
+                    $iconStock = false;
+                    $valid = false;
+                }
+                if ($iconStock) {
+                    $productRepo = $manager->getRepository('App:Product');
+                    $nbProductsInStock = count($productRepo->findBy(['hasStock' => 1]));
 
-                $inventory->addInventoryAvailability($inventoryAvailability);
-                $product->addInventoryAvailability($inventoryAvailability);
+                    //Si le nombre de produit déjà crée en stock est inférieur au nbre de ref autorisé par l'abonnement
+                    if (($nbProductsInStock < $productRefNumber) || ($productRefNumber == 19022020)) {
+                        //Création de la disponibilité de stock pour le nouveau produit dans tous les inventaires(ou stock) existants
+                        //$inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
+                        foreach ($inventories as $inventory) {
+                            $available = 0;
+                            $inventoryAvailability = new InventoryAvailability();
+                            $inventoryAvailability->setAvailable($available);
 
-                $manager->persist($inventoryAvailability);
-                $manager->persist($inventory);
+                            $inventory->addInventoryAvailability($inventoryAvailability);
+                            $product->addInventoryAvailability($inventoryAvailability);
+
+                            $manager->persist($inventoryAvailability);
+                            $manager->persist($inventory);
+                        }
+                    } else {
+                        $valid = false;
+                    }
+                }
             }
 
             //$manager = $this->getDoctrine()->getManager();
-            $manager->persist($product);
-            $manager->flush();
+            if ($valid == true) {
+                $manager->persist($product);
+                $manager->flush();
+                $this->addFlash(
+                    'success',
+                    "The product <strong> {$product->getName()} </strong> has been registered successfully !"
+                );
+            } else {
+                $this->addFlash(
+                    'success',
+                    "Désolé le produit <strong> {$product->getName()} </strong> n'a pas été enregistré car vous avez déjà atteint votre limite de réference en stock !"
+                );
+            }
 
-            $this->addFlash(
-                'success',
-                "The product <strong> {$product->getName()} </strong> has been registered successfully !"
-            );
 
             return $this->redirectToRoute('products_index', [
                 'id' => $product->getId(),

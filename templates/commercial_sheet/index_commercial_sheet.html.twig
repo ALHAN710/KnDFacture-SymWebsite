@@ -15,12 +15,12 @@
 <h4 class="page-title mb-2"><i class="mdi mdi-file-table-outline mr-2"></i>Commercial Sheets</h4>  
 {% endblock %}
 
+{% set iconStock = true %}
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">{{inventory.name}}</li>
             <li class="breadcrumb-item active">Commercial Sheets</li>
-            <li class="breadcrumb-item active">{{type|capitalize}}</li>
+            <li class="breadcrumb-item active">{% if type == 'purchaseorder' %}Purchase Order{% else %}{{type}}{% endif %}</li>
             <li class="breadcrumb-item active">Dashboard</li>
         </ol>
     </div>
@@ -32,7 +32,8 @@
         <div class="col-lg-12 col-sm-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <h5 class="header-title">{{inventory.name ~ " " ~ type ~ "s" }} lists</h5>
+                    <h5 class="header-title">Lists of {% if type == 'purchaseorder' %}Purchase Order{% else %}{{type}}{% endif %}
+                    </h5>
                     {% if type != 'quote' %}
                     <div class="row ">
                         <div class="col"></div>
@@ -40,8 +41,8 @@
                             {# <div class="mt-2 mb-2">
                                 <a href="{{path('customers_index')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New product"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-cart-outline"></i></a>
                             </div> #}
-                            <div class="mt-2 mb-2">
-                                <button type="button" class="btn btn-primary" id="saveBtn" data-toggle="tooltip" data-placement="top" title="Save the Orders Status">
+                            <div class="mt-2 mb-2 savebtn">
+                                <button type="button" class="btn btn-primary" id="saveBtn" data-toggle="tooltip" data-placement="top" title="Save the Commercial Sheets Status">
                                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
                                     Save
                                 </button>
@@ -68,12 +69,16 @@
                     {# {% autoescape %}{{ '<span class="badge bg">on pending</span>'|raw }}{% endautoescape %} #}
                         <div class="tab-content">
                             <div class="tab-pane active p-3" id="delivery" role="tabpanel">    
+                                {% if type == 'bill' %}
                                 <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Delivery Journal"><i class="fa fa-print"></i></button>
-                                <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button>  
+                                <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button> 
+                                {% endif %} 
                                 <table id="datatableDelivery" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr class="text-center">
+                                            {% if type == 'bill' %}
                                             <th style="width:0.5em"></th>
+                                            {% endif %}
                                             <th>N° {{type|capitalize}}</th>
                                             <th>Customer</th>
                                             <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
@@ -89,20 +94,22 @@
                                         {% set itemsAmount = 0 %}
                                         {% set promoAmount = 0 %}
                                         {% set total = 0 %}
-                                        {% for orderItem in commercialSheet.orderItems %}
-                                            {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
-                                        
+                                        {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
+                                            {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
                                         {% endfor %}
                                         {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
-                                        {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
+                                        {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
+                                        {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount - commercialSheet.advancePayment %}
                                         {% if commercialSheet.deliveryStatus == false %}
                                         <tr class="text-center">
+                                            {% if type == 'bill' %}
                                             <td style="width:5px">
                                                 <div class="checkbox checkbox-primary">
                                                     <input id="Journal{{commercialSheet.id}}" type="checkbox" name="journal" value="{{commercialSheet.id}}">
                                                     <label for="Journal{{commercialSheet.id}}"></label>
                                                 </div>
                                             </td>
+                                            {% endif %}
                                             <td>{{commercialSheet.number}}</td>
                                             <td>{{commercialSheet.businessContact.socialReason}}</td>
                                             <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
@@ -156,16 +163,17 @@
 
                                         <tbody>
                                             {% for commercialSheet in commercialSheets %}
-                                            {{ commercialSheet.deliverAt|date("d/m/Y") }}
+                                            {# {{ commercialSheet.deliverAt|date("d/m/Y") }} #}
                                             {% set itemsAmount = 0 %}
                                             {% set promoAmount = 0 %}
                                             {% set total = 0 %}
-                                            {% for orderItem in commercialSheet.orderItems %}
-                                                {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
+                                            {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
+                                                {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
                                             
                                             {% endfor %}
                                             {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
-                                            {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
+                                            {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
+                                            {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount %}
                                             {% if commercialSheet.paymentStatus == false %}
                                             <tr class="text-center align-items-center">
                                                 <td>{{commercialSheet.number}}</td>
@@ -212,15 +220,16 @@
 
                                         <tbody>
                                             {% for commercialSheet in commercialSheets %}
-                                            {% set itemsAmount = 0 %}
+                                            {# {% set itemsAmount = 0 %}
                                             {% set promoAmount = 0 %}
                                             {% set total = 0 %}
-                                            {% for orderItem in commercialSheet.orderItems %}
-                                                {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
+                                            {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
+                                                {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
                                             
                                             {% endfor %}
                                             {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
-                                            {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
+                                            {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
+                                            {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount %} #}
                                             {% if commercialSheet.completedStatus == true %}
                                             <tr class="text-center">
                                                 <td>{{commercialSheet.number}}</td>
@@ -228,9 +237,9 @@
                                                 <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
                                                 <td>{{ commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td>
                                                 <td>{{ commercialSheet.payAt is empty ? "-" : commercialSheet.payAt|date("d/m/Y") }}</td>
-                                                <td>{{total}}</td>
+                                                <td>{{commercialSheet.advancePayment}}</td>
                                                 <td>
-                                                    <a href="{{path('commercila_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline"></i> </a>    
+                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline"></i> </a>    
                                                 </td>
                                                 
                                             </tr>
@@ -260,6 +269,7 @@
                         </div>#}
                     </div> <!--end div-->
                     {% else %}
+                    {# {{dump(commercialSheets)}} #}
                     <div class="">
                         <table id="datatable2" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
@@ -280,13 +290,12 @@
                                 {% set itemsAmount = 0 %}
                                 {% set promoAmount = 0 %}
                                 {% set total = 0 %}
-                                {% for orderItem in commercialSheet.orderItems %}
-                                    {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
-                                
+                                {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
+                                    {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
                                 {% endfor %}
                                 {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
-                                {% set total = itemsAmount + commercialSheet.deliveryFees - promoAmount %}
-                                {% if order.deliveryStatus == false %}
+                                {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
+                                {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount %}
                                 <tr class="text-center">
                                     {# <td style="width:5px">
                                         <div class="checkbox checkbox-primary">
@@ -299,11 +308,10 @@
                                     <td>{{commercialSheet.createdAt|date("d/m/Y")}}</td>
                                     <td>{{commercialSheet.periodofvalidity|date("d/m/Y")}}</td>
                                     <td>
-                                        {{"Evaluate"}}
-                                        {% if date(commercialSheet.periodofvalidity) <= date() %}
-                                        <span class="badge badge-success text-muted">valid</span>  
+                                        {% if commercialSheet.alert %}
+                                        <span class="badge badge-success">valid</span>  
                                         {% else %}  
-                                        <span class="badge badge-danger text-muted">invalid</span>  
+                                        <span class="badge badge-danger">invalid</span>  
                                         {% endif %}
                                     </td>
                                     <td>{{total}}</td>
@@ -322,7 +330,6 @@
                                     </td>
                                     
                                 </tr>
-                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>                    
@@ -360,8 +367,8 @@
         var tabPaid      = [];
         var _url = "{{path('commercial_sheet_change_status')}}";
         //block of code that runs when the click event triggers
-        $(this).children('i').addClass('d-none');
-        $(this).children('span').removeClass('d-none');
+        {# $(this).children('i').addClass('d-none');
+        $(this).children('span').removeClass('d-none'); #}
         //$('#saveBtn').prop('disabled', true);
         $("input:checkbox[name=delivered]:checked").each(function(){
             tabDelivered.push($(this).val());
@@ -401,7 +408,13 @@
             }
         });
     });
-    $('#deliveryJournalBtn').click(function(){
+    {% if type != 'quote' %}
+    $('#completed').click(function(){
+        $('.savebtn').addClass('d-none');
+        console.log('completed tab clicked');
+    });
+    {% endif %}
+    {# $('#deliveryJournalBtn').click(function(){
         console.log('Delivery Journal Btn clicked');
         var tabJournal = [];
         $("input:checkbox[name=journal]:checked").each(function(){
@@ -438,6 +451,6 @@
             "POST", "_blank");
 
         }
-    });
+    }); #}
 </script>
 {% endblock %}

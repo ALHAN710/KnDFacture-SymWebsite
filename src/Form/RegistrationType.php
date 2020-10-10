@@ -11,6 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class RegistrationType extends ApplicationType
@@ -26,7 +27,7 @@ class RegistrationType extends ApplicationType
             ->add(
                 'lastName',
                 TextType::class,
-                $this->getConfiguration("Last Name", "Please enter your last Name...")
+                $this->getConfiguration("Nom", "Please enter your last Name...")
             )
             ->add(
                 'hash',
@@ -66,6 +67,36 @@ class RegistrationType extends ApplicationType
                         ],
                     ]
                 )
+            )
+            ->add(
+                'passwordConfirm',
+                PasswordType::class,
+                $this->getConfiguration("Confirmation de mot de passe", "Veuillez confirmer votre mot de passe")
+            )
+            ->add(
+                'countryCode',
+                TextType::class,
+                $this->getConfiguration("Country code :", "Telephone code of your country", [
+                    'required' => false,
+                ])
+
+            )
+            ->add(
+                'phoneNumber',
+                TextType::class,
+                $this->getConfiguration("N° Tel :", "Your Phone Number please...")
+
+            )
+            ->add(
+                'role',
+                ChoiceType::class,
+                [
+                    'choices' => [
+                        'USER' => 'ROLE_USER',
+                        'ADMIN' => 'ROLE_ADMIN'
+                    ],
+                    'label'    => 'Rôle'
+                ]
             );
         // ->add('phoneNumber')
         // ->add('countryCode')

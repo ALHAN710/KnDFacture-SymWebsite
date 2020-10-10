@@ -46,7 +46,7 @@
                         </thead>
 
                         <tbody>
-                            {% for order in orders %}
+                            {% for commercialSheet in commercialSheets %}
                             {% set itemsAmount = 0 %}
                             {% set qty240 = 0 %}
                             {% set qty100 = 0 %}
@@ -54,28 +54,18 @@
                             {% set price100 = 0 %}
                             {% set promoAmount = 0 %}
                             {% set total = 0 %}
-                            {% for orderItem in order.orderItems %}
-                                {% set itemsAmount = itemsAmount + (orderItem.quantity * orderItem.product.price) %}
+                            {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
+                                {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
                             
                             {% endfor %}
-                            {% for reduction in order.reductions %}
-                                {% if reduction.returnedJars.potVolume == 240 %}
-                                    {% set qty240 = qty240 + reduction.quantity %}
-                                    {% set price240 = reduction.returnedJars.price %}
-                                {% endif %}
-                                {% if reduction.returnedJars.potVolume == 100 %}
-                                    {% set qty100 = qty100 + reduction.quantity %}
-                                    {% set price100 = reduction.returnedJars.price %}
-                                {% endif %}
-                            {% endfor %}
-                            {% set promoAmount = promoAmount + (price240 * qty240) + (price100 * qty100) %}
-                            {% set promoAmount = promoAmount + order.itemsReduction + order.deliveryReduction %}
-                            {% set total = itemsAmount + order.customer.deliveryAddress.fees - promoAmount %}
+                            {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
+                            {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
+                            {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount %}
                             <tr class="text-center">
-                                <td>{{order.customer.fullName}}</td>
-                                <td>{{order.customer.phoneNumber}}</td>
-                                <td>{{order.customer.address}}</td>
-                                <td>{{order.number}}</td>
+                                <td>{{commercialSheet.businessContact.fullName}}</td>
+                                <td>{{commercialSheet.businessContact.phoneNumber}}</td>
+                                <td>{{commercialSheet.businessContact.address}}</td>
+                                <td>{{commercialSheet.number}}</td>
                                 <td>{{total}}</td>
                                 <td style="min-width: 100px;"></td>
                             </tr>

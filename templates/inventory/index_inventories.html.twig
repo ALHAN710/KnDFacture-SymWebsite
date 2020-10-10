@@ -51,15 +51,15 @@
                                 {% for inventory in inventories %}
                                 <tr class="text-center">
                                     {#<td>{{inventory.id}}</td>#}
-                                    <td>{{inventory.name}}</td>
+                                    <td><a href="{{ path('inventory_dashboard',{'id':inventory.id}) }}">{{inventory.name}}</a></td>
                                     <td>{{inventory.approvDelay}}</td>
                                     <td>{{inventory.orderingFreq}}</td>
                                     <td>{{inventory.txOfService}}</td>
                                     <td>
-                                        <a href="{{path('inventory_edit', {'id':inventory.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify inventory"><i class="far fa-edit"></i> </a>
-                                        </a>
+                                        <a href="{{path('inventory_edit', {'id':inventory.id})}}" class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify inventory"><i class="far fa-edit"></i></a>
+                                        <a href="{{path('lot_create', {'prod':0, 'inv':inventory.id})}}"  class="btn btn-soft-purple btn-xs rounded " data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot"><i class="fa fa-plus-circle"></i></a>
+                                                
                                         <a href="{{path('inventory_delete', {'id':inventory.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete inventory"><i class="fas fa-trash"></i> </a>
-                                    
                                     </td>
                                     
                                 </tr>
