@@ -21,6 +21,7 @@ class ProductType extends ApplicationType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        //dump($options['categories']);
         $builder
             ->add(
                 'name',
@@ -62,32 +63,14 @@ class ProductType extends ApplicationType
                 'categories',
                 CollectionType::class,
                 [
-                    'entry_type'   =>
-                    EntityType::class,
-                    [
-                        // looks for choices from this entity
-                        'class' => Category::class,
+                    'entry_type'   => CategoryCollectionType::class,
 
-                        // uses the User.username property as the visible option string
-                        'choice_label' => 'name',
-                        'query_builder' => function (EntityRepository $er) {
-                            return $er->createQueryBuilder('c')
-                                ->innerJoin('c.enterprise', 'e')
-                                ->where('e.id = :entId')
-                                ->setParameters(array(
-                                    'entId'    => $this->entId,
-                                ));
-                        },
-
-                        // used to render a select box, check boxes or radios
-                        // 'multiple' => true,
-                        // 'expanded' => true,
-                    ],
                     'allow_add'    => true,
                     'allow_delete' => true,
                     'entry_options' => array(
 
-                        'entId' => $options['entId']
+                        'entId' => $options['entId'],
+                        'categories' => $options['categories'],
                     ),
                 ]
 
@@ -129,7 +112,18 @@ class ProductType extends ApplicationType
                         '36'  => '36',
                     ],
                 ])
-            )*/;
+            )
+                        
+            */;
+        /*
+            echo "# KnDFacture-SymWebsite" >> README.md
+            git init
+            git add README.md
+            git commit -m "first commit"
+            git branch -M main
+            git remote add origin https://github.com/ALHAN710/KnDFacture-SymWebsite.git
+            git push -u origin main
+        */
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -137,6 +131,9 @@ class ProductType extends ApplicationType
         $resolver->setDefaults([
             'data_class' => Product::class,
             'entId'      => 0,
+            'categories' => array()
         ]);
+        $resolver->setRequired('categories'); // Requires that categories be set by the caller.
+        $resolver->setAllowedTypes('categories', 'array'); // Validates the type(s) of option(s) passed.
     }
 }

@@ -22,7 +22,7 @@ class InventoryController extends ApplicationController
     /**
      * @Route("/inventory/dashboard", name="inventories_index")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      */
     public function index(InventoryRepository $inventoryRepo)
@@ -38,7 +38,7 @@ class InventoryController extends ApplicationController
      *
      * @Route("/inventory/new", name = "inventory_create")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      * @return Response
      */
@@ -95,12 +95,12 @@ class InventoryController extends ApplicationController
      *
      * @Route("inventory/{id<\d+>}/edit", name="inventory_edit")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      * @return Response
      */
     public function edit(Inventory $inventory, Request $request, InventoryRepository $inventoryRepo, EntityManagerInterface $manager)
-    { //@Security("is_granted('ROLE_MANAGER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
+    { //@Security("is_granted('ROLE_STOCK_MANAGER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
 
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         //$product = $productRepo->findOneBy(['id' => $id]);
@@ -135,7 +135,7 @@ class InventoryController extends ApplicationController
      * 
      * @Route("/inventory/{id<\d+>}/delete", name="inventory_delete")
      *
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      * @param Inventory $inventory
      * @param EntityManagerInterface $manager
@@ -157,7 +157,7 @@ class InventoryController extends ApplicationController
     /**
      * @Route("/inventory/{id<\d+>}/dashboard", name="inventory_dashboard")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      */
     public function inventoryDash(Inventory $inventory, Request $request, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)

@@ -1,0 +1,56 @@
+
+{% block _product_categories_widget %}
+
+<div class="card">
+    <div class="card-body mx-5">        
+        <h4 class="mt-2 mb-4 header-title">Spécifiez la(les) catégorie(s)</h4>
+    
+        {{form_widget(form)}}
+
+        <input type="hidden" id="categories-widgets-count">
+        
+        <div class="form-group mt-4 text-right">
+            <button type="button" id="add-categories" class="btn btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Add Category">
+                <i class="fas fa-plus-circle mr-2"></i>Category
+            </button>
+            
+        </div>
+    </div>
+</div>
+                        
+{% endblock %}
+
+{% block _product_categories_entry_row %}
+    {{form_widget(form)}}
+{% endblock %} 
+
+{% block _product_categories_entry_widget %}
+    
+    <div class="row form-group mb-0 align-items-center nbItems" id = "block_{{id}}">
+        <div class="col-10 mt-4">
+            <div class="row text-center">
+                <div class="col">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.reference, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.category, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+               
+            </div>       
+        </div>
+
+        <div class="col">
+            <button type="button" data-action="delete" data-target="#block_{{id}}" class="mt-1 btn btn-danger">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+
+    </div>
+
+
+{% endblock %}

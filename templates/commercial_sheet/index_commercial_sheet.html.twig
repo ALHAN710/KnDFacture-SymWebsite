@@ -69,20 +69,20 @@
                     {# {% autoescape %}{{ '<span class="badge bg">on pending</span>'|raw }}{% endautoescape %} #}
                         <div class="tab-content">
                             <div class="tab-pane active p-3" id="delivery" role="tabpanel">    
-                                {% if type == 'bill' %}
+                                {# {% if type == 'bill' %}
                                 <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Delivery Journal"><i class="fa fa-print"></i></button>
                                 <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button> 
-                                {% endif %} 
+                                {% endif %}  #}
                                 <table id="datatableDelivery" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr class="text-center">
-                                            {% if type == 'bill' %}
+                                            {# {% if type == 'bill' %}
                                             <th style="width:0.5em"></th>
-                                            {% endif %}
+                                            {% endif %} #}
                                             <th>N° {{type|capitalize}}</th>
                                             <th>Customer</th>
                                             <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
-                                            <th>Payment Date</th>
+                                            {# <th>Payment Date</th> #}
                                             <th>Amount (XAF)</th>
                                             <th>Delivered</th>
                                             <th>Actions</th>
@@ -91,36 +91,27 @@
 
                                     <tbody>
                                         {% for commercialSheet in commercialSheets %}
-                                        {% set itemsAmount = 0 %}
-                                        {% set promoAmount = 0 %}
-                                        {% set total = 0 %}
-                                        {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
-                                            {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
-                                        {% endfor %}
-                                        {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
-                                        {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
-                                        {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount - commercialSheet.advancePayment %}
                                         {% if commercialSheet.deliveryStatus == false %}
                                         <tr class="text-center">
-                                            {% if type == 'bill' %}
+                                            {# {% if type == 'bill' %}
                                             <td style="width:5px">
                                                 <div class="checkbox checkbox-primary">
                                                     <input id="Journal{{commercialSheet.id}}" type="checkbox" name="journal" value="{{commercialSheet.id}}">
                                                     <label for="Journal{{commercialSheet.id}}"></label>
                                                 </div>
                                             </td>
-                                            {% endif %}
+                                            {% endif %} #}
                                             <td>{{commercialSheet.number}}</td>
                                             <td>{{commercialSheet.businessContact.socialReason}}</td>
                                             <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
-                                            <td>
+                                            {# <td>
                                             {% if commercialSheet.payAt is empty %} 
                                             {% autoescape %}{{ '<span class="badge badge-soft-info">on pending</span>'|raw }}{% endautoescape %}
                                             {% else %}
                                             {{commercialSheet.payAt|date("d/m/Y") }}
                                             {% endif %}
-                                            </td>
-                                            <td>{{total}}</td>
+                                            </td> #}
+                                            <td>{{commercialSheet.amountNetToPaid}}</td>
                                             <td>
                                                 <div class="checkbox checkbox-primary">
                                                     <input id="checkbox{{commercialSheet.id}}" type="checkbox" name="delivered" value="{{commercialSheet.id}}">
@@ -128,10 +119,9 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {{commercialSheet.type|capitalize}}"><i class="far fa-edit"></i> </a>
-                                                </a>
-                                                <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {{commercialSheet.type|capitalize}}"><i class="fas fa-trash"></i> </a>
+                                                {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {{commercialSheet.type|capitalize}}"><i class="far fa-edit"></i> </a> #}
                                                 <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline "></i> </a>
+                                                <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {{commercialSheet.type|capitalize}}"><i class="fas fa-trash"></i> </a>
                                                 
                                             </td>
                                             
@@ -154,7 +144,7 @@
                                                 <th>N° {{type|capitalize}}</th>
                                                 <th>Customer</th>
                                                 <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
-                                                <th>Delivery Date</th>
+                                                {# <th>Delivery Date</th> #}
                                                 <th>Amount (XAF)</th>
                                                 <th>Paid</th>
                                                 <th>Actions</th>
@@ -164,23 +154,13 @@
                                         <tbody>
                                             {% for commercialSheet in commercialSheets %}
                                             {# {{ commercialSheet.deliverAt|date("d/m/Y") }} #}
-                                            {% set itemsAmount = 0 %}
-                                            {% set promoAmount = 0 %}
-                                            {% set total = 0 %}
-                                            {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
-                                                {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
-                                            
-                                            {% endfor %}
-                                            {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
-                                            {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
-                                            {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount %}
                                             {% if commercialSheet.paymentStatus == false %}
                                             <tr class="text-center align-items-center">
                                                 <td>{{commercialSheet.number}}</td>
                                                 <td>{{commercialSheet.businessContact.socialReason}}</td>
-                                                <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
-                                                <td>{{ commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td>
-                                                <td>{{total}}</td>
+                                                <td>{{commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
+                                                {# <td>{{commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td> #}
+                                                <td>{{commercialSheet.amountNetToPaid}}</td>
                                                 <td class="align-items-center">
                                                     <div class="checkbox checkbox-primary">
                                                         <input id="paidCheckbox{{commercialSheet.id}}" type="checkbox" name="paid" value="{{commercialSheet.id}}">
@@ -188,11 +168,9 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {{commercialSheet.type|capitalize}}"><i class="far fa-edit"></i> </a>
-                                                    </a>
-                                                    <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {{commercialSheet.type|capitalize}}"><i class="fas fa-trash"></i> </a>
+                                                    {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {{commercialSheet.type|capitalize}}"><i class="far fa-edit"></i> </a> #}
                                                     <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline"></i> </a>
-                                                    
+                                                    <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {{commercialSheet.type|capitalize}}"><i class="fas fa-trash"></i> </a>
                                                 </td>
                                                 
                                             </tr>
@@ -287,15 +265,6 @@
 
                             <tbody>
                                 {% for commercialSheet in commercialSheets %}
-                                {% set itemsAmount = 0 %}
-                                {% set promoAmount = 0 %}
-                                {% set total = 0 %}
-                                {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
-                                    {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
-                                {% endfor %}
-                                {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
-                                {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
-                                {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount %}
                                 <tr class="text-center">
                                     {# <td style="width:5px">
                                         <div class="checkbox checkbox-primary">
@@ -314,7 +283,7 @@
                                         <span class="badge badge-danger">invalid</span>  
                                         {% endif %}
                                     </td>
-                                    <td>{{total}}</td>
+                                    <td>{{commercialSheet.amountNetToPaid}}</td>
                                     {# <td>
                                         <div class="checkbox checkbox-primary">
                                             <input id="checkbox{{order.id}}" type="checkbox" name="delivered" value="{{order.id}}">
@@ -322,10 +291,9 @@
                                         </div>
                                     </td> #}
                                     <td>
-                                        <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Quote"><i class="far fa-edit"></i> </a>
-                                        </a>
-                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete Quote"><i class="fas fa-trash"></i> </a>
+                                        {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Quote"><i class="far fa-edit"></i> </a> #}
                                         <a href="{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Convert Quote To Bill"><i class="fas fa-exchange-alt"></i> </a>
+                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete Quote"><i class="fas fa-trash"></i> </a>
                                         
                                     </td>
                                     

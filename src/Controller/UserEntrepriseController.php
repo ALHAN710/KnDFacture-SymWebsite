@@ -18,27 +18,29 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserEntrepriseController extends AbstractController
 {
     /**
-     * @Route("/user/entreprise", name="users_entreprise_index")
+     * @Route("/user/enterprise", name="users_entreprise_index")
      */
-    public function index()
+    public function index(EntityManagerInterface $manager)
     {
+        $userRepo = $manager->getRepository('App:User');
+        $users = $userRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         return $this->render('user_entreprise/index.html.twig', [
-            'controller_name' => 'UserEntrepriseController',
+            'users' => $users,
         ]);
     }
 
     /**
      * Permet de créer un Produit
      *
-     * @Route("/user/new", name = "user_create")
+     * 
      * 
      * @IsGranted("ROLE_ADMIN")
      * 
      * @return Response
      */
-    public function create(EntityManagerInterface $manager, Request $request, UserPasswordEncoderInterface $encoder)
-    {
-        $user = new User();
+    public function edit($user, EntityManagerInterface $manager, Request $request, UserPasswordEncoderInterface $encoder)
+    { //@Route("/user/{id<\d+>}/new", name = "user_edit")
+        // $user = new User();
         $slugify = new Slugify();
         $form = $this->createForm(RegistrationType::class, $user);
 
@@ -86,13 +88,13 @@ class UserEntrepriseController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Le Compte utilisateur <strong> {$user->getFullName()}</strong> a été crée avec succès. !"
+                "La modification de l'utilisateur <strong> {$user->getFullName()}</strong> a été effectuée avec succès. !"
             );
 
             return $this->redirectToRoute('users_entreprise_index');
         }
 
-        return $this->render('user_entreprise/new.html.twig', [
+        return $this->render('user_entreprise/edit.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -100,14 +102,14 @@ class UserEntrepriseController extends AbstractController
     /**
      * Permet de supprimer un Utilisateur
      * 
-     * @Route("/user/{id}/delete", name="user_entreprise_delete")
+     * 
      *
      * @param User $user
      * @param EntityManagerInterface $manager
      * @return void
      */
     public function delete(User $user, EntityManagerInterface $manager)
-    {
+    { //@Route("/user/{id<\d+>}/delete", name="user_entreprise_delete")
         $_user = $user->getFullName();
 
         $manager->remove($user);

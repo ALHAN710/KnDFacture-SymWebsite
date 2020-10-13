@@ -121,8 +121,9 @@
                                             {% set totalAmountBill = 0 %}
                                             {% for commercialSheet in businessContact.commercialSheets %}
                                                 {% if commercialSheet.type == 'bill'  %}
-                                                    {% set totalAmountBill = totalAmountBill + commercialSheet.amount %}
-                                                    
+                                                    {% if commercialSheet.deliveryStatus == true  or commercialSheet.paymentStatus == true %}
+                                                        {% set totalAmountBill = totalAmountBill + commercialSheet.amountNetToPaid %}
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endfor %}
                                         {# {{ dump('bill') }} #}
@@ -131,7 +132,9 @@
                                             {% set totalAmountPurchaseOrder = 0 %}
                                             {% for commercialSheet in businessContact.commercialSheets %}
                                                 {% if commercialSheet.type == 'purchaseorder'%}
-                                                    {% set totalAmountPurchaseOrder = totalAmountPurchaseOrder + commercialSheet.amount %}
+                                                    {% if commercialSheet.deliveryStatus == true  or commercialSheet.paymentStatus == true %}
+                                                        {% set totalAmountPurchaseOrder = totalAmountPurchaseOrder + commercialSheet.amountNetToPaid %}
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endfor %}
                                         {# {{ dump('purchase_order') }} #}

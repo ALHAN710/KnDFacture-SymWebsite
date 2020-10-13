@@ -94,10 +94,16 @@ class CommercialSheet
     private $periodofvalidity;
 
     /**
-     * @ORM\Column(type="float")
-     * @Assert\PositiveOrZero
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * 
      */
-    private $deliveryFees;
+    private $deliveryMode; //deliveryFees;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * 
+     */
+    private $paymentMode;
 
     /**
      * @ORM\ManyToOne(targetEntity=BusinessContact::class, inversedBy="commercialSheets")
@@ -150,20 +156,58 @@ class CommercialSheet
         $this->commercialSheetItems = new ArrayCollection();
     }
 
-    public function getAmount(): float
+    public function getAmountHT(): float
     {
-        //totalAmount = itemsAmountSubTotal + deliveryFees + taxes - totalPromoAmount;
-        $totalPromoAmount = $this->getItemsReduction() + $this->getFixReduction();
         $itemsAmountSubTotal = 0.0;
         $items = $this->getCommercialSheetItems();
         foreach ($items as $item) {
             $itemsAmountSubTotal += ($item->getQuantity() * $item->getPu());
         }
 
-        $taxes = ($this->getUser()->getEnterprise()->getTva() * $itemsAmountSubTotal) / 100.0;
-        $totalAmount = $itemsAmountSubTotal + $this->getDeliveryFees() + $taxes - $totalPromoAmount - $this->getAdvancePayment();
+        return $itemsAmountSubTotal;
+    }
 
-        return $totalAmount;
+    public function getTaxes(): float
+    {
+        $itemsAmountSubTotal = $this->getAmountHT();
+        $taxes = ($this->getUser()->getEnterprise()->getTva() * $itemsAmountSubTotal) / 100.0;
+        return $taxes;
+    }
+
+    public function getAmountTTC(): float
+    {
+
+        $itemsAmountSubTotal = $this->getAmountHT();
+        $taxes = $this->getTaxes();
+        $totalTTC = $itemsAmountSubTotal + $taxes;
+
+        return $totalTTC;
+    }
+
+    public function getAmountReduction(): float
+    {
+        $amountHT = $this->getAmountHT();
+        $totalAmountReduction = ($amountHT * $this->getItemsReduction()) / 100.0 + $this->getFixReduction();
+
+        return $totalAmountReduction;
+    }
+
+    public function getAmountNetToPaid(): float
+    {
+        //totalAmount = itemsAmountSubTotal + deliveryFees + taxes - totalPromoAmount;
+        $totalTTC = $this->getAmountTTC();
+        $totalAmountReduction = $this->getAmountReduction();
+        $totalAmountNetToPaid = $totalTTC - $totalAmountReduction;
+
+        return $totalAmountNetToPaid;
+    }
+
+    public function getAmountRestToPaid(): float
+    {
+        $totalNetToPaid = $this->getAmountNetToPaid();
+        $totalAmountRestToPaid = $totalNetToPaid - $this->getAdvancePayment();
+
+        return $totalAmountRestToPaid;
     }
 
     /**
@@ -176,8 +220,8 @@ class CommercialSheet
      */
     public function initializeAdvancePayment()
     {
-        if ($this->getCompletedStatus() == true) {
-            $this->setAdvancePayment($this->getAmount());
+        if (($this->getCompletedStatus() == true) || ($this->getPaymentStatus() == true)) {
+            $this->setAdvancePayment($this->getAmountNetToPaid());
         }
     }
 
@@ -434,14 +478,26 @@ class CommercialSheet
         return null;
     }
 
-    public function getDeliveryFees(): ?float
+    public function getDeliveryMode(): ?string
     {
-        return $this->deliveryFees;
+        return $this->deliveryMode;
     }
 
-    public function setDeliveryFees(float $deliveryFees): self
+    public function setDeliveryMode(string $deliveryMode): self
     {
-        $this->deliveryFees = $deliveryFees;
+        $this->deliveryMode = $deliveryMode;
+
+        return $this;
+    }
+
+    public function getPaymentMode(): ?string
+    {
+        return $this->paymentMode;
+    }
+
+    public function setPaymentMode(string $paymentMode): self
+    {
+        $this->paymentMode = $paymentMode;
 
         return $this;
     }

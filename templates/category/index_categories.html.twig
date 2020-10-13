@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Users Dashboard  {% endblock %}
+{% block title %} Categories Dashboard  {% endblock %}
 
 {% block stylesheets %}
 <!-- DataTables -->
@@ -12,13 +12,13 @@
 {% endblock %}
 
 {% block pageTitle %}
-<h4 class="page-title mb-2"><i class="fas fa-users mr-2"></i>Utilisateurs</h4>  
+<h4 class="page-title mb-2"><i class="dripicons-network-1 mr-2"></i>Categories</h4>  
 {% endblock %}
 
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">Utilisateurs</li>
+            <li class="breadcrumb-item active">Categories</li>
             <li class="breadcrumb-item active">Dashboard</li>
         </ol>
     </div>
@@ -30,29 +30,29 @@
         <div class="col-lg-12 col-sm-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <h5 class="header-title">Liste des Utilisateurs</h5>
+                    <h5 class="header-title">Liste des Catégories</h5>
                     <div class="mt-2 mb-2 mr-5 text-right">
-                        <a href="{{path('account_register')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Ajoutez un nouveau utilisateur"><i class="fa fa-plus-circle mr-2"></i> <i class="fas fa-users"></i></a>
+                        <a href="{{path('category_create')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Ajoutez une nouvelle catégorie"><i class="fa fa-plus-circle mr-2"></i> <i class="dripicons-network-1"></i></a>
                     </div>
                     <div class="">
                         <table id="datatable2" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr class="text-center">
-                                    <th class="text-left">Nom</th>
-                                    <th>Rôle</th>
+                                    <th>Nom</th>
+                                    <th>Nombre de produit</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                {% for user in users %}
+                                {% for category in categories %}
                                 <tr class="text-center">
-                                    {# <td>{{user.id}}</td> #}
-                                    <td class="text-left">{{user.fullName}}</td>
-                                    <td>{{user.roles[0]}}</td>
+                                    {# <td>{{category.id}}</td> #}
+                                    <td class="text-left">{{category.name}}</td>
+                                    <td>{{category.products|length}}</td>
                                     <td>
-                                        <a href="{{path('user_edit', {'id':user.id})}}"  class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifiez l'utilisateur ?"><i class="far fa-edit"></i> </a></a>
-                                        <a href="{{path('user_delete', {'id':user.id})}}" class="btn btn-soft-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimez l'utilisateur ?"><i class="fas fa-trash"></i> </a>   
+                                        <a href="{{path('category_edit', {'id':category.id})}}"  class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifiez la catégorie ?"><i class="far fa-edit"></i> </a></a>
+                                        <a href="{{path('category_delete', {'id':category.id})}}" class="btn btn-soft-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimez la catégorie ?"><i class="fas fa-trash"></i> </a>   
                                     </td>    
                                 </tr>
                                 {% endfor %}

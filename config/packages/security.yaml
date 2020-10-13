@@ -44,5 +44,5 @@ security:
     # Un éditeur sera également utilisateur
     # Un administrateur sera également éditeur et donc utilisateur
     role_hierarchy:
-        ROLE_MANAGER: ROLE_USER
-        ROLE_ADMIN: ROLE_MANAGER
+        ROLE_STOCK_MANAGER: ROLE_USER
+        ROLE_ADMIN: ROLE_STOCK_MANAGER

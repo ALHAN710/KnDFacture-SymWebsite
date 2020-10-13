@@ -94,8 +94,9 @@
                 <li class="has-submenu">
                     <a href="#"><i class="mdi mdi-settings"></i>Settings</a>
                     <ul class="submenu">
-                        <li><a href="#"><i class="fas fa-users"></i> Utilisateurs</a></li>{# {{ path('users_index') }} #}
-                        <li><a href="#">Mon abonnement</a></li>{# {{ path('jar_recycling_management_index') }} #}
+                        <li><a href="{{ path('users_entreprise_index')}}"><i class="fas fa-users mr-2"></i>Utilisateurs</a></li>{# {{ path('users_index') }} #}
+                        <li><a href="{{ path('index_categories') }}"><i class="dripicons-network-1 mr-2"></i>Catégorie de produit</a></li>{# {{ path('jar_recycling_management_index') }} #}
+                        <li><a href="#">Mon compte</a></li>{# {{ path('jar_recycling_management_index') }} #}
                     </ul>
                 </li>
             </ul>

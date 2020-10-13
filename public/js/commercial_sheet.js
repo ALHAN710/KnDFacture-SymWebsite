@@ -22,12 +22,13 @@ var deliveryReduction = 0;
 var totalPromoAmount = 0;
 
 var totalAmount = 0;
+var totalRestAmount = 0.0;
+var amountTTC = 0.0;
 
 //console.log(availabilities);
 //var availabilitiesTab = availabilities;
 var itemsReduction = 0.0;
 var fixReductions = 0;
-var deliveryFees = 0;
 
 if (isNaN(parseFloat($('#commercial_sheet_itemsReduction').val())) || parseFloat($('#commercial_sheet_itemsReduction').val()) < 0 || !$('#commercial_sheet_itemsReduction').val() == true) {
     $('#commercial_sheet_itemsReduction').val(0.0);
@@ -63,23 +64,6 @@ $('#commercial_sheet_fixReduction').change(function () {
     }
 
     fixReductions = parseFloat($(this).val());
-
-    //Calcul du montant total de la promo
-    computeTotalPromoAmount();
-
-});
-
-if (isNaN(parseFloat($('#commercial_sheet_deliveryFees').val())) || parseFloat($('#commercial_sheet_deliveryFees').val()) < 0 || !$('#commercial_sheet_deliveryFees').val() == true) {
-    $('#commercial_sheet_deliveryFees').val(0);
-}
-deliveryFees = parseFloat($('#commercial_sheet_deliveryFees').val());
-
-//Gestion des évènements de modification sur l'entrée numérique du prix de livraison 
-$('#commercial_sheet_deliveryFees').change(function () {
-    if (isNaN(parseFloat($(this).val())) || parseFloat($(this).val()) < 0 || !$(this).val() == true) {
-        $(this).val(0.0);
-    }
-    deliveryFees = parseFloat($(this).val());
 
     //Calcul du montant total de la promo
     computeTotalPromoAmount();
@@ -766,6 +750,9 @@ function computeItemsAmountSubTotal() {
     taxes = itemsAmountSubTotal * tva;
     $('#taxes').text(taxes);
 
+    amountTTC = itemsAmountSubTotal + taxes;
+    $('#amountTTC').text(amountTTC);
+
     //Calcul du montant total de la promo
     computeTotalPromoAmount();
 
@@ -808,16 +795,22 @@ function computeTotalPromoAmount() {
 
 //Procédure de calcul du montant Total Net à payer
 function computeTotalAmount() {
-    totalAmount = itemsAmountSubTotal + deliveryFees + taxes - totalPromoAmount;
+    totalAmount = amountTTC - totalPromoAmount;
     if ($('#commercial_sheet_paymentStatus').is(':checked') || $('#commercial_sheet_completedStatus').is(':checked')) {
         $('#commercial_sheet_advancePayment').val(totalAmount);
-        totalAmount = 0;
+        totalRestAmount = 0;
     }
     else {
         var val = $('#commercial_sheet_advancePayment').val();
-        if (val && $.isNumeric(val)) totalAmount = totalAmount - parseFloat(val);
+        if (val && $.isNumeric(val)) totalRestAmount = totalAmount - parseFloat(val);
+        else {
+            $('#commercial_sheet_advancePayment').val(0);
+            totalRestAmount = totalAmount;
+        }
     }
+
     $('#totalAmount').text(totalAmount);
+    $('#totalRestAmount').text(totalRestAmount);
 }
 
 $('#commercial_sheet_paymentStatus').change(function () {
@@ -827,6 +820,7 @@ $('#commercial_sheet_paymentStatus').change(function () {
     }
     else if (!$('#commercial_sheet_completedStatus').is(':checked')) {
         $('#commercial_sheet_advancePayment').attr('readonly', false);
+        $('#commercial_sheet_advancePayment').val(0);
     }
     computeTotalAmount();
 });
@@ -838,6 +832,7 @@ $('#commercial_sheet_completedStatus').change(function () {
     }
     else if (!$('#commercial_sheet_paymentStatus').is(':checked')) {
         $('#commercial_sheet_advancePayment').attr('readonly', false);
+        $('#commercial_sheet_advancePayment').val(0);
     }
     computeTotalAmount();
 });

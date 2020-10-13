@@ -63,13 +63,17 @@ class CommercialSheetType extends ApplicationType
                 ])
             )
             ->add(
-                'deliveryFees',
-                NumberType::class,
-                $this->getConfiguration("Delivery Fees (XAF)", "Please enter the Delivery fees...", [
-                    'attr' => [
-                        'min'   => '0',
-                        //'value' => '0'
-                    ]
+                'deliveryMode',
+                TextType::class,
+                $this->getConfiguration("Delivery Mode", "Please enter the Delivery Mode...", [
+                    'required' => false,
+                ])
+            )
+            ->add(
+                'paymentMode',
+                TextType::class,
+                $this->getConfiguration("Payment Mode", "Please enter the Payment Mode...", [
+                    'required' => false,
                 ])
             )
             ->add(

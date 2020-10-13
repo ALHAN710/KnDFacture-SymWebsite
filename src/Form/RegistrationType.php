@@ -93,7 +93,9 @@ class RegistrationType extends ApplicationType
                 [
                     'choices' => [
                         'USER' => 'ROLE_USER',
-                        'ADMIN' => 'ROLE_ADMIN'
+                        'STOCK MANAGER' => 'ROLE_STOCK_MANAGER',
+                        'ADMIN' => 'ROLE_ADMIN',
+
                     ],
                     'label'    => 'Rôle'
                 ]

@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Category;
+use App\Form\ApplicationType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class CategoryType extends ApplicationType
 {
@@ -15,21 +17,11 @@ class CategoryType extends ApplicationType
             ->add(
                 'name',
                 TextType::class,
-                $this->getConfiguration("Nom", "Entrez le no, de la catégorie...")
+                $this->getConfiguration("Nom", "Veuillez entrer le nom de la catégorie svp...")
             )
-            ->add(
-                'products',
-                CollectionType::class,
-                [
-                    'entry_type'   => ProductType::class,
-                    'allow_add'    => true,
-                    'allow_delete' => true,
-                    'entry_options' => array(
-
-                        //'entId' => $options['entId']
-                    ),
-                ]
-            );
+            //->add('products')
+            //->add('entreprise')
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

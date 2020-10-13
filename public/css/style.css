@@ -7562,14 +7562,13 @@ tr:first-child > td > .fc-day-grid-event {
 }
 
 .accountbg {
-  background: url("../images/bg-1.jpg");
+  background: url("../images/KnD-Slogan.png");
   background-size: cover;
   background-position: center center;
   height: 100%;
   width: 100%;
   top: 0;
-  -webkit-box-shadow: inset 0 0 0 2000px rgba(35, 34, 47, 0.8);
-          box-shadow: inset 0 0 0 2000px rgba(35, 34, 47, 0.8);
+  
 }
 
 .accountbg .account-title {

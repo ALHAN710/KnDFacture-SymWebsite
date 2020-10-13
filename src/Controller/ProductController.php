@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\Category;
+use App\Entity\Inventory;
 use App\Form\ProductType;
 use App\Entity\InventoryAvailability;
 use App\Repository\ProductRepository;
@@ -23,13 +25,12 @@ class ProductController extends AbstractController
      * @IsGranted("ROLE_MANAGER")
      * 
      */
-    public function index(ProductRepository $productRepo, InventoryRepository $inventoryRepo)
+    public function index(ProductRepository $productRepo)
     {
         $products = $productRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
-        $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         return $this->render('product/index_product.html.twig', [
             'products'    => $products,
-            'inventories' => $inventories,
+
         ]);
     }
 
@@ -42,18 +43,27 @@ class ProductController extends AbstractController
      * 
      * @return Response
      */
-    public function create(Request $request, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
+    public function create(Request $request, EntityManagerInterface $manager)
     { //
         $product = new Product();
         $product->setEnterprise($this->getUser()->getEnterprise())
             ->setType('Product');
-
+        $categoryRepo = $manager->getRepository('App:Category');
+        $categories_ = $categoryRepo->findBy(['entreprise' => $this->getUser()->getEnterprise()]);
+        $categories = [];
+        foreach ($categories_ as $category) {
+            $categories[$category->getName()] = $category->getName();
+        }
+        $inventoryRepo = $manager->getRepository('App:Inventory');
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         //Permet d'obtenir un constructeur de formulaire
         // Externaliser la création du formulaire avec la cmd php bin/console make:form
 
         //  instancier un form externe
-        $form = $this->createForm(ProductType::class, $product);
+        $form = $this->createForm(ProductType::class, $product, [
+            'entId' => $this->getUser()->getEnterprise()->getId(),
+            'categories' => $categories,
+        ]);
         $form->handleRequest($request);
         //dump($site);
         $valid = true;
@@ -95,6 +105,30 @@ class ProductController extends AbstractController
 
             //$manager = $this->getDoctrine()->getManager();
             if ($valid == true) {
+
+                $categoryRepo = $manager->getRepository('App:Category');
+                foreach ($product->getCategories() as $category) {
+                    dump($category);
+                    $category->setName($category->getCategory()->getName())
+                        ->setEntreprise($this->getUser()->getEnterprise());
+                    //Je vérifie si la catégorie est déjà existante en BDD pour éviter les doublons 
+                    $category_ = $categoryRepo->findOneBy([
+                        'name' => $category->getName(),
+                        'entreprise' => $this->getUser()->getEnterprise()
+                    ]);
+
+                    if (empty($category_)) {
+                        $category->addProduct($product);
+                        $manager->persist($category);
+                        // dump('category dont exists ');
+                    } else {
+                        //dump('category exists with id = ' . $category_->getId());
+                        //$category = $category_;
+                        $category_->addProduct($product);
+                        $product->removeCategory($category);
+                        $product->addCategory($category_);
+                    }
+                }
                 $manager->persist($product);
                 $manager->flush();
                 $this->addFlash(
@@ -134,18 +168,53 @@ class ProductController extends AbstractController
      * 
      * @return Response
      */
-    public function edit(Product $product, Request $request, InventoryRepository $inventoryRepo, EntityManagerInterface $manager)
+    public function edit(Product $product, Request $request, EntityManagerInterface $manager)
     { //
 
-        $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
-        //$product = $productRepo->findOneBy(['id' => $id]);
+        $categoryRepo = $manager->getRepository('App:Category');
+        $categories_ = $categoryRepo->findBy(['entreprise' => $this->getUser()->getEnterprise()]);
+        $categories = [];
+        foreach ($categories_ as $category) {
+            $categories[$category->getName()] = $category->getName();
+        }
+        //Permet d'obtenir un constructeur de formulaire
+        // Externaliser la création du formulaire avec la cmd php bin/console make:form
+
         //  instancier un form externe
-        $form = $this->createForm(ProductType::class, $product);
+        $form = $this->createForm(ProductType::class, $product, [
+            'entId' => $this->getUser()->getEnterprise()->getId(),
+            'categories' => $categories,
+        ]); //  instancier un form externe
+        $form = $this->createForm(ProductType::class, $product, [
+            'entId' => $this->getUser()->getEnterprise()->getId(),
+        ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $categoryRepo = $manager->getRepository('App:Category');
+            foreach ($product->getCategories() as $category) {
+                dump($category);
+                $category->setName($category->getCategory()->getName())
+                    ->setEntreprise($this->getUser()->getEnterprise());
+                //Je vérifie si la catégorie est déjà existante en BDD pour éviter les doublons 
+                $category_ = $categoryRepo->findOneBy([
+                    'name' => $category->getName(),
+                    'entreprise' => $this->getUser()->getEnterprise()
+                ]);
 
+                if (empty($category_)) {
+                    $category->addProduct($product);
+                    $manager->persist($category);
+                    // dump('category dont exists ');
+                } else {
+                    //dump('category exists with id = ' . $category_->getId());
+                    //$category = $category_;
+                    $category_->addProduct($product);
+                    $product->removeCategory($category);
+                    $product->addCategory($category_);
+                }
+            }
             //$manager = $this->getDoctrine()->getManager();
             $manager->persist($product);
             $manager->flush();
@@ -160,7 +229,7 @@ class ProductController extends AbstractController
 
         return $this->render('product/edit.html.twig', [
             'form'        => $form->createView(),
-            'inventories' => $inventories,
+
         ]);
     }
 
