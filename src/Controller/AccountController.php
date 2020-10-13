@@ -206,7 +206,7 @@ class AccountController extends ApplicationController
      * 
      * @return Response
      */
-    public function edit($user, EntityManagerInterface $manager, Request $request, UserPasswordEncoderInterface $encoder)
+    public function edit(User $user, EntityManagerInterface $manager, Request $request, UserPasswordEncoderInterface $encoder)
     {
         // $user = new User();
         $slugify = new Slugify();

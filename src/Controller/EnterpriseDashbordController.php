@@ -180,7 +180,7 @@ class EnterpriseDashbordController extends ApplicationController
                     ))
                     ->getResult();
 
-                $billPaid = $manager->createQuery("SELECT SUM(cms.advancePayment) AS paidTotal
+                $bills = $manager->createQuery("SELECT cms AS CommercialSheet
                                             FROM App\Entity\CommercialSheet cms
                                             LEFT JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -196,13 +196,13 @@ class EnterpriseDashbordController extends ApplicationController
                     ))
                     ->getResult();
 
-                $billPartial = $manager->createQuery("SELECT SUM(cms.advancePayment) AS advanceTotal 
+                $billPartial = $manager->createQuery("SELECT cms.advancePayment AS CommercialSheet 
                                             FROM App\Entity\CommercialSheet cms
                                             LEFT JOIN cms.user u 
                                             JOIN u.enterprise e
                                             WHERE cms.type = :type_
                                             AND cms.completedStatus = 0
-                                            AND cms.paymentStatus = 0
+                                            AND cms.deliveryStatus = 0
                                             AND cms.advancePayment > 0
                                             AND e.id = :entId
                                             AND cms.createdAt LIKE :dat                                                                                  
@@ -504,12 +504,12 @@ class EnterpriseDashbordController extends ApplicationController
             // dump($billPaymentOnpending);
             $outstandingClaim = 0.0;
             foreach ($billPaymentOnpending as $commercialSheet) {
-                $outstandingClaim += $commercialSheet['paymentOnPending']->getAmount();
+                $outstandingClaim += $commercialSheet['paymentOnPending']->getAmountTTC();
             }
 
             $outstandingDebt = 0.0;
             foreach ($purchaseOrderPaymentOnpending as $commercialSheet) {
-                $outstandingDebt += $commercialSheet['paymentOnPending']->getAmount();
+                $outstandingDebt += $commercialSheet['paymentOnPending']->getAmountTTC();
             }
 
             $bestSellingProducts = $manager->createQuery("SELECT cmsi.designation AS designation,
