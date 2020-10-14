@@ -41,6 +41,7 @@ class AppFixtures extends Fixture
             ->setRccm('RC/DCN/2020/13/770')
             ->setAddress('Bépanda Camtel, BP : 2702 Douala')
             ->setPhoneNumber('+237 694342007')
+            ->setTva(19.25)
             ->setEmail('contact@leeloubabyfood.com');
         $manager->persist($enterprise);
 
