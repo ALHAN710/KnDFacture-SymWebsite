@@ -17,7 +17,7 @@ class BusinessContactController extends AbstractController
     /**
      * @Route("/business/contact/{type<[a-z]+>}", name="business_contacts_index")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_USER")
      * 
      */
     public function index($type, BusinessContactRepository $businessContactRepo, InventoryRepository $inventoryRepo)
@@ -37,7 +37,7 @@ class BusinessContactController extends AbstractController
      *
      * @Route("/business/contact/{type<[a-z]+>}/new", name = "business_contact_create")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_USER")
      * 
      * @return Response
      */
@@ -90,7 +90,7 @@ class BusinessContactController extends AbstractController
      *
      * @Route("/business/contact/{id<\d+>}/edit", name="business_contact_edit")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_USER")
      * 
      * @return Response
      */
@@ -136,7 +136,7 @@ class BusinessContactController extends AbstractController
      * 
      * @Route("/business/contact/{id}/delete", name="business_contact_delete")
      *
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_USER")
      * 
      * @param BusinessContact $businessContact
      * @param EntityManagerInterface $manager
