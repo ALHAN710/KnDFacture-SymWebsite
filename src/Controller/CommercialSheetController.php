@@ -177,7 +177,8 @@ class CommercialSheetController extends ApplicationController
                                                             $stockMovement->setCreatedAt($date)
                                                                 ->setLot($lot)
                                                                 ->setQuantity($qtyToRemove)
-                                                                ->setType('Sale Exit');
+                                                                ->setType('Sale Exit')
+                                                                ->setCommercialSheet($commercialSheet);
                                                             //dump($stockMovement);
                                                             $manager->persist($stockMovement);
                                                             $qtyToRemove = 0;
@@ -190,7 +191,8 @@ class CommercialSheetController extends ApplicationController
                                                             $stockMovement->setCreatedAt($date)
                                                                 ->setLot($lot)
                                                                 ->setQuantity($lot->getQuantity())
-                                                                ->setType('Sale Exit');
+                                                                ->setType('Sale Exit')
+                                                                ->setCommercialSheet($commercialSheet);
                                                             //dump($stockMovement);
                                                             $manager->persist($stockMovement);
 
