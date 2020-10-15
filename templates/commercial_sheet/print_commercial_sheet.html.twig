@@ -219,23 +219,15 @@
                     </div>
                 </div>
 
-                <div class="row justify-content-center">
+                <div class="row justify-content-center my-4">
+                    <small>Thank you very much for doing business with us. Thanks !</small>
+                </div>
+                {# <div class="row justify-content-center">
                     <div class="col-lg-6">
-                        {#<h5 class="mt-4">Terms And Condition :</h5>
-                        <ul class="pl-3">
-                            <li><small>All accounts are to be paid within 7 days from receipt of
-                                    invoice. </small></li>
-                            <li><small>To be paid by cheque or credit card or direct payment
-                                    online.</small></li>
-                            <li><small> If account is not paid within 7 days the credits details
-                                    supplied as confirmation<br> of work undertaken will be charged the
-                                    agreed quoted fee noted above.</small></li>
-                        </ul>#}
+                        
                     </div>
                     <div class="col-lg-6 align-self-end">
                         <div class="w-25 float-right">
-                            {#<small>Account Manager</small>
-                            <img src="/images/signature.png" alt="" class="" height="48">#}
                             <br>
                             <br>
                             <br>
@@ -244,14 +236,17 @@
                             <p class="border-top text-center">Signature</p>
                         </div>
                     </div>
-                </div>
+                </div> #}
                 <hr>
                 <div class="row d-flex justify-content-center">
-                    <div class="col-lg-12 col-xl-4 ml-auto align-self-center">
-                        <div class="text-center text-muted"><small>Thank you very much for doing
-                                business with us. Thanks !</small></div>
+                    <div class="col-lg-9 col-xl-8 ml-auto align-self-center">
+                        <div class="text-center text-muted">
+                            {{commercialSheet.user.enterprise.socialReason}} - 
+                            NIU : {{commercialSheet.user.enterprise.niu}} - 
+                            RCCM : {{commercialSheet.user.enterprise.rccm}}
+                        </div>
                     </div>
-                    <div class="col-lg-12 col-xl-4">
+                    <div class="col-lg-3 col-xl-4">
                         <div class="float-right d-print-none">
                             {#<button type="button" onclick="printJS('printJS-form', 'html')" class="btn btn-info text-light">
                                 <i class="fa fa-print"></i>
