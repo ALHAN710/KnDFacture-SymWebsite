@@ -19,15 +19,24 @@ class AccountType extends ApplicationType
     {
         $builder
             ->add(
-                'enterpriseName',
+                'firstName',
                 TextType::class,
-                $this->getConfiguration("Nom de l'entreprise", "Nom de l'entreprise")
+                $this->getConfiguration("First Name", "Please enter your first Name...")
             )
-
+            ->add(
+                'lastName',
+                TextType::class,
+                $this->getConfiguration("Nom", "Please enter your last Name...")
+            )
+            /*->add(
+                'hash',
+                PasswordType::class,
+                $this->getConfiguration("Password", "Please enter your password...")
+            )*/
             ->add(
                 'email',
                 EmailType::class,
-                $this->getConfiguration("Email", "Email de l'entreprise")
+                $this->getConfiguration("Email", "Please enter your email here...")
             )
             ->add(
                 'avatar',
@@ -57,7 +66,39 @@ class AccountType extends ApplicationType
                         ],
                     ]
                 )
-            );
+            )
+            /*->add(
+                'passwordConfirm',
+                PasswordType::class,
+                $this->getConfiguration("Confirmation de mot de passe", "Veuillez confirmer votre mot de passe")
+            )*/
+            ->add(
+                'countryCode',
+                TextType::class,
+                $this->getConfiguration("Country code :", "Telephone code of your country", [
+                    'required' => false,
+                ])
+
+            )
+            ->add(
+                'phoneNumber',
+                TextType::class,
+                $this->getConfiguration("N° Tel :", "Your Phone Number please...")
+
+            )
+            /*->add(
+                'role',
+                ChoiceType::class,
+                [
+                    'choices' => [
+                        'USER' => 'ROLE_USER',
+                        'STOCK MANAGER' => 'ROLE_STOCK_MANAGER',
+                        'ADMIN' => 'ROLE_ADMIN',
+
+                    ],
+                    'label'    => 'Rôle'
+                ]
+            )*/;
     }
 
     public function configureOptions(OptionsResolver $resolver)
