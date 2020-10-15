@@ -22,7 +22,7 @@ class ProductController extends AbstractController
     /**
      * @Route("/product", name="products_index")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      */
     public function index(ProductRepository $productRepo)
@@ -39,7 +39,7 @@ class ProductController extends AbstractController
      *
      * @Route("/product/new", name = "product_create")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      * @return Response
      */
@@ -164,7 +164,7 @@ class ProductController extends AbstractController
      *
      * @Route("product/{id<\d+>}/edit", name="product_edit")
      * 
-     * @Security("is_granted('ROLE_MANAGER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
+     * @Security("is_granted('ROLE_STOCK_MANAGER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
      * 
      * @return Response
      */
@@ -238,7 +238,7 @@ class ProductController extends AbstractController
      * 
      * @Route("/product/{id}/delete", name="product_delete")
      *
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      * @param Product $product
      * @param EntityManagerInterface $manager

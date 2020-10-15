@@ -22,7 +22,7 @@ class LotController extends AbstractController
     /**
      * @Route("/lots/dashboard/{prod<\d+>?0}/{inv<\d+>?0}", name="lots_index")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      */
     public function index($prod, $inv, EntityManagerInterface $manager)
@@ -54,7 +54,7 @@ class LotController extends AbstractController
     /**
      * @Route("/lot/{prod<\d+>?0}/{inv<\d+>?0}/create", name="lot_create")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      */
     public function create($prod, $inv, Request $request, EntityManagerInterface $manager)
@@ -133,7 +133,7 @@ class LotController extends AbstractController
     /**
      * @Route("/lot/{id<\d+>}/edit", name="lot_edit")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      */
     public function edit(Lot $lot, Request $request, EntityManagerInterface $manager)

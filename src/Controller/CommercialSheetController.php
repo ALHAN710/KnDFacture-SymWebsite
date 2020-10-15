@@ -34,7 +34,7 @@ class CommercialSheetController extends ApplicationController
 {
     /**
      * @Route("/commercial/sheet/{type<[a-z]+>}/dashboard", name="commercial_sheet_index")
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_USER")
      */
     public function index($type, CommercialSheetRepository $commercialSheetRepo, InventoryRepository $inventoryRepo)
     {
@@ -54,7 +54,7 @@ class CommercialSheetController extends ApplicationController
      *
      * @Route("/commercial/sheet/new/{id<\d+>}/{type<[a-z]+>}/{stock<\d+>?0}", name = "commercial_sheet_create")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_USER")
      * 
      * @return Response
      */
@@ -358,7 +358,7 @@ class CommercialSheetController extends ApplicationController
      *
      * @Route("/commercial/sheet/{id<\d+>}/edit", name="commercial_sheet_edit")
      * 
-     * @Security("is_granted('ROLE_MANAGER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
+     * @Security("is_granted('ROLE_USER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
      * 
      * @return Response
      */
@@ -429,7 +429,7 @@ class CommercialSheetController extends ApplicationController
      * 
      * @Route("/commercial/sheet/{id}/delete", name="commercial_sheet_delete")
      * 
-     * @IsGranted("ROLE_MANAGER")
+     * @IsGranted("ROLE_USER")
      *
      * @param CommercialSheet $commercialSheet
      * @param EntityManagerInterface $manager
