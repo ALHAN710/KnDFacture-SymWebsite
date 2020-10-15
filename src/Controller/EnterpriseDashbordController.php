@@ -66,7 +66,7 @@ class EnterpriseDashbordController extends ApplicationController
                 ))
                 ->setMaxResults(10)
                 ->getResult();
-            dump($bestSellingProducts);
+            //dump($bestSellingProducts);
 
             $nbProductsSold = $manager->createQuery("SELECT COUNT(DISTINCT cmsi.designation) AS Designation
                                             FROM App\Entity\CommercialSheetItem cmsi
@@ -83,7 +83,7 @@ class EnterpriseDashbordController extends ApplicationController
                     'entId'   => $this->getUser()->getEnterprise()->getId(),
                 ))
                 ->getResult();
-            dump($nbProductsSold);
+            //dump($nbProductsSold);
             // dd($tmp);
             // dump(gettype(floatval($billCompleted[0]['TotalPayment'])));
             // dd(floatval($billPartial[0]['advanceTotal']));
