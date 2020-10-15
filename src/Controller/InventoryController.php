@@ -239,22 +239,22 @@ class InventoryController extends ApplicationController
             $nowTime = new DateTime("now");
             $nowTime = $nowTime->format('d/m/Y');
             //$nowTime = $nowTime->format('H:m:i');
-            dump($endDate);
-            dump($endDate->format('d-m-Y'));
-            dump($nowTime);
+            //dump($endDate);
+            //dump($endDate->format('d-m-Y'));
+            //dump($nowTime);
 
             if ($endDate->format('d/m/Y') == $nowTime) {
                 $nowTime = new DateTime("now");
                 $nowTime = $nowTime->format('H:m:i');
                 $endDate = new DateTime($paramJSON['endDate'] . ' ' . $nowTime);
-                dump($nowTime);
+                //dump($nowTime);
             } else {
                 $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
             }
             // $startDate = new DateTime("yesterday");
             // $endDate = new DateTime("now");
             $inv = $paramJSON['inv'];
-            dump($endDate);
+            //dump($endDate);
             $stockMovements = $manager->createQuery("SELECT st.createdAt AS dat, p.sku AS sku, p.name AS nam, 
                                                     l.number AS numLot, l.dlc AS dlc, st.type AS typ, st.quantity AS qty
                                                     FROM App\Entity\StockMovement st
@@ -272,7 +272,7 @@ class InventoryController extends ApplicationController
                     'invId'        => $inv
                 ))
                 ->getResult();
-            dump($stockMovements);
+            //dump($stockMovements);
             return $this->json([
                 'code'           => 200,
                 'stockMovements' => $stockMovements,

@@ -365,7 +365,7 @@ class CommercialSheetController extends ApplicationController
     public function edit(CommercialSheet $commercialSheet, Request $request, EntityManagerInterface $manager, InventoryRepository $inventoryRepo, InventoryAvailabilityRepository $inventoryAvailabilityRepo)
     { //
 
-        dump($commercialSheet);
+        //dump($commercialSheet);
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         //  instancier un form externe
         $form = $this->createForm(CommercialSheetType::class, $commercialSheet, array(
@@ -382,7 +382,7 @@ class CommercialSheetController extends ApplicationController
         //dump($availabilities);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            dump($commercialSheet->getCommercialSheetItems());
+            //dump($commercialSheet->getCommercialSheetItems());
             foreach ($commercialSheet->getCommercialSheetItems() as $orderItem) {
                 if ($orderItem->getQuantity() >= 1) {
                     foreach ($inventoryAvailabilities as $inventoryAvailability) {
@@ -392,7 +392,7 @@ class CommercialSheetController extends ApplicationController
                         }
                         $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
                     }
-                    dump($orderItem);
+                    //dump($orderItem);
                     $manager->persist($orderItem);
                 }
                 $orderItem->addOrder($commercialSheet);
@@ -549,7 +549,7 @@ class CommercialSheetController extends ApplicationController
                 if (!empty($paramJSON['commercialSheetDeliveredIds'])) {
                     foreach ($paramJSON['commercialSheetDeliveredIds'] as $Id) {
                         $commercialSheet = $commercialSheetRepo->findOneBy(['id' => intval($Id)]);
-                        dump($commercialSheet);
+                        //dump($commercialSheet);
                         $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
                         $commercialSheet->setDeliveryStatus(true)
                             ->setDeliverAt($date);
@@ -600,7 +600,7 @@ class CommercialSheetController extends ApplicationController
      */
     public function printJournal($journal, $town, Request $request, CommercialSheetRepository $commercialSheetRepo, InventoryRepository $inventoryRepo, ProductRepository $productRepo)
     {
-        dump($request->request->get("commercialSheetIds"));
+        //dump($request->request->get("commercialSheetIds"));
         $inventories = $inventoryRepo->findAll();
         //die();
         //$paramJSON = $this->getJSONRequest($request->getContent());
@@ -611,7 +611,7 @@ class CommercialSheetController extends ApplicationController
                 foreach ($paramJSON['commercialSheetIds'] as $id) {
                     $orders[] = $commercialSheetRepo->findOneBy(['id' => intval($id)]);
                 }
-                dump($commercialSheets);
+                //dump($commercialSheets);
                 if ($journal == 'delivery') {
                     return $this->render('commercial_sheet/printDeliveryJournal.html.twig', [
                         'commercialSheets' => $commercialSheets,
