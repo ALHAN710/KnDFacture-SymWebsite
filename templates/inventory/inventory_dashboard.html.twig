@@ -283,19 +283,19 @@
                                         <tbody>
                                             {% for i in range(1,4) %}
                                             <tr class="text-center align-items-center">
-                                                <td>{{'Date'}}</td> {#{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}#}
-                                                <td>{{ 'SKU' }}</td>
-                                                <td>{{ 'Name' }}</td>
-                                                <td>{{ 'N° Lot' }}</td>
-                                                <td>{{ 'DLC' }}</td>
+                                                <td></td> {#{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}#}
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
                                                 <td class="align-items-center">
                                                     {# <div class="checkbox checkbox-primary">
                                                         <input id="paidCheckbox{{commercialSheet.id}}" type="checkbox" name="paid" value="{{commercialSheet.id}}">
                                                         <label for="paidCheckbox{{commercialSheet.id}}"></label>
                                                     </div> #}
-                                                    {{'Type'}}
+                                                    
                                                 </td>
-                                                <td>{{'Qty'}}</td>
+                                                <td></td>
                                                 
                                             </tr>
                                             {% endfor %}
