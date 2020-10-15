@@ -108,7 +108,7 @@ class ProductController extends AbstractController
 
                 $categoryRepo = $manager->getRepository('App:Category');
                 foreach ($product->getCategories() as $category) {
-                    dump($category);
+                    //dump($category);
                     $category->setName($category->getCategory()->getName())
                         ->setEntreprise($this->getUser()->getEnterprise());
                     //Je vérifie si la catégorie est déjà existante en BDD pour éviter les doublons 
@@ -194,7 +194,7 @@ class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $categoryRepo = $manager->getRepository('App:Category');
             foreach ($product->getCategories() as $category) {
-                dump($category);
+                //dump($category);
                 $category->setName($category->getCategory()->getName())
                     ->setEntreprise($this->getUser()->getEnterprise());
                 //Je vérifie si la catégorie est déjà existante en BDD pour éviter les doublons 
