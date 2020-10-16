@@ -25,7 +25,7 @@ class LotType extends ApplicationType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        dump($options['include_product']);
+        //dump($options['include_product']);
         $this->entId = $options['entId'];
         $builder
             ->add(
