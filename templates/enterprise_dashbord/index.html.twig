@@ -54,7 +54,7 @@
                     <div class="row">                                            
                         <div class="col-8 align-self-center">
                             <div class="">
-                                <h4 class="mt-0 header-title">Total Revenue</h4>
+                                <h4 class="mt-0 header-title">Chiffre d'affaire HT</h4>
                                 <h2 class="mt-0 font-weight-bold text-dark"><span id="turnOver">0</span> XAF</h2> 
                                 {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
                             </div>
@@ -70,7 +70,7 @@
 
                 </div><!--end card-body-->
 
-                <div class="card-body overflow-hidden p-0 mt-4">
+                <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
                     <div class="d-flex mb-0 h-100 dash-info-box">
                         <div class="w-100">                                                
                             <div class="apexchart-wrapper">
@@ -85,12 +85,45 @@
         </div><!--end col-->
 
         <div class="col-lg-4">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card overflow-hidden">
+                        <div class="card-body bg-gradient3">
+                            <div class="">
+                                <div class="card-icon">
+                                    <i class="fas fa-sort-amount-down"></i>
+                                </div>
+                                <h2 class="font-weight-bold text-white"><span id="amountReduction">0</span> XAF</h2>
+                                <p class="text-white mb-0 font-16">Montant des réductions</p>                                            
+                            </div>
+                        </div><!--end card-body-->
+                    </div><!--end card-->
+                </div><!--end col-->
+
+                <div class="col-sm-12">
+                    <div class="card overflow-hidden">
+                        <div class="card-body bg-gradient2">
+                            <div class="">
+                                <div class="card-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <h2 class="font-weight-bold text-white"><span id="DFHT">0</span> XAF</h2>
+                                <p class="text-white mb-0 font-16">Dettes fournisseurs TTC en cours</p>                                            
+                            </div>
+                        </div><!--end card-body-->
+                    </div><!--end card-->
+                </div><!--end col-->
+
+            </div>
+        </div>
+
+        <div class="col-lg-4">
             <div class="card">
                 <div class="card-body mb-0">
                     <div class="row">                                            
                         <div class="col-8 align-self-center">
                             <div class="">
-                                <h4 class="mt-0 header-title">purchase order amount paid</h4>
+                                <h4 class="mt-0 header-title">Dépenses Fournisseurs TTC</h4>
                                 <h2 class="mt-0 font-weight-bold text-dark"><span id="expenses">0</span> XAF</h2> 
                                 {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
                             </div>
@@ -102,7 +135,7 @@
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end card-body-->
-                <div class="card-body overflow-hidden p-0">
+                <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
                     <div class="d-flex mb-0 h-100 dash-info-box">
                         <div class="w-100">                                                
                             <div class="apexchart-wrapper">
@@ -114,36 +147,100 @@
             </div><!--end card-->
         </div><!--end col-->
         
-        {# <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body mb-0">
-                    <div class="row">                                            
-                        <div class="col-8 align-self-center">
-                            <div class="">
-                                <h4 class="mt-0 header-title">Total Sales</h4>
-                                <h2 class="mt-0 font-weight-bold text-dark">40k</h2> 
-                                <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up From Last Week</p>
-                            </div>
-                        </div><!--end col-->
-                        <div class="col-4 align-self-center">
-                            <div class="icon-info text-right">
-                                <i class="dripicons-cart bg-soft-warning"></i>
-                            </div>
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end card-body-->
-                <div class="card-body overflow-hidden p-0">
-                    <div class="d-flex mb-0 h-100 dash-info-box">
-                        <div class="w-100">                                                
-                            <div class="apexchart-wrapper">
-                                <div id="dash_spark_1" class="chart-gutters"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end card-body-->                                                                    
-            </div><!--end card-->
-        </div><!--end col--> #}
+    </div><!--end row-->
 
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card overflow-hidden">
+                <div class="card-body bg-gradient1">
+                    <div class="">
+                        <div class="card-icon">
+                            <i class="mdi mdi-google-pages"></i>
+                        </div>
+                        <h2 class="font-weight-bold text-white">10</h2>
+                        <p class="text-white mb-0 font-16">Top 10 des Produits les plus vendus</p>                                            
+                    </div>
+                </div>
+                <div class="card-body dash-info-carousel">                                        
+                    <div id="carousel_best_sellingProduct" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for i in range(0,9) %}
+                            <div class="carousel-item {% if i == 0 %}active{% endif %}">
+                                <div class="text-center">
+                                    {# <img src="/images/users/user-4.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1"> #}
+                                    <h3>#{{i + 1}}</h3>
+                                    <h5><span id="ref_{{i}}">####</span></h5>
+                                    <p class="font-12 text-muted"><span id="designation_{{i}}"></span></p>
+                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{i}}"></span>0 XAF</p>
+                                    <p class="font-12 text-muted">Total des ventes : <span id="totalSale_{{i}}">0</span></p>
+                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
+                                    <div class="mt-2 align-item-center">
+                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_{{i}}">0</span> XAF</h5>
+                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a class="carousel-control-prev" href="#carousel_best_sellingProduct" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carousel_best_sellingProduct" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div><!--end card-body-->
+            </div><!--end card-->
+        </div><!--end col-->
+
+        <div class="col-lg-6">
+            <div class="card overflow-hidden">
+                <div class="card-body bg-gradient1">
+                    <div class="">
+                        <div class="card-icon">
+                            <i class="dripicons-network-1"></i>
+                        </div>
+                        <h2 class="font-weight-bold text-white">Classement par Catégorie</h2>
+                        <p class="text-white mb-0 font-16">Des Ventes de Produits</p>                                            
+                    </div>
+                </div>
+                <div class="card-body dash-info-carousel">                                        
+                    <div id="carousel_sale_per_category" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for category in app.user.enterprise.categories %}
+                            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                <div class="text-center">
+                                    {# <img src="/images/users/user-{{loop.index0}}.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1"> #}
+                                    <h3>#{{loop.index}}</h3>
+                                    <h5><span id="cat_{{loop.index0}}">Cat{{loop.index0}}</span></h5>
+                                    <p class="font-12 text-muted">Total de Vente : <span id="totalSaleCat_{{loop.index0}}"></span></p>
+                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
+                                    <div class="mt-2 align-item-center">
+                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amountCat_{{loop.index0}}">0</span> XAF</h5>
+                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a class="carousel-control-prev" href="#carousel_sale_per_category" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carousel_sale_per_category" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div><!--end card-body-->
+            </div><!--end card-->
+        </div><!--end col-->
+
+    </div><!--end row-->
+    
+    <div class="row">
         <div class="col-lg-4">
             <div class="card carousel-bg-img">
                 <div class="card-body dash-info-carousel mb-0">
@@ -153,7 +250,7 @@
                                 <div class="row">                                            
                                     <div class="col-12 align-self-center">
                                         <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">Number Of Edited Invoices</h4>
+                                            <h4 class="mt-0 header-title text-left">Nombre de factures éditées</h4>
                                             <div class="icon-info my-3">
                                                 <i class="mdi mdi-file-table-outline bg-soft-pink"></i>
                                             </div>
@@ -167,7 +264,7 @@
                                 <div class="row">                                            
                                     <div class="col-12 align-self-center">
                                         <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">Number Of Edited Purchase Orders</h4>
+                                            <h4 class="mt-0 header-title text-left">Nombre de bons de commandes édités</h4>
                                             <div class="icon-info my-3">
                                                 <i class="mdi mdi-file-table-outline bg-soft-info"></i>
                                             </div>
@@ -182,7 +279,7 @@
                                 <div class="row">                                            
                                     <div class="col-12 align-self-center">
                                         <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">Number of Edited Quotes</h4>
+                                            <h4 class="mt-0 header-title text-left">Nombre de dévis édités</h4>
                                             <div class="icon-info my-3">
                                                 <i class="mdi mdi-file-table-outline bg-soft-primary"></i>
                                             </div>
@@ -196,7 +293,7 @@
                                 <div class="row">                                            
                                     <div class="col-12 align-self-center">
                                         <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">number of quotes converted</h4>
+                                            <h4 class="mt-0 header-title text-left">Nombre de dévis convertis</h4>
                                             <div class="icon-info my-3">
                                                 <i class="mdi mdi-file-table-outline bg-soft-warning"></i>
                                             </div>
@@ -206,20 +303,7 @@
                                     </div><!--end col-->                                                        
                                 </div><!--end row-->                                                    
                             </div><!--end carousel-item-->
-                            {#<div class="carousel-item">
-                                <div class="row">                                            
-                                    <div class="col-12 align-self-center">
-                                        <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">Total Visits</h4>
-                                            <div class="icon-info my-3">
-                                                <i class="dripicons-user-group bg-soft-success"></i>
-                                            </div>
-                                            <h2 class="mt-0 font-weight-bold text-dark">35k</h2> 
-                                            <p class="mb-1 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>11.1%</span> Up from yesterday</p>
-                                        </div>
-                                    </div><!--end col-->                                                        
-                                </div><!--end row-->                                                    
-                            </div><!--end carousel-item--> #}
+                            
                         </div>
                         <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -234,175 +318,6 @@
             </div><!--end card-->
         </div><!--end col--> 
 
-    </div><!--end row-->
-
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="card overflow-hidden">
-                <div class="card-body bg-gradient1">
-                    <div class="">
-                        <div class="card-icon">
-                            <i class="mdi mdi-google-pages"></i>
-                        </div>
-                        <h2 class="font-weight-bold text-white">10</h2>
-                        <p class="text-white mb-0 font-16">Top 10 Best Selling Products</p>                                            
-                    </div>
-                </div>
-                <div class="card-body dash-info-carousel">                                        
-                    <div id="carousel_best_saler" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="text-center">
-                                    <img src="/images/users/user-4.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
-                                    <h5><span id="ref_0">Ref0</span></h5>
-                                    <p class="font-12 text-muted"><span id="designation_0"></span></p>
-                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_0"></span> XAF</p>
-                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_0"></span></p>
-                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
-                                    <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_0">0</span> XAF</h5>
-                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="text-center">
-                                    <img src="/images/users/user-2.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
-                                    <h5><span id="ref_1">Ref1</span></h5>
-                                    <p class="font-12 text-muted"><span id="designation_1"></span></p>
-                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_1"></span> XAF</p>
-                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_1"></span></p>
-                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
-                                    <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_1">0</span> XAF</h5>
-                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item ">
-                                <div class="text-center">
-                                    <img src="/images/users/user-1.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
-                                    <h5><span id="ref_2">Ref2</span></h5>
-                                    <p class="font-12 text-muted"><span id="designation_2"></span></p>
-                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_2"></span> XAF</p>
-                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_2"></span></p>
-                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
-                                    <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_2">0</span> XAF</h5>
-                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#carousel_best_saler" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carousel_best_saler" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </div>
-                </div><!--end card-body-->
-            </div><!--end card-->
-        </div><!--end col-->
-
-        {# <div class="col-lg-4">
-            <div class="card overflow-hidden">
-                <div class="card-body bg-gradient3">
-                    <div class="">
-                        <div class="card-icon">
-                            <i class="far fa-smile"></i>
-                        </div>
-                        <h2 class="font-weight-bold text-white">58</h2>
-                        <p class="text-white mb-0 font-16">Stores Very Good Review</p>                                            
-                    </div>
-                </div><!--end card-body-->
-                <div class="card-body dash-info-carousel">                                        
-                    <div id="carousel_review" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="media">
-                                    <img src="assets/images/flags/us_flag.jpg" class="mr-2 thumb-xs rounded-circle" alt="...">
-                                    <div class="media-body align-self-center">                                                                                                                       
-                                        <h6 class="m-0">USA Store</h6>
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <p class="review-data mb-0">4.8<span>/ 5.0</span></p>
-                                    <p class="px-4 py-1 bg-soft-success d-inline-block rounded">Very Good</p>
-                                    <ul class="list-inline mb-1">
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                    </ul>
-                                    <p class="mb-1 text-muted">There are many variations of passages of Lorem Ipsum available, 
-                                        but the majority have suffered alteration in some form, by injected humour, or randomised
-                                        variations of passages of Lorem Ipsum available.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="media">
-                                    <img src="assets/images/flags/spain_flag.jpg" class="mr-2 thumb-xs rounded-circle" alt="...">
-                                    <div class="media-body align-self-center">                                                                                                                       
-                                        <h6 class="m-0">Spain Store</h6>
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <p class="review-data mb-0">4.6<span>/ 5.0</span></p>
-                                    <p class="px-4 py-1 bg-soft-success d-inline-block rounded">Very Good</p>
-                                    <ul class="list-inline mb-1">
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                    </ul>
-                                    <p class="mb-1 text-muted">There are many variations of passages of Lorem Ipsum available, 
-                                        but the majority have suffered alteration in some form, by injected humour, or randomised
-                                        variations of passages of Lorem Ipsum available.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="media">
-                                    <img src="assets/images/flags/russia_flag.jpg" class="mr-2 thumb-xs rounded-circle" alt="...">
-                                    <div class="media-body align-self-center">                                                                                                                       
-                                        <h6 class="m-0">Russia Store</h6>
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <p class="review-data mb-0">5.0<span>/ 5.0</span></p>
-                                    <p class="px-4 py-1 bg-soft-success d-inline-block rounded">Exellent</p>
-                                    <ul class="list-inline mb-1">
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                        <li class="list-inline-item mr-0"><i class="mdi mdi-star text-warning font-16"></i></li>
-                                    </ul>
-                                    <p class="mb-1 text-muted">There are many variations of passages of Lorem Ipsum available, 
-                                        but the majority have suffered alteration in some form, by injected humour, or randomised
-                                        variations of passages of Lorem Ipsum available.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#carousel_review" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carousel_review" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                        </a>
-                    </div>
-                </div><!--end card-body-->
-            </div><!--end card-->
-        </div><!--end col--> #}
         <div class="col-lg-4">
             <div class="row">
                 <div class="col-sm-12">
@@ -413,26 +328,7 @@
                                     <i class="fas fa-coins"></i>
                                 </div>
                                 <h2 class="font-weight-bold text-white"><span id="outstandingClaim">0</span> XAF</h2>
-                                <p class="text-white mb-0 font-16">Outstanding Claims</p>                                            
-                            </div>
-                        </div><!--end card-body-->
-                        {# <div class="card-body">
-                            <div class="">
-                                <div id="d1_payment" class="apex-charts"></div>
-                            </div> 
-                        </div><!--end card-body--> #}
-                    </div><!--end card-->
-                </div><!--end col-->
-
-                <div class="col-sm-12">
-                    <div class="card overflow-hidden">
-                        <div class="card-body bg-gradient2">
-                            <div class="">
-                                <div class="card-icon">
-                                    <i class="fas fa-coins"></i>
-                                </div>
-                                <h2 class="font-weight-bold text-white"><span id="outstandingDebt">0</span> XAF</h2>
-                                <p class="text-white mb-0 font-16">Outstanding Debts</p>                                            
+                                <p class="text-white mb-0 font-16">Créances en cours</p>                                            
                             </div>
                         </div><!--end card-body-->
                         {# <div class="card-body">
@@ -451,7 +347,7 @@
                                     <i class="mdi mdi-google-pages"></i>
                                 </div>
                                 <h2 class="font-weight-bold text-white"><span id="nbProductsSold">0</span></h2>
-                                <p class="text-white mb-0 font-16">Number Of Products Sold</p>                                            
+                                <p class="text-white mb-0 font-16">Nombre de Produits vendus</p>                                            
                             </div>
                         </div><!--end card-body-->
                         {# <div class="card-body">
@@ -464,76 +360,6 @@
             
             </div>
         </div>
-
-        <div class="col-lg-4">
-            <div class="card overflow-hidden">
-                <div class="card-body bg-gradient1">
-                    <div class="">
-                        <div class="card-icon">
-                            <i class="dripicons-network-1"></i>
-                        </div>
-                        <h2 class="font-weight-bold text-white"></h2>
-                        <p class="text-white mb-0 font-16">Vente par catégorie de produit</p>                                            
-                    </div>
-                </div>
-                <div class="card-body dash-info-carousel">                                        
-                    <div id="carousel_best_saler" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="text-center">
-                                    <img src="/images/users/user-4.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
-                                    <h5><span id="ref_0">Ref0</span></h5>
-                                    <p class="font-12 text-muted"><span id="designation_0"></span></p>
-                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_0"></span> XAF</p>
-                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_0"></span></p>
-                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
-                                    <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_0">0</span> XAF</h5>
-                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="text-center">
-                                    <img src="/images/users/user-2.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
-                                    <h5><span id="ref_1">Ref1</span></h5>
-                                    <p class="font-12 text-muted"><span id="designation_1"></span></p>
-                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_1"></span> XAF</p>
-                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_1"></span></p>
-                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
-                                    <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_1">0</span> XAF</h5>
-                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item ">
-                                <div class="text-center">
-                                    <img src="/images/users/user-1.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1">
-                                    <h5><span id="ref_2">Ref2</span></h5>
-                                    <p class="font-12 text-muted"><span id="designation_2"></span></p>
-                                    <p class="font-12 text-muted">Unit Cost : <span id="pu_2"></span> XAF</p>
-                                    <p class="font-12 text-muted">Total Sale : <span id="totalSale_2"></span></p>
-                                    {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
-                                    <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_2">0</span> XAF</h5>
-                                        {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#carousel_best_saler" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carousel_best_saler" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </div>
-                </div><!--end card-body-->
-            </div><!--end card-->
-        </div><!--end col-->
 
     </div><!--end row-->
     
@@ -642,15 +468,16 @@
                         success: function (data) {
                             //$('.fa-sync').removeClass('fa-spin');                                  
                             console.log(data);
-                            $('#turnOver').text(data['turnOver']);
-                            $('#expenses').text(data['expenses']);
+                            $('#turnOver').text(data['turnOverHT']);
+                            $('#expenses').text(data['expensesHT']);
                             $('#nbBill').text(data['billNb']);
                             $('#nbPurchaseOrder').text(data['purchaseNb']);
                             $('#nbQuote').text(data['quoteNb']);
                             $('#nbConvertedQuote').text(data['converted']);
-                            $('#outstandingDebt').text(data['outstandingDebt']);
+                            $('#DFHT').text(data['outstandingDebt']);
                             $('#outstandingClaim').text(data['outstandingClaim']);
                             $('#nbProductsSold').text(data['nbProductsSold']);
+                            $('#amountReduction').text(data['amountReduction']);
 
                             //console.log('Type of best : ' + typeof data['bestSellingProducts'] );
                             data['bestSellingProducts'].forEach(function(item, index){

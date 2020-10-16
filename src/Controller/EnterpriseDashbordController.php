@@ -27,6 +27,8 @@ class EnterpriseDashbordController extends ApplicationController
         if ($this->getUser()->getEnterprise()->getId() == $id) {
             $startDate = new DateTime('2020-10-01 00:00:00 ');
             $endDate = new DateTime('2020-10-09 23:59:59');
+            $endDate_ = $endDate->format('Y-m-d');
+            $endDate_ = '%' . $endDate_ . '%';
             $turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 13) AS jour, SUM(cms.advancePayment) AS amount
                                             FROM App\Entity\CommercialSheet cms
                                             LEFT JOIN cms.user u 
@@ -48,7 +50,7 @@ class EnterpriseDashbordController extends ApplicationController
                 ->getResult();
             //dump($turnOverPer);
 
-            $bestSellingProducts = $manager->createQuery("SELECT cmsi.designation AS designation, SUM(cmsi.quantity) AS totalSale
+            /*$bestSellingProducts = $manager->createQuery("SELECT cmsi.designation AS designation, SUM(cmsi.quantity) AS totalSale
                                             FROM App\Entity\CommercialSheetItem cmsi
                                             JOIN cmsi.commercialSheet cms
                                             JOIN cms.user u
@@ -65,10 +67,10 @@ class EnterpriseDashbordController extends ApplicationController
                     'entId'   => $this->getUser()->getEnterprise()->getId(),
                 ))
                 ->setMaxResults(10)
-                ->getResult();
+                ->getResult();*/
             //dump($bestSellingProducts);
 
-            $nbProductsSold = $manager->createQuery("SELECT COUNT(DISTINCT cmsi.designation) AS Designation
+            /*$nbProductsSold = $manager->createQuery("SELECT COUNT(DISTINCT cmsi.designation) AS Designation
                                             FROM App\Entity\CommercialSheetItem cmsi
                                             JOIN cmsi.commercialSheet cms
                                             JOIN cms.user u
@@ -82,9 +84,75 @@ class EnterpriseDashbordController extends ApplicationController
                 ->setParameters(array(
                     'entId'   => $this->getUser()->getEnterprise()->getId(),
                 ))
+                ->getResult();*/
+
+
+            $salePerCategory = $manager->createQuery("SELECT cat.name AS name_, SUM(cmsi.quantity) AS qty
+                                            FROM App\Entity\Category cat, App\Entity\CommercialSheet cms
+                                            JOIN cms.user u 
+                                            JOIN cms.commercialSheetItems cmsi
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = :type_
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                            AND cmsi.itemOfferType != 'Simple'
+                                            AND e.id = :entId
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate  
+                                            GROUP BY name_                                                                                
+                                        ")
+                ->setParameters(array(
+                    'entId'     => $this->getUser()->getEnterprise()->getId(),
+                    'startDate' => $startDate->format('Y-m-d H:m:i'),
+                    'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                    'type_'     => 'bill',
+                ))
                 ->getResult();
+            $salePerCategory = $manager->createQuery("SELECT cat.name AS name_, SUM(cmsi.quantity) AS qty
+                                            FROM App\Entity\Category cat,
+                                            JOIN cms.user u 
+                                            JOIN cat.enterprise e
+                                            RIGHT JOIN cat.products p
+                                            WHERE cms.type = :type_
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                            AND cmsi.itemOfferType != 'Simple'
+                                            AND e.id = :entId
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate  
+                                            GROUP BY name_                                                                                
+                                        ")
+                ->setParameters(array(
+                    'entId'     => $this->getUser()->getEnterprise()->getId(),
+                    'startDate' => $startDate->format('Y-m-d H:m:i'),
+                    'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                    'type_'     => 'bill',
+                ))
+                ->getResult();
+
+            $turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour,
+                                        SUM(cmsi.pu * cmsi.quantity) AS amount
+                                        FROM App\Entity\CommercialSheet cms
+                                        JOIN cms.commercialSheetItems cmsi
+                                        JOIN cms.user u 
+                                        JOIN u.enterprise e
+                                        WHERE cms.type = :type_
+                                        AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                        AND e.id = :entId
+                                        AND cms.deliverAt >= :startDate                                                                                  
+                                        AND cms.deliverAt <= :endDate
+                                        GROUP BY jour
+                                        ORDER BY jour ASC
+                                                                                
+                                        ")
+                ->setParameters(array(
+                    'entId'   => $this->getUser()->getEnterprise()->getId(),
+                    'startDate' => $startDate->format('Y-m-d H:m:i'),
+                    'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                    'type_'   => 'bill',
+                ))
+                ->getResult();
+            //dump($turnOverPer);
+            //dd($salePerCategory);
             //dump($nbProductsSold);
-            // dd($tmp);
             // dump(gettype(floatval($billCompleted[0]['TotalPayment'])));
             // dd(floatval($billPartial[0]['advanceTotal']));
 
@@ -120,12 +188,9 @@ class EnterpriseDashbordController extends ApplicationController
             $types   = ['bill', 'quote', 'purchaseorder'];
             $sheetNb = [];
             $convertedQuoteNb = null;
-            $billPaid = null;
-            $billPartial = null;
-            $purchaseOrderPaid = null;
-            $purchaseOrderPartial = null;
-            $turnOver = 0.0;
-            $expenses = 0.0;
+            $turnOverHT = 0.0;
+            $totalAmountReduction = 0.0;
+            $expensesTTC = 0.0;
             $outstandingClaim = 0.0;
             $outstandingDebt = 0.0;
             $turnOverPer = null;
@@ -149,6 +214,8 @@ class EnterpriseDashbordController extends ApplicationController
                 $endDate_ = $endDate->format('Y-m-d');
                 $endDate_ = '%' . $endDate_ . '%';
                 $per = 'hour';
+
+                //Détermination du nombre de Document réalisé par type
                 foreach ($types as $type) {
                     //dump($type);
                     $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
@@ -166,6 +233,7 @@ class EnterpriseDashbordController extends ApplicationController
                         ))
                         ->getResult();
                 }
+                //Détermination du nombre de Dévis convertis en Facture
                 $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
                                             FROM App\Entity\CommercialSheet cms
                                             LEFT JOIN cms.user u 
@@ -180,14 +248,17 @@ class EnterpriseDashbordController extends ApplicationController
                     ))
                     ->getResult();
 
-                $bills = $manager->createQuery("SELECT cms AS CommercialSheet
+                //Détermination du chiffre d'affaire HT
+                $bills = $manager->createQuery("SELECT cms.deliverAt AS jour, SUM(cmsi.pu * cmsi.quantity) AS CAHT
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
+                                            JOIN cms.commercialSheetItems cmsi
                                             WHERE cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
-                                            AND cms.deliverAt LIKE :dat                                                                                  
+                                            AND cms.deliverAt LIKE :dat  
+                                            GROUP BY jour                                                                                
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -196,16 +267,23 @@ class EnterpriseDashbordController extends ApplicationController
                     ))
                     ->getResult();
 
-                $billPartial = $manager->createQuery("SELECT cms.advancePayment AS CommercialSheet 
+
+                foreach ($bills as $bill_) {
+                    $tmp         = $bill_['CAHT'] == null ? 0 : floatval($bill_['CAHT']);
+                    $turnOverHT += $tmp;
+                }
+
+                //Détermination du montant des Réduction
+                $amountReduction = $manager->createQuery("SELECT cms.deliverAt AS jour, ((SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) + cms.fixReduction AS amountReduction
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
+                                            JOIN cms.commercialSheetItems cmsi
                                             WHERE cms.type = :type_
-                                            AND cms.completedStatus = 0
-                                            AND cms.deliveryStatus = 0
-                                            AND cms.advancePayment > 0
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
-                                            AND cms.createdAt LIKE :dat                                                                                  
+                                            AND cms.deliverAt LIKE :dat 
+                                            GROUP BY jour                                                                                 
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -214,19 +292,23 @@ class EnterpriseDashbordController extends ApplicationController
                     ))
                     ->getResult();
 
-                $tmp       = $billPaid[0]['paidTotal'] == null ? 0 : floatval($billPaid[0]['paidTotal']);
-                $turnOver += $tmp;
-                $tmp       = $billPartial[0]['advanceTotal'] == null ? 0 : floatval($billPartial[0]['advanceTotal']);
-                $turnOver += $tmp;
+                foreach ($amountReduction as $amountReduction_) {
+                    $tmp       = $amountReduction_['amountReduction'] == null ? 0 : floatval($amountReduction_['amountReduction']);
+                    $totalAmountReduction += $tmp;
+                }
 
-                $purchaseOrderPaid = $manager->createQuery("SELECT SUM(cms.advancePayment) AS paidTotal
+                //Détermination des dépenses fournisseurs TTC
+                $purchaseOrders = $manager->createQuery("SELECT cms.deliverAt AS jour,
+                                            SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) - cms.fixReduction AS EXTTC
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
+                                            JOIN cms.commercialSheetItems cmsi
                                             WHERE cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
                                             AND cms.deliverAt LIKE :dat                                                                                  
+                                            GROUP BY jour
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -235,40 +317,23 @@ class EnterpriseDashbordController extends ApplicationController
                     ))
                     ->getResult();
 
-                $purchaseOrderPartial = $manager->createQuery("SELECT SUM(cms.advancePayment) AS advanceTotal 
-                                            FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = :type_
-                                            AND cms.completedStatus = 0
-                                            AND cms.paymentStatus = 0
-                                            AND cms.advancePayment > 0
-                                            AND e.id = :entId
-                                            AND cms.createdAt LIKE :dat                                                                                  
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'dat'     => $endDate_,
-                        'type_'   => 'purchaseorder',
-                    ))
-                    ->getResult();
 
-                $tmp       = $purchaseOrderPaid[0]['paidTotal'] == null ? 0 : floatval($purchaseOrderPaid[0]['paidTotal']);
-                $expenses += $tmp;
-                $tmp       = $purchaseOrderPartial[0]['advanceTotal'] == null ? 0 : floatval($purchaseOrderPartial[0]['advanceTotal']);
-                $expenses += $tmp;
+                foreach ($purchaseOrders as $purchaseOrder_) {
+                    $tmp         = $purchaseOrder_['EXTTC'] == null ? 0 : floatval($purchaseOrder_['EXTTC']);
+                    $expensesTTC += $tmp;
+                }
 
-                // // $endDate = '%2020-10-09%';
-                // $endDate_ = $endDate->format('Y-m-d');
-                // $endDate_ = '%' . $endDate_ . '%';
-                $turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 13) AS jour, SUM(cms.advancePayment) AS amount
+                //Chiffre d'affaire HT par heure de la journée
+                $turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 13) AS jour,
+                                        SUM(cmsi.pu * cmsi.quantity) AS amount
                                         FROM App\Entity\CommercialSheet cms
-                                        LEFT JOIN cms.user u 
+                                        JOIN cms.commercialSheetItems cmsi
+                                        JOIN cms.user u 
                                         JOIN u.enterprise e
                                         WHERE cms.type = :type_
-                                        AND (cms.completedStatus = 1 OR cms.paymentStatus = 1)
+                                        AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                         AND e.id = :entId
-                                        AND cms.createdAt LIKE :endDate 
+                                        AND cms.deliverAt LIKE :endDate 
                                         GROUP BY jour
                                         ORDER BY jour ASC
                                                                                 
@@ -281,14 +346,17 @@ class EnterpriseDashbordController extends ApplicationController
                     ))
                     ->getResult();
 
-                $expensesPer = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 13) AS jour, SUM(cms.advancePayment) AS amount
+                //Dépenses TTC par heure de la journée
+                $expensesPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 13) AS jour,
+                                        SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) - cms.fixReduction AS amount
                                         FROM App\Entity\CommercialSheet cms
-                                        LEFT JOIN cms.user u 
+                                        JOIN cms.user u 
+                                        JOIN cms.commercialSheetItems cmsi
                                         JOIN u.enterprise e
                                         WHERE cms.type = :type_
-                                        AND (cms.completedStatus = 1 OR cms.paymentStatus = 1)
+                                        AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                         AND e.id = :entId
-                                        AND cms.createdAt LIKE :endDate 
+                                        AND cms.deliverAt LIKE :endDate 
                                         GROUP BY jour
                                         ORDER BY jour ASC
                                                                                 
@@ -305,80 +373,131 @@ class EnterpriseDashbordController extends ApplicationController
                 $startDate = new DateTime($paramJSON['startDate'] . ' 00:00:00');
                 $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
 
-                $billPaid = $manager->createQuery("SELECT SUM(cms.advancePayment) AS paidTotal
+                //Détermination du chiffre d'affaire HT
+                $bills = $manager->createQuery("SELECT cms.deliverAt AS jour, SUM(cmsi.pu * cmsi.quantity) AS CAHT
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
+                                            JOIN cms.commercialSheetItems cmsi
                                             WHERE cms.type = :type_
-                                            AND (cms.completedStatus = 1 OR cms.paymentStatus = 1)
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
-                                            AND cms.payAt >= :startDate                                                                                  
-                                            AND cms.payAt <= :endDate                                                                                  
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate  
+                                            GROUP BY jour                                                                                
                                         ")
                     ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
                         'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate' => $endDate->format('Y-m-d H:m:i'),
-                        'type_'   => 'bill',
+                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'type_'     => 'bill',
                     ))
                     ->getResult();
 
-                $billPartial = $manager->createQuery("SELECT SUM(cms.advancePayment) AS advanceTotal 
+
+                foreach ($bills as $bill_) {
+                    $tmp         = $bill_['CAHT'] == null ? 0 : floatval($bill_['CAHT']);
+                    $turnOverHT += $tmp;
+                }
+
+                //Détermination du montant des Réduction
+                $amountReduction = $manager->createQuery("SELECT cms.deliverAt AS jour, ((SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) + cms.fixReduction AS amountReduction
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
+                                            JOIN cms.commercialSheetItems cmsi
                                             WHERE cms.type = :type_
-                                            AND cms.completedStatus = 0
-                                            AND cms.paymentStatus = 0
-                                            AND cms.advancePayment > 0
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
-                                            AND cms.createdAt >= :startDate                                                                                  
-                                            AND cms.createdAt <= :endDate                                                                                  
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate   
+                                            GROUP BY jour                                                                                 
                                         ")
                     ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
                         'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate' => $endDate->format('Y-m-d H:m:i'),
-
-                        'type_'   => 'bill',
+                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'type_'     => 'bill',
                     ))
                     ->getResult();
 
-                $purchaseOrderPaid = $manager->createQuery("SELECT SUM(cms.advancePayment) AS paidTotal
+                foreach ($amountReduction as $amountReduction_) {
+                    $tmp       = $amountReduction_['amountReduction'] == null ? 0 : floatval($amountReduction_['amountReduction']);
+                    $totalAmountReduction += $tmp;
+                }
+
+                //Détermination des dépenses fournisseurs TTC
+                $purchaseOrders = $manager->createQuery("SELECT cms.deliverAt AS jour,
+                                            SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) - cms.fixReduction AS EXTTC
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
+                                            JOIN cms.commercialSheetItems cmsi
                                             WHERE cms.type = :type_
-                                            AND (cms.completedStatus = 1 OR cms.paymentStatus = 1) 
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
-                                            AND cms.payAt >= :startDate                                                                                  
-                                            AND cms.payAt <= :endDate                                                                                  
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate                                                                                   
+                                            GROUP BY jour
                                         ")
                     ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
                         'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate' => $endDate->format('Y-m-d H:m:i'),
-                        'type_'   => 'purchaseorder',
+                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'type_'     => 'purchaseorder',
                     ))
                     ->getResult();
 
-                $purchaseOrderPartial = $manager->createQuery("SELECT SUM(cms.advancePayment) AS advanceTotal 
-                                            FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = :type_
-                                            AND cms.completedStatus = 0
-                                            AND cms.paymentStatus = 0
-                                            AND cms.advancePayment > 0
-                                            AND e.id = :entId
-                                            AND cms.createdAt >= :startDate                                                                                  
-                                            AND cms.createdAt <= :endDate                                                                                  
+
+                foreach ($purchaseOrders as $purchaseOrder_) {
+                    $tmp         = $purchaseOrder_['EXTTC'] == null ? 0 : floatval($purchaseOrder_['EXTTC']);
+                    $expensesTTC += $tmp;
+                }
+
+                //Chiffre d'affaire HT par jour de l'intervalle de date
+                $turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour,
+                                        SUM(cmsi.pu * cmsi.quantity) AS amount
+                                        FROM App\Entity\CommercialSheet cms
+                                        JOIN cms.user u 
+                                        JOIN cms.commercialSheetItems cmsi
+                                        JOIN u.enterprise e
+                                        WHERE cms.type = :type_
+                                        AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                        AND e.id = :entId
+                                        AND cms.deliverAt >= :startDate                                                                                  
+                                        AND cms.deliverAt <= :endDate                                                                                   
+                                        GROUP BY jour
+                                        ORDER BY jour ASC
+                                                                                
+                                        ")
+                    ->setParameters(array(
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
+                        'startDate' => $startDate,
+                        'endDate'   => $endDate,
+                        'type_'     => 'bill',
+                    ))
+                    ->getResult();
+
+                //Dépenses TTC par jour de l'intervalle de date
+                $expensesPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour,
+                                        SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) - cms.fixReduction AS amount
+                                        FROM App\Entity\CommercialSheet cms
+                                        JOIN cms.user u 
+                                        JOIN cms.commercialSheetItems cmsi
+                                        JOIN u.enterprise e
+                                        WHERE cms.type = :type_
+                                        AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                        AND e.id = :entId
+                                        AND cms.deliverAt >= :startDate                                                                                  
+                                        AND cms.deliverAt <= :endDate                                                                                   
+                                        GROUP BY jour
+                                        ORDER BY jour ASC
+                                                                                
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate' => $endDate->format('Y-m-d H:m:i'),
-
+                        'startDate' => $startDate,
+                        'endDate'   => $endDate,
                         'type_'   => 'purchaseorder',
                     ))
                     ->getResult();
@@ -420,61 +539,11 @@ class EnterpriseDashbordController extends ApplicationController
 
                     ))
                     ->getResult();
-
-                $tmp       = $billPaid[0]['paidTotal'] == null ? 0 : floatval($billPaid[0]['paidTotal']);
-                $turnOver += $tmp;
-                $tmp       = $billPartial[0]['advanceTotal'] == null ? 0 : floatval($billPartial[0]['advanceTotal']);
-                $turnOver += $tmp;
-                $tmp       = $purchaseOrderPaid[0]['paidTotal'] == null ? 0 : floatval($purchaseOrderPaid[0]['paidTotal']);
-                $expenses += $tmp;
-                $tmp       = $purchaseOrderPartial[0]['advanceTotal'] == null ? 0 : floatval($purchaseOrderPartial[0]['advanceTotal']);
-                $expenses += $tmp;
-
-                $turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 10) AS jour, SUM(cms.advancePayment) AS amount
-                                        FROM App\Entity\CommercialSheet cms
-                                        LEFT JOIN cms.user u 
-                                        JOIN u.enterprise e
-                                        WHERE cms.type = :type_
-                                        AND (cms.completedStatus = 1 OR cms.paymentStatus = 1)
-                                        AND e.id = :entId
-                                        AND cms.createdAt >= :startDate                                                                                  
-                                        AND cms.createdAt <= :endDate 
-                                        GROUP BY jour
-                                        ORDER BY jour ASC                                                                        
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate,
-                        'endDate' => $endDate,
-                        'type_'   => 'bill',
-                    ))
-                    ->getResult();
-
-                $expensesPer = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 10) AS jour, SUM(cms.advancePayment) AS amount
-                                        FROM App\Entity\CommercialSheet cms
-                                        LEFT JOIN cms.user u 
-                                        JOIN u.enterprise e
-                                        WHERE cms.type = :type_
-                                        AND (cms.completedStatus = 1 OR cms.paymentStatus = 1)
-                                        AND e.id = :entId
-                                        AND cms.createdAt >= :startDate                                                                                  
-                                        AND cms.createdAt <= :endDate 
-                                        GROUP BY jour
-                                        ORDER BY jour ASC
-                                                                                
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate,
-                        'endDate' => $endDate,
-                        'type_'   => 'purchaseorder',
-                    ))
-                    ->getResult();
             }
 
             $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
                                             WHERE cms.type = :type_
                                             AND cms.paymentStatus = 0
@@ -504,12 +573,12 @@ class EnterpriseDashbordController extends ApplicationController
             // dump($billPaymentOnpending);
             $outstandingClaim = 0.0;
             foreach ($billPaymentOnpending as $commercialSheet) {
-                $outstandingClaim += $commercialSheet['paymentOnPending']->getAmountTTC();
+                $outstandingClaim += $commercialSheet['paymentOnPending']->getAmountRestToPaid();
             }
 
             $outstandingDebt = 0.0;
             foreach ($purchaseOrderPaymentOnpending as $commercialSheet) {
-                $outstandingDebt += $commercialSheet['paymentOnPending']->getAmountTTC();
+                $outstandingDebt += $commercialSheet['paymentOnPending']->getAmountRestToPaid();
             }
 
             $bestSellingProducts = $manager->createQuery("SELECT cmsi.designation AS designation,
@@ -520,7 +589,7 @@ class EnterpriseDashbordController extends ApplicationController
                                             JOIN cms.user u
                                             JOIN u.enterprise e
                                             WHERE cms.type = 'bill'
-                                            AND cms.paymentStatus = 1
+                                            AND cms.deliveryStatus = 1
                                             AND cmsi.itemOfferType != 'Simple'
                                             AND e.id = :entId
                                             GROUP BY designation, ref, pu
@@ -550,7 +619,7 @@ class EnterpriseDashbordController extends ApplicationController
                                             JOIN u.enterprise e
                                             WHERE cms.type = 'bill'
                                             AND cmsi.itemOfferType != 'Simple'
-                                            AND cms.paymentStatus = 1
+                                            AND cms.deliveryStatus = 1
                                             AND e.id = :entId
                                                                                                                                                                         
                                         ")
@@ -566,8 +635,8 @@ class EnterpriseDashbordController extends ApplicationController
 
             return $this->json([
                 'code'                => 200,
-                'turnOver'            => $turnOver,
-                'expenses'            => $expenses,
+                'turnOverHT'          => $turnOverHT,
+                'expenses'            => $expensesTTC,
                 'turnOverAmountPer'   => $turnOverAmountPer,
                 'xturnOverPer'        => $xturnOverPer,
                 'expensesAmountPer'   => $expensesAmountPer,
@@ -581,7 +650,8 @@ class EnterpriseDashbordController extends ApplicationController
                 'bestSellingProducts' => $bestSellingProducts,
                 'nbProductsSold'      => $nbProductsSold,
                 'outstandingDebt'     => $outstandingDebt,
-                'outstandingClaim'    => $outstandingClaim
+                'outstandingClaim'    => $outstandingClaim,
+                'amountReduction'     => $totalAmountReduction,
             ], 200);
         }
         return $this->json([
