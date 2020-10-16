@@ -45,7 +45,7 @@ class Inventory
     private $txOfService;
 
     /**
-     * @ORM\OneToMany(targetEntity=InventoryAvailability::class, mappedBy="inventory")
+     * @ORM\OneToMany(targetEntity=InventoryAvailability::class, mappedBy="inventory", orphanRemoval=true)
      */
     private $inventoryAvailabilities;
 
@@ -66,12 +66,12 @@ class Inventory
     private $enterprise;
 
     /**
-     * @ORM\OneToMany(targetEntity=Lot::class, mappedBy="inventory")
+     * @ORM\OneToMany(targetEntity=Lot::class, mappedBy="inventory", orphanRemoval=true)
      */
     private $lots;
 
     /**
-     * @ORM\OneToMany(targetEntity=CommercialSheet::class, mappedBy="inventory")
+     * @ORM\OneToMany(targetEntity=CommercialSheet::class, mappedBy="inventory", orphanRemoval=true)
      */
     private $commercialSheets;
 
