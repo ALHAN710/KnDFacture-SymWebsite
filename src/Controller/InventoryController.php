@@ -59,13 +59,17 @@ class InventoryController extends ApplicationController
             //Création de la disponibilité de stock pour le nouvel inventaire de tous les produits existants
             $products = $productRepo->findBy(['enterprise' => $inventory->getEnterprise(), 'hasStock' => 1]);
             $available = 0;
-            $inventoryAvailability = new InventoryAvailability();
             foreach ($products as $product) {
+                $inventoryAvailability = new InventoryAvailability();
                 $inventoryAvailability->setAvailable($available)
                     ->setInventory($inventory)
                     ->setProduct($product);
 
+                $inventory->addInventoryAvailability($inventoryAvailability);
+                $product->addInventoryAvailability($inventoryAvailability);
+
                 $manager->persist($inventoryAvailability);
+                $manager->persist($product);
             }
 
             //$manager = $this->getDoctrine()->getManager();

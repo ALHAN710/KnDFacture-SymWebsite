@@ -13,6 +13,7 @@ use App\Entity\StockMovement;
 //use App\Repository\InventoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
+use App\Entity\InventoryAvailability;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -95,8 +96,22 @@ class LotController extends ApplicationController
         if ($form->isSubmitted() && $form->isValid()) {
             //MAJ de la disponibilité
             $inventoryAvailability = $manager->getRepository('App:InventoryAvailability')->findOneBy(['inventory' => $lot->getInventory(), 'product' => $lot->getProduct()]);
-            $add = $inventoryAvailability->getAvailable() + $lot->getQuantity();
-            $inventoryAvailability->setAvailable($add);
+            if ($inventoryAvailability) {
+                $add = $inventoryAvailability->getAvailable() + $lot->getQuantity();
+                $inventoryAvailability->setAvailable($add);
+            } else {
+                $inventoryAvailability = new InventoryAvailability();
+                $inventoryAvailability->setInventory($lot->getInventory())
+                    ->setProduct($lot->getProduct())
+                    ->setAvailable($lot->getQuantity());
+
+                $lot->getInventory()->addInventoryAvailability($inventoryAvailability);
+                $lot->getProduct()->addInventoryAvailability($inventoryAvailability);
+
+                $manager->persist($inventory);
+                $manager->persist($product);
+                $manager->persist($inventoryAvailability);
+            }
 
             //Gestion du mouvement de stock : input
             $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
@@ -108,7 +123,6 @@ class LotController extends ApplicationController
             // dump($stockMovement);
             // dd($inventoryAvailability);
             $manager->persist($stockMovement);
-            $manager->persist($inventoryAvailability);
 
             //$manager = $this->getDoctrine()->getManager();
             $manager->persist($lot);
