@@ -18,26 +18,27 @@
                 {% endif %}
 
                 <li class="has-submenu">
-                    <a href="#">
-                        <i class="fas fa-hand-holding-heart"></i>{#   fas fa-hand-holding#}
+                    <a href="{{ path('products_index') }}"><i class="dripicons-shopping-bag mr-2"></i>Produits</a></li>
+                    {# <a href="#">
+                        <i class="fas fa-hand-holding-heart"></i><!--   fas fa-hand-holding -->
                         Offers
                     </a>
                     <ul class="submenu">
                         <li><a href="{{ path('products_index') }}"><i class="dripicons-shopping-bag mr-2"></i>Products</a></li>
-                        {# <li><a href="#"><i class="fas fa-wrench mr-2"></i>Services</a></li>    #}
-                    </ul>
+                        <li><a href="#"><i class="fas fa-wrench mr-2"></i>Services</a></li>   
+                    </ul> #}
                 </li>
                 <li class="has-submenu">
                     <a href="#">
                         <i class="mdi mdi-file-table-outline"></i>{#mdi mdi-cart-outline - mdi mdi-cart-arrow-right  - mdi mdi-square-inc-cash -  mdi mdi-cart#}
-                        Commercial Sheets
+                        Documents
                     </a>
                     <ul class="submenu">
                         {# {% for inventory in inventories %}
                         <li><a href="{{ path('order_index',{'id':inventory.id}) }}">{{inventory.name}}</a></li>
                         {% endfor %} #} 
                         <li>
-                            <a href="{{ path('commercial_sheet_index',{'type':'bill'}) }}">Bill</a>
+                            <a href="{{ path('commercial_sheet_index',{'type':'bill'}) }}">Facture</a>
                             {# {% if inventories|length > 0 %}
                             <ul class="submenu">
                                 {% for inventory in inventories %}
@@ -48,7 +49,7 @@
                             {% endif %} #}
                         </li>
                         <li>
-                            <a href="{{ path('commercial_sheet_index',{'type':'quote'}) }}">Quote</a>
+                            <a href="{{ path('commercial_sheet_index',{'type':'quote'}) }}">Devis</a>
                             {# {% if inventories|length > 0 %}
                             <ul class="submenu">
                                 {% for inventory in inventories %}
@@ -58,14 +59,14 @@
                             {% endif %} #}
                         </li>  
                         <li>
-                            <a href="{{ path('commercial_sheet_index',{'type':'purchaseorder'}) }}">Purchase Order</a>
+                            <a href="{{ path('commercial_sheet_index',{'type':'purchaseorder'}) }}">Bon de commande</a>
                         </li>  
                     </ul>
                 </li>
-                <li class="">
+                <li class="has-submenu">
                     <a href="{{ path('inventories_index') }}">
                         <i class="mdi mdi-buffer"></i>{#mdi mdi-file-table-outline  - mdi mdi-clipboard-text-outline - mdi mdi-database #}
-                        Inventories
+                        Inventaires
                     </a>
                     {# <ul class="submenu">
                         <li><a href="{{ path('inventories_index') }}">Dashboard</a></li>
@@ -84,15 +85,15 @@
                     <a href="#"><i class="fas fa-address-book"></i>Business Contacts</a>{# fas fa-address-book  mdi mdi-account-multiple #}
                     <ul class="submenu">
                         <li>
-                            <a href="{{ path('business_contacts_index',{'type':'customer'})}}"><i class="mdi mdi-account-multiple mr-2"></i> Customers</a>
+                            <a href="{{ path('business_contacts_index',{'type':'customer'})}}"><i class="mdi mdi-account-multiple mr-2"></i> Clients</a>
                         </li>
                         <li>
-                            <a href="{{ path('business_contacts_index',{'type':'supplier'})}}"><i class="fas fa-handshake mr-2"></i> Suppliers</a>
+                            <a href="{{ path('business_contacts_index',{'type':'supplier'})}}"><i class="fas fa-handshake mr-2"></i> Fournisseurs</a>
                         </li>
                     </ul>
                 </li>
                 <li class="has-submenu">
-                    <a href="#"><i class="mdi mdi-settings"></i>Settings</a>
+                    <a href="#"><i class="mdi mdi-settings"></i>Paramètres</a>
                     <ul class="submenu">
                         <li><a href="{{ path('users_entreprise_index')}}"><i class="fas fa-users-cog mr-2"></i>Utilisateurs</a></li>{# {{ path('users_index') }} #}
                         <li><a href="{{ path('index_categories') }}"><i class="dripicons-network-1 mr-2"></i>Catégorie de produit</a></li>{# {{ path('jar_recycling_management_index') }} #}
