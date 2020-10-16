@@ -88,7 +88,7 @@
                                             <th>Available</th>
                                             <th>Alerts</th>
                                             <th>Demand</th>
-                                            {# <th>Actions</th> #}
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
 
@@ -387,15 +387,15 @@
                     console.log('Type = ' + typeof stockMovementTab.length);  
                     console.log(stockMovementTab);  
                     stockMovementTab.forEach(function (item, index) {
-                        var $dat = new moment(String(item['dat']));
+                        {# var $dat = new moment(String(item['dat']));
                         var date = $dat.format("DD MMM YYYY hh:mm:ss").toString();
                         
                         $dat = new moment(String(item['dlc']));
-                        var dlc = $dat.format("DD MMM YYYY").toString();
+                        var dlc = $dat.format("DD MMM YYYY").toString(); #}
             
                         table
-                        .row.add( [ date, String(item['sku']), 
-                        String(item['nam']), String(item['numLot']),dlc,
+                        .row.add( [ item['dat'], String(item['sku']), 
+                        String(item['nam']), String(item['numLot']),item['dlc'],
                         String(item['typ']), String(item['qty'])] )
                         .draw();
 
@@ -408,6 +408,8 @@
             error: function (result) {
                 console.log("Error");
                 console.log(result);
+                $('.fa-sync').removeClass('fa-spin');
+                alert('Erreur !!!');
             }
         });
     });

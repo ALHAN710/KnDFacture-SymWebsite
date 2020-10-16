@@ -199,17 +199,20 @@ class InventoryController extends ApplicationController
                                                                         MIN(st.quantity) AS qtyMin, STD(st.quantity) AS ET
                                                                         FROM App\Entity\StockMovement st
                                                                         JOIN st.commercialSheet cms
+                                                                        JOIN cms.inventory inv
                                                                         JOIN st.lot l
                                                                         JOIN l.product p
                                                                         WHERE st.type = 'Sale Exit'
                                                                         AND (st.createdAt >= :from_ AND st.createdAt <= :to_)                                                                                   
                                                                         AND p.id = :prodId
                                                                         AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
+                                                                        AND inv.id = :invId
                                                                     ")
                 ->setParameters(array(
                     'from_'    => $from_->format('Y-m-d H:i:s'),
                     'to_'      => $to_->format('Y-m-d H:i:s'),
-                    'prodId'   => $product->getId()
+                    'prodId'   => $product->getId(),
+                    'invId'    => $inventory->getId(),
                 ))
                 ->getResult();
             $inventoryAvailabilityRepo = $manager->getRepository("App:InventoryAvailability");
@@ -282,7 +285,12 @@ class InventoryController extends ApplicationController
                     'invId'        => $inv
                 ))
                 ->getResult();
-            //dump($stockMovements);
+            dump($stockMovements);
+            foreach ($stockMovements as $key => $value) {
+                $stockMovements[$key]['dat'] = $value['dat']->format('d M Y H:i:s');
+                $stockMovements[$key]['dlc'] = $value['dlc']->format('d M Y');
+            }
+            dump($stockMovements);
             return $this->json([
                 'code'           => 200,
                 'stockMovements' => $stockMovements,
