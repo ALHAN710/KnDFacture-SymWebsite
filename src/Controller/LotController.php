@@ -133,8 +133,8 @@ class LotController extends ApplicationController
                 "The Lot N° <strong> {$lot->getNumber()} </strong> has been registered successfully !"
             );
             return $this->redirectToRoute('lots_index', [
-                'prod' => $include_product   == true ? $lot->getProduct()->getId() : 0,
-                'inv'  => $include_inventory == true ? $lot->getInventory()->getId() : 0,
+                'prod' => $include_product   == true ? 0 : $lot->getProduct()->getId(),
+                'inv'  => $include_inventory == true ? 0 : $lot->getInventory()->getId(),
             ]);
         }
 
