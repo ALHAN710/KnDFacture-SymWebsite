@@ -33,12 +33,13 @@ class LotController extends AbstractController
         $product = $manager->getRepository('App:Product')->findOneBy(['id' => $prod]);
         $inventory = $manager->getRepository('App:Inventory')->findOneBy(['id' => $inv]);
         if ($product) {
-            $lots = $manager->getRepository('App:Lot')->findBy(['product' => $product]);
+            if ($inventory) $lots = $manager->getRepository('App:Lot')->findBy(['product' => $product, 'inventory' => $inventory]);
+            else $lots = $manager->getRepository('App:Lot')->findBy(['product' => $product]);
             $isProd = $product->getId();
         } else if ($inventory) {
             $lots = $manager->getRepository('App:Lot')->findBy(['inventory' => $inventory]);
             $inv_  = $inventory->getId();
-            dump($inventory);
+            //dump($inventory);
         }
         //dd($lots);
         $inventories = $manager->getRepository('App:Inventory')->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
@@ -66,17 +67,17 @@ class LotController extends AbstractController
         $inventory = $manager->getRepository('App:Inventory')->findOneBy(['id' => $inv]);
         if ($product) {
             $lot->setProduct($product);
-            dump($product);
+            //dump($product);
             $include_product = false;
             if ($inventory) {
                 $lot->setInventory($inventory);
                 $include_inventory = false;
-                dump($inventory);
+                //dump($inventory);
             }
         } else if ($inventory) {
             $lot->setInventory($inventory);
             $include_inventory = false;
-            dump($inventory);
+            //dump($inventory);
         }
 
         $inventories = $manager->getRepository('App:Inventory')->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
@@ -139,7 +140,7 @@ class LotController extends AbstractController
     public function edit(Lot $lot, Request $request, EntityManagerInterface $manager)
     {
         $include_product = true;
-        $include_inventory = true;
+        $include_inventory = false;
 
         $inventories = $manager->getRepository('App:Inventory')->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
 

@@ -35,7 +35,7 @@ class Lot
 
     /**
      * @ORM\Column(type="float")
-     * @Assert\Positive
+     * @Assert\PositiveOrZero
      */
     private $quantity;
 

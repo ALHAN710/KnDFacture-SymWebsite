@@ -67,7 +67,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group {% if include_inventory == false %}d-none{% endif %}">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 {{ form_label(form.inventory, null, {'label_attr': {'class': 'input-group-text'}}) }}
