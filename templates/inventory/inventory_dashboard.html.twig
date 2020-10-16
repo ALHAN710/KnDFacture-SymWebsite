@@ -118,14 +118,14 @@
                                                 
                                                 {% set ss = productStats[product.id][0]["ET"] * inventory.const %}
                                                 {% set pc = ss + productStats[product.id][0]["qtyAVG"] * inventory.approvDelay %}
-                                                {% if available[product.id].available >= pc %}
+                                                {% if available[product.id].available <= pc %}
                                                 <a href="" class="mr-2" data-toggle="tooltip" data-placement="top" title="Refueling Alert">
                                                     <i class="fas fa-exclamation-triangle text-warning"></i>
                                                 </a>
                                                 {% endif %}
                                                 {% set lotPeremp = [] %}
                                                 {% for lot in product.lots %}
-                                                    {% if lot.alert == true and lot.quantity > 0 %}
+                                                    {% if lot.alert == false and lot.quantity > 0 and lot.inventory == inventory %}
                                                         {% set lotPeremp = lotPeremp|merge([lot]) %}
                                                     
                                                     {% endif %} 
@@ -227,23 +227,8 @@
                                             <td>
                                                 {# <a href="#custom-modal{{'0'}}" class="btn btn-primary btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Add New Lot"><i class="fa fa-plus-circle"></i></a> #}
                                                 <a href="{{path('lot_create', {'prod':product.id, 'inv':inventory.id})}}"  class="btn btn-soft-info btn-xs rounded " data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot"><i class="fa fa-plus-circle"></i></a>
-                                                <a href="{{path('lots_index', {'prod':product.id, 'inv':0})}}" class="btn btn-soft-purple btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir les Lots"><i class="far fa-eye"></i></a>
-                                        
-                                                {# <!-- Custom Modal -->
-                                                <div id="custom-modal{{'0'}}" class="modal-demo">
-                                                    <button type="button" class="close" onclick="Custombox.modal.close();">
-                                                        <span>&times;</span><span class="sr-only">Close</span>
-                                                    </button>
-                                                    <h4 class="custom-modal-title">Add a new Lot in {{ (inventory.name)|capitalize }} Stock</h4>
-                                                    <div class="custom-modal-text">
-                                                        
-
-                                                        
-                                                        
-                                                    </div>
-                                                </div> 
-                                                <!--end custom modal--> #}
-                                                <a href="#custom-modal{{'1'}}" class="btn btn-danger btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Remove Lot"><i class="fas fa-trash"></i></a>
+                                                <a href="{{path('lots_index', {'prod':product.id, 'inv':inventory.id})}}" class="btn btn-soft-purple btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir les Lots"><i class="far fa-eye"></i></a>
+                                                {# <a href="#custom-modal{{'1'}}" class="btn btn-danger btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-plas"top" title="Remove Lot"><i class="fas fa-trash"></i></a> #}
                                             </td> 
                                             
                                         </tr>
@@ -357,7 +342,7 @@
 
 <script>
     var inv = {{ inventory.id }};
-
+    
     //Buttons examples
     var table = $('#datatable-buttons').DataTable({
         lengthChange: false,
@@ -426,49 +411,43 @@
             }
         });
     });
-    {# {% if type != 'quote' %}
-    $('#completed').click(function(){
-        $('.savebtn').addClass('d-none');
-        console.log('completed tab clicked');
-    });
-    {% endif %} #}
-    {# $('#deliveryJournalBtn').click(function(){
-        console.log('Delivery Journal Btn clicked');
-        var tabJournal = [];
-        $("input:checkbox[name=journal]:checked").each(function(){
-            tabJournal.push($(this).val());
+    
+    $('#saveBtn').click(function(){
+        console.log('Lot To Remove Btn clicked');
+        var tabLotToRemove = [];
+        $("input:checkbox[name=lotToRemove]:checked").each(function(){
+            tabLotToRemove.push($(this).val());
         });
-        console.log('Tab Journal : ' + tabJournal);
-        if (tabJournal.length === 0){
+        console.log('Tab Lot To Remove : ' + tabLotToRemove);
+        if (tabLotToRemove.length > 0){
 
-        }
-        else{
-            $.redirect("{{path('print_journal',{'journal':'delivery','town':inventory.id})}}",
-                {
-                    commercialSheetIds: {'commercialSheetIds':tabJournal},
+            var _url = "{{ path('lot_expired') }}";
+
+            var $data = JSON.stringify({
+                "lotIds": tabLotToRemove
+            });
+
+            $.ajax({
+                type: "POST",//method type
+                contentType: "application/json; charset=utf-8",
+                url: _url,///Target function that will be return result
+                data: $data,//parameter pass data is parameter name param is value 
+                dataType: "json",
+                timeout: 120000,//64241
+                success: function (data) {
+                    console.log(data);
+                    location.reload(true);
                 },
-            "POST", "_blank");
+                error: function (result) {
+                    console.log("Error");
+                    console.log(result);
+                    alert('Erreur !!!');
+                    //$('#modal').modal('toggle');
+                }
+            });
 
         }
     });
-    $('#inventoryExitJournalBtn').click(function(){
-        console.log('Inventory Exit Journal Btn clicked');
-        var tabJournal = [];
-        $("input:checkbox[name=journal]:checked").each(function(){
-            tabJournal.push($(this).val());
-        });
-        console.log('Tab Journal : ' + tabJournal);
-        if (tabJournal.length === 0){
-
-        }
-        else{
-            $.redirect("{{path('print_journal',{'journal':'inventory','town':inventory.id})}}",
-                {
-                    commercialSheetIds: {'commercialSheetIds':tabJournal},
-                },
-            "POST", "_blank");
-
-        }
-    }); #}
+    
 </script>
 {% endblock %}

@@ -6,18 +6,19 @@ use DateTime;
 use DateTimeZone;
 use App\Entity\Lot;
 use App\Form\LotType;
-use App\Entity\Product;
-use App\Entity\Inventory;
+//use App\Entity\Product;
+//use App\Entity\Inventory;
 use App\Entity\StockMovement;
-use App\Repository\LotRepository;
-use App\Repository\InventoryRepository;
+//use App\Repository\LotRepository;
+//use App\Repository\InventoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Controller\ApplicationController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+//use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class LotController extends AbstractController
+class LotController extends ApplicationController
 {
     /**
      * @Route("/lots/dashboard/{prod<\d+>?0}/{inv<\d+>?0}", name="lots_index")
@@ -183,7 +184,7 @@ class LotController extends AbstractController
                 $manager->persist($inventoryAvailability);
             }
 
-            if ($oldInv != $lot->getInventory()) {
+            if ($oldInv != $lot->getInventory()) { //Si l'inventaire a été modifié
                 $inventoryAvailability->setInventory($lot->getInventory());
                 // dd($inventoryAvailability);
                 $manager->persist($inventoryAvailability);
@@ -208,5 +209,65 @@ class LotController extends AbstractController
             'include_product'   => $include_product,
             'include_inventory' => $include_inventory
         ]);
+    }
+
+    /**
+     * Permet le retrait total de la quantité restante en stock des lots périmés
+     * 
+     * @Route("/remove/expired/lots", name="lot_expired")
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @return void
+     */
+    public function removeExpiredLot(Request $request, EntityManagerInterface $manager)
+    {
+        //dump($request->request->get("lotIds"));
+
+        //$paramJSON = $this->getJSONRequest($request->getContent());
+        //$paramJSON = $request->request->get("lotIds");
+        $paramJSON = $this->getJSONRequest($request->getContent());
+        if (array_key_exists("lotIds", $paramJSON)) {
+            //dump($paramJSON);
+
+            if (!empty($paramJSON['lotIds'])) {
+                $lotRepo   = $manager->getRepository('App:Lot');
+
+                foreach ($paramJSON['lotIds'] as $id) {
+                    $lot = $lotRepo->findOneBy(['id' => intval($id)]);
+                    $inventoryAvailability = $manager->getRepository('App:InventoryAvailability')->findOneBy(['inventory' => $lot->getInventory(), 'product' => $lot->getProduct()]);
+                    //Gestion du mouvement de stock : Manual Exit
+                    $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
+                    $stockMovement = new StockMovement();
+                    $stockMovement->setCreatedAt($date)
+                        ->setLot($lot)
+                        ->setQuantity($lot->getQuantity())
+                        ->setType('Expiration Exit');
+
+                    //MAJ de la disponibilité
+                    $diff = $inventoryAvailability->getAvailable() - $lot->getQuantity();
+                    if ($diff > 0) $inventoryAvailability->setAvailable($diff);
+                    else $inventoryAvailability->setAvailable(0);
+
+                    $lot->setQuantity(0);
+
+                    // dump($stockMovement);
+                    // dd($inventoryAvailability);
+
+                    $manager->persist($stockMovement);
+                    $manager->persist($inventoryAvailability);
+                    $manager->persist($lot);
+                }
+                $manager->flush();
+                return $this->json([
+                    'code' => 200,
+                    'message' => 'Expiration exit successfull !',
+                ], 200);
+            }
+        }
+        return $this->json([
+            'code' => 403,
+            'message' => 'Empty Array or Not exists !',
+        ], 403);
     }
 }

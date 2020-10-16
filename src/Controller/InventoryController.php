@@ -160,7 +160,7 @@ class InventoryController extends ApplicationController
      * @IsGranted("ROLE_STOCK_MANAGER")
      * 
      */
-    public function inventoryDash(Inventory $inventory, Request $request, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
+    public function inventoryDash(Inventory $inventory, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
     {
         $productStats          = [];
         $inventoryAvailability = [];
@@ -177,29 +177,35 @@ class InventoryController extends ApplicationController
             ->getResult();
         //dd($products);
 
-        $to_ = new DateTime("now");
-        //dump($to_);
-        $from_ = $to_;
+        $to_ = new DateTime('now');
+        //dump($to_->format('Y-m-d H:i:s'));
+        $from_ = new DateTime('now');
         $from_->sub(new DateInterval('P30D'));
-        //dd($from_);
+        //dump($from_->format('Y-m-d H:i:s'));
+        $from_ = new DateTime($from_->format('Y-m-d') . ' ' . '00:00:00');
+        //dump($from_->format('Y-m-d H:i:s'));
+        /*
+         
+         
+                                                                        AND st.createdAt >= :from_*/
         foreach ($products as $product) {
             //dd($product->getId());
             $productStats['' . $product->getId()] = $manager->createQuery("SELECT AVG(st.quantity) AS qtyAVG, 
                                                                         SUM(st.quantity) AS qtyTotal, MAX(st.quantity) AS qtyMax, 
                                                                         MIN(st.quantity) AS qtyMin, STD(st.quantity) AS ET
                                                                         FROM App\Entity\StockMovement st
-                                                                        JOIN st.lot l 
-                                                                        JOIN l.product p
                                                                         JOIN st.commercialSheet cms
-                                                                        WHERE st.createdAt >= :from_
-                                                                        AND st.createdAt <= :to_
-                                                                        AND cms.completedStatus = 1
-                                                                                                                                                            
+                                                                        JOIN st.lot l
+                                                                        JOIN l.product p
+                                                                        WHERE st.type = 'Sale Exit'
+                                                                        AND (st.createdAt >= :from_ AND st.createdAt <= :to_)                                                                                   
+                                                                        AND p.id = :prodId
+                                                                        AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
                                                                     ")
                 ->setParameters(array(
                     'from_'    => $from_->format('Y-m-d H:i:s'),
                     'to_'      => $to_->format('Y-m-d H:i:s'),
-                    //'prodId'   => $product->getId()
+                    'prodId'   => $product->getId()
                 ))
                 ->getResult();
             $inventoryAvailabilityRepo = $manager->getRepository("App:InventoryAvailability");
@@ -258,8 +264,8 @@ class InventoryController extends ApplicationController
             $stockMovements = $manager->createQuery("SELECT st.createdAt AS dat, p.sku AS sku, p.name AS nam, 
                                                     l.number AS numLot, l.dlc AS dlc, st.type AS typ, st.quantity AS qty
                                                     FROM App\Entity\StockMovement st
-                                                    INNER JOIN st.lot l 
-                                                    LEFT JOIN l.inventory inv
+                                                    JOIN st.lot l 
+                                                    JOIN l.inventory inv
                                                     JOIN l.product p
                                                     WHERE st.createdAt >= :startDate
                                                     AND st.createdAt <= :endDate
