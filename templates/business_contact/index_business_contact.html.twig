@@ -101,29 +101,32 @@
                                     <th>Name</th>
                                     {# <th>Tel</th> #}
                                     <th>Address</th>
-                                    <th>Created At</th>
-                                    <th>{% if type == 'customer' %}Revenues Generated (XAF){% elseif type == 'supplier' %}Total Expenses (XAF){% endif %}</th>
-                                    <th>{% if type == 'customer' %}Order Number{% elseif type == 'supplier' %}Number of Purchase Orders{% endif %}</th>
+                                    <th>Tel</th>
+                                    <th>{% if type == 'customer' %}Revenues Générés (XAF){% elseif type == 'supplier' %}Dépenses Générées (XAF){% endif %}</th>
+                                    <th>{% if type == 'customer' %}Nombre de commande{% elseif type == 'supplier' %}Number of Purchase Orders{% endif %}</th>
+                                    <th>{% if type == 'customer' %}Créances (XAF){% elseif type == 'supplier' %}Dettes (XAF){% endif %}</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 {% for businessContact in businessContacts %}
+                                {% set rest = 0 %}
                                 <tr class="text-center">
                                     {# <td>{{businessContact.id}}</td> #}
                                     <td>{{businessContact.socialReason}}</td>
                                     {# <td>{{businessContact.phoneNumber}}</td> #}
                                     <td>{{businessContact.address}}</td>
-                                    <td>{{businessContact.createdAt|date("d/m/Y") }}</td>
+                                    <td>{{businessContact.phoneNumber }}</td>
                                     <td>
                                         {% if type == 'customer' %}
                                             {% set totalAmountBill = 0 %}
                                             {% for commercialSheet in businessContact.commercialSheets %}
                                                 {% if commercialSheet.type == 'bill'  %}
-                                                    {% if commercialSheet.deliveryStatus == true  or commercialSheet.paymentStatus == true %}
+                                                    {% if commercialSheet.deliveryStatus == true  or commercialSheet.completedStatus == true %}
                                                         {% set totalAmountBill = totalAmountBill + commercialSheet.amountNetToPaid %}
                                                     {% endif %}
+                                                    {% set rest = rest + commercialSheet.amountRestToPaid %}
                                                 {% endif %}
                                             {% endfor %}
                                         {# {{ dump('bill') }} #}
@@ -132,9 +135,10 @@
                                             {% set totalAmountPurchaseOrder = 0 %}
                                             {% for commercialSheet in businessContact.commercialSheets %}
                                                 {% if commercialSheet.type == 'purchaseorder'%}
-                                                    {% if commercialSheet.deliveryStatus == true  or commercialSheet.paymentStatus == true %}
+                                                    {% if commercialSheet.deliveryStatus == true  or commercialSheet.completedStatus == true %}
                                                         {% set totalAmountPurchaseOrder = totalAmountPurchaseOrder + commercialSheet.amountNetToPaid %}
                                                     {% endif %}
+                                                    {% set rest = rest + commercialSheet.amountRestToPaid %}
                                                 {% endif %}
                                             {% endfor %}
                                         {# {{ dump('purchase_order') }} #}
@@ -145,7 +149,7 @@
                                         {% if type == 'customer' %}
                                             {% set completedBill = [] %}
                                             {% for commercialSheet in businessContact.commercialSheets %}
-                                                {% if commercialSheet.type == 'bill' and (commercialSheet.completedStatus == true or commercialSheet.paymentStatus == true) %}
+                                                {% if commercialSheet.type == 'bill' and (commercialSheet.completedStatus == true or commercialSheet.deliveryStatus == true) %}
                                                     {% set completedBill = completedBill|merge([commercialSheet]) %}
                                                 {% endif %}
                                             {% endfor %}
@@ -154,7 +158,7 @@
                                         {% elseif type == 'supplier' %}
                                             {% set completedPurchaseOrder = [] %}
                                             {% for commercialSheet in businessContact.commercialSheets %}
-                                                {% if commercialSheet.type == 'purchase_order' and commercialSheet.completedStatus == true %}
+                                                {% if commercialSheet.type == 'purchaseorder' and (commercialSheet.completedStatus == true or commercialSheet.deliveryStatus == true) %}
                                                     {% set completedPurchaseOrder = completedPurchaseOrder|merge([commercialSheet]) %}
                                                 {% endif %}
                                             {% endfor %}
@@ -162,6 +166,7 @@
                                             {{ completedPurchaseOrder|length }}
                                         {% endif %}
                                     </td>
+                                    <td>{{ rest }}</td>
                                     <td>
                                         <a href="{{path('business_contact_edit', {'id':businessContact.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="far fa-edit"></i> </a>
                                         {% if type == 'customer' %}
