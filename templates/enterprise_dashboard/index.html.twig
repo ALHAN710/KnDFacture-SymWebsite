@@ -30,73 +30,33 @@
         <div class="card-body">
             {# <h4 class="mt-0 header-title">Date Range Picker</h4>  
             <P class="mt-0 text-muted mb-4">A JavaScript component for choosing date ranges, dates and times.</P>  #}
-            <div class="row">
-                <div class="col-lg-6">
-                    <label class="my-3">Select Date Ranges</label>
-                    <div class="input-group">  
-                        <input type="text"  id="reportrange" class="form-control" value="10/24/1984">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                        </div>
+            <div class="my-3">
+                <label class="my-3">Select Date Ranges</label>
+                <div class="input-group">  
+                    <input type="text"  id="reportrange" class="form-control" value="10/24/1984">
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                     </div>
                 </div>
-            </div> 
-        </div><!--end card-body-->
-    </div><!--end card-->
-
-    <div class="row">
-        
-        <div class="col-lg-4">
-
-            <div class="card">
-            
-                <div class="card-body mb-0">
-                    <div class="row">                                            
-                        <div class="col-8 align-self-center">
-                            <div class="">
-                                <h4 class="mt-0 header-title">Chiffre d'affaire HT</h4>
-                                <h2 class="mt-0 font-weight-bold text-dark"><span id="turnOver">0</span> XAF</h2> 
-                                {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
-                            </div>
-                        </div><!--end col-->
-
-                        <div class="col-4 align-self-center">
-                            <div class="icon-info text-right">
-                                <i class="dripicons-wallet bg-soft-success"></i>
-                            </div>
-                        </div><!--end col-->
-
-                    </div><!--end row-->
-
-                </div><!--end card-body-->
-
-                <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
-                    <div class="d-flex mb-0 h-100 dash-info-box">
-                        <div class="w-100">                                                
-                            <div class="apexchart-wrapper">
-                                <div id="turnOverColumnChart" class="chart-gutters"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end card-body--> 
-
-            </div><!--end card-->
-
-        </div><!--end col-->
-
-        <div class="col-lg-4">
+            </div>
             <div class="row">
+
                 <div class="col-sm-12">
                     <div class="card overflow-hidden">
                         <div class="card-body bg-gradient3">
                             <div class="">
                                 <div class="card-icon">
-                                    <i class="fas fa-sort-amount-down"></i>
+                                    <i class="fas fa-coins"></i>
                                 </div>
-                                <h2 class="font-weight-bold text-white"><span id="amountReduction">0</span> XAF</h2>
-                                <p class="text-white mb-0 font-16">Montant des réductions</p>                                            
+                                <h2 class="font-weight-bold text-white"><span id="outstandingClaim">0</span> XAF</h2>
+                                <p class="text-white mb-0 font-16">Créances en cours</p>                                            
                             </div>
                         </div><!--end card-body-->
+                        {# <div class="card-body">
+                            <div class="">
+                                <div id="d1_payment" class="apex-charts"></div>
+                            </div> 
+                        </div><!--end card-body--> #}
                     </div><!--end card-->
                 </div><!--end col-->
 
@@ -114,41 +74,106 @@
                     </div><!--end card-->
                 </div><!--end col-->
 
-            </div>
-        </div>
+            </div> 
+        </div><!--end card-body-->
+    </div><!--end card-->
 
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body mb-0">
-                    <div class="row">                                            
-                        <div class="col-8 align-self-center">
-                            <div class="">
-                                <h4 class="mt-0 header-title">Dépenses Fournisseurs TTC</h4>
-                                <h2 class="mt-0 font-weight-bold text-dark"><span id="expenses">0</span> XAF</h2> 
-                                {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
-                            </div>
-                        </div><!--end col-->
-                        <div class="col-4 align-self-center">
-                            <div class="icon-info text-right">
-                                <i class="dripicons-wallet bg-soft-danger"></i>
-                            </div>
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end card-body-->
-                <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
-                    <div class="d-flex mb-0 h-100 dash-info-box">
-                        <div class="w-100">                                                
-                            <div class="apexchart-wrapper">
-                                <div id="expensesColumnChart" class="chart-gutters"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end card-body-->                                                                    
-            </div><!--end card-->
-        </div><!--end col-->
+    
         
-    </div><!--end row-->
+    <div class="card">    
+        <div class="card-body mb-0">
+            <div class="row">                                            
+                <div class="col-8 align-self-center">
+                    <div class="">
+                        <h4 class="mt-0 header-title">Chiffre d'affaire HT</h4>
+                        <h2 class="mt-0 font-weight-bold text-dark"><span id="turnOver">0</span> XAF</h2> 
+                        {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                    </div>
+                </div><!--end col-->
 
+                <div class="col-4 align-self-center">
+                    <div class="icon-info text-right">
+                        <i class="dripicons-wallet bg-soft-success"></i>
+                    </div>
+                </div><!--end col-->
+
+            </div><!--end row-->
+
+        </div><!--end card-body-->
+
+        <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
+            <div class="d-flex mb-0 h-100 dash-info-box">
+                <div class="w-100">                                                
+                    <div class="apexchart-wrapper">
+                        <div id="turnOverColumnChart" class="chart-gutters"></div>
+                    </div>
+                </div>
+            </div>
+        </div><!--end card-body--> 
+
+    </div><!--end card-->
+
+    <div class="card">    
+        <div class="card-body mb-0">
+            <div class="row">                                            
+                <div class="col-8 align-self-center">
+                    <div class="">
+                        <h4 class="mt-0 header-title">Recettes</h4>
+                        <h2 class="mt-0 font-weight-bold text-dark"><span id="amountRecettes">0</span> XAF</h2> 
+                        {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                    </div>
+                </div><!--end col-->
+
+                <div class="col-4 align-self-center">
+                    <div class="icon-info text-right">
+                        <i class="dripicons-wallet bg-soft-success"></i>
+                    </div>
+                </div><!--end col-->
+
+            </div><!--end row-->
+
+        </div><!--end card-body-->
+
+        <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
+            <div class="d-flex mb-0 h-100 dash-info-box">
+                <div class="w-100">                                                
+                    <div class="apexchart-wrapper">
+                        <div id="amountRecettesColumnChart" class="chart-gutters"></div>
+                    </div>
+                </div>
+            </div>
+        </div><!--end card-body--> 
+
+    </div><!--end card-->
+    
+    <div class="card">
+        <div class="card-body mb-0">
+            <div class="row">                                            
+                <div class="col-8 align-self-center">
+                    <div class="">
+                        <h4 class="mt-0 header-title">Dépenses Fournisseurs TTC</h4>
+                        <h2 class="mt-0 font-weight-bold text-dark"><span id="expenses">0</span> XAF</h2> 
+                        {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                    </div>
+                </div><!--end col-->
+                <div class="col-4 align-self-center">
+                    <div class="icon-info text-right">
+                        <i class="dripicons-wallet bg-soft-danger"></i>
+                    </div>
+                </div><!--end col-->
+            </div><!--end row-->
+        </div><!--end card-body-->
+        <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
+            <div class="d-flex mb-0 h-100 dash-info-box">
+                <div class="w-100">                                                
+                    <div class="apexchart-wrapper">
+                        <div id="expensesColumnChart" class="chart-gutters"></div>
+                    </div>
+                </div>
+            </div>
+        </div><!--end card-body-->                                                                    
+    </div><!--end card-->
+  
     <div class="row">
         <div class="col-lg-6">
             <div class="card overflow-hidden">
@@ -239,7 +264,7 @@
     </div><!--end row-->
     
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-6">
             <div class="card carousel-bg-img">
                 <div class="card-body dash-info-carousel mb-0">
                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
@@ -316,47 +341,23 @@
             </div><!--end card-->
         </div><!--end col--> 
 
-        <div class="col-lg-4">
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card overflow-hidden">
-                        <div class="card-body bg-gradient3">
-                            <div class="">
-                                <div class="card-icon">
-                                    <i class="fas fa-coins"></i>
-                                </div>
-                                <h2 class="font-weight-bold text-white"><span id="outstandingClaim">0</span> XAF</h2>
-                                <p class="text-white mb-0 font-16">Créances en cours</p>                                            
-                            </div>
-                        </div><!--end card-body-->
-                        {# <div class="card-body">
-                            <div class="">
-                                <div id="d1_payment" class="apex-charts"></div>
-                            </div> 
-                        </div><!--end card-body--> #}
-                    </div><!--end card-->
-                </div><!--end col-->
-
-                <div class="col-sm-12">
-                    <div class="card overflow-hidden">
-                        <div class="card-body bg-gradient1">
-                            <div class="">
-                                <div class="card-icon">
-                                    <i class="mdi mdi-google-pages"></i>
-                                </div>
-                                <h2 class="font-weight-bold text-white"><span id="nbProductsSold">0</span></h2>
-                                <p class="text-white mb-0 font-16">Nombre de Produits vendus</p>                                            
-                            </div>
-                        </div><!--end card-body-->
-                        {# <div class="card-body">
-                            <div class="">
-                                <div id="d1_payment" class="apex-charts"></div>
-                            </div> 
-                        </div><!--end card-body--> #}
-                    </div><!--end card-->
-                </div><!--end col-->
-            
-            </div>
+        <div class="col-lg-6">                
+            <div class="card overflow-hidden">
+                <div class="card-body bg-gradient1">
+                    <div class="">
+                        <div class="card-icon">
+                            <i class="mdi mdi-google-pages"></i>
+                        </div>
+                        <h2 class="font-weight-bold text-white"><span id="nbProductsSold">0</span></h2>
+                        <p class="text-white mb-0 font-16">Nombre de Produits vendus</p>                                            
+                    </div>
+                </div><!--end card-body-->
+                {# <div class="card-body">
+                    <div class="">
+                        <div id="d1_payment" class="apex-charts"></div>
+                    </div> 
+                </div><!--end card-body--> #}
+            </div><!--end card-->
         </div>
 
     </div><!--end row-->
@@ -385,7 +386,7 @@
 {# <script src="https://apexcharts.com/samples/assets/irregular-data-series.js"></script>
 <script src="https://apexcharts.com/samples/assets/series1000.js"></script>
 <script src="https://apexcharts.com/samples/assets/ohlc.js"></script> #}
-<script src="/pages/jquery.dashboard.init.js"></script>
+<script src="/pages/jquery.dashboard.init1.js"></script>
 
 <!-- Plugins js -->
 {# <script src="/plugins/moment/moment.js"></script> #}
@@ -467,6 +468,7 @@
                             //$('.fa-sync').removeClass('fa-spin');                                  
                             console.log(data);
                             $('#turnOver').text(data['turnOverHT']);
+                            $('#amountRecettes').text(data['amountRecettes']);
                             $('#expenses').text(data['expenses']);
                             $('#nbBill').text(data['billNb']);
                             $('#nbPurchaseOrder').text(data['purchaseNb']);
@@ -475,7 +477,6 @@
                             $('#DFHT').text(data['outstandingDebt']);
                             $('#outstandingClaim').text(data['outstandingClaim']);
                             $('#nbProductsSold').text(data['nbProductsSold']);
-                            $('#amountReduction').text(data['amountReduction']);
 
                             //console.log('Type of best : ' + typeof data['bestSellingProducts'] );
                             data['bestSellingProducts'].forEach(function(item, index){
@@ -487,6 +488,7 @@
                             });
                             
                             displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
+                            displayNewData1(amountRecettesColumnChart, data['xamountRecettesPer'], data['amountRecettesPer'], /*dateopt, */1, data['per']);
                             displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']);
 
                             swal({
