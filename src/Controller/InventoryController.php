@@ -285,7 +285,7 @@ class InventoryController extends ApplicationController
     public function updateStockMovementTable(Request $request, EntityManagerInterface $manager)
     {
         $paramJSON = $this->getJSONRequest($request->getContent());
-        dump($paramJSON);
+        //dump($paramJSON);
         if ((array_key_exists("startDate", $paramJSON) && !empty($paramJSON['startDate'])) && (array_key_exists("endDate", $paramJSON) && !empty($paramJSON['endDate'])) && (array_key_exists("inv", $paramJSON) && !empty($paramJSON['inv']))) {
             $startDate = new DateTime($paramJSON['startDate']);
             $endDate = new DateTime($paramJSON['endDate']);
@@ -379,23 +379,31 @@ class InventoryController extends ApplicationController
                     ))
                     ->getResult();
 
+                //dump($Stats);
                 $sum = 0.0;
                 $AVG = 0.0;
+                $min = 0;
+                $max = 0;
+                $ET  = 0;
                 $nb = count($Stats['' . $product->getId()]);
-                $min = $Stats['' . $product->getId()][0]['qtyTotal'];
-                $max = $Stats['' . $product->getId()][$nb - 1]['qtyTotal'];
-                foreach ($Stats['' . $product->getId()] as $key => $value) {
-                    $sum += $value['qtyTotal'];
-                }
-                $AVG = $sum / ($nb * 1.0);
+                if ($nb > 0) {
+                    $min = $Stats['' . $product->getId()][0]['qtyTotal'];
+                    $max = $Stats['' . $product->getId()][$nb - 1]['qtyTotal'];
+                    foreach ($Stats['' . $product->getId()] as $key => $value) {
+                        $sum += $value['qtyTotal'];
+                    }
+                    $AVG = $sum / ($nb * 1.0);
 
-                $ET = 0;
-                foreach ($Stats['' . $product->getId()] as $key => $value) {
-                    $ET += pow(($value['qtyTotal'] - $AVG), 2);
+                    $ET = 0;
+                    foreach ($Stats['' . $product->getId()] as $key => $value) {
+                        $ET += pow(($value['qtyTotal'] - $AVG), 2);
+                    }
+
+                    $ET = $ET / ($nb);
+                    $ET = pow($ET, 1 / 2);
                 }
 
-                $ET = $ET / ($nb - 1);
-                $ET = pow($ET, 1 / 2);
+                //dump($nb);
                 $ET = number_format((float) $ET, 2, '.', '');
                 $AVG = number_format((float) $AVG, 2, '.', '');
 
@@ -413,7 +421,7 @@ class InventoryController extends ApplicationController
                 ];
             }
             //dump($Stats);
-            dump($inventoryAvailability);
+            //dump($inventoryAvailability);
             //dd($productStats);
             return $this->json([
                 'code'           => 200,
