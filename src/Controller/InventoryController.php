@@ -167,6 +167,7 @@ class InventoryController extends ApplicationController
     public function inventoryDash(Inventory $inventory, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
     {
         $productStats          = [];
+        //$Stats          = [];
         $inventoryAvailability = [];
         $products = $manager->createQuery("SELECT p
                                            FROM App\Entity\Product p, App\Entity\Lot l
@@ -181,20 +182,9 @@ class InventoryController extends ApplicationController
             ->getResult();
         //dd($products);
 
-        $to_ = new DateTime('now');
-        //dump($to_->format('Y-m-d H:i:s'));
-        $from_ = new DateTime('now');
-        $from_->sub(new DateInterval('P30D'));
-        //dump($from_->format('Y-m-d H:i:s'));
-        $from_ = new DateTime($from_->format('Y-m-d') . ' ' . '00:00:00');
-        //dump($from_->format('Y-m-d H:i:s'));
-        /*
-         
-         
-                                                                        AND st.createdAt >= :from_*/
         foreach ($products as $product) {
             //dd($product->getId());
-            $productStats['' . $product->getId()] = $manager->createQuery("SELECT AVG(st.quantity) AS qtyAVG, 
+            /*$productStats['' . $product->getId()] = $manager->createQuery("SELECT AVG(st.quantity) AS qtyAVG, 
                                                                         SUM(st.quantity) AS qtyTotal, MAX(st.quantity) AS qtyMax, 
                                                                         MIN(st.quantity) AS qtyMin, STD(st.quantity) AS ET
                                                                         FROM App\Entity\StockMovement st
@@ -207,6 +197,28 @@ class InventoryController extends ApplicationController
                                                                         AND p.id = :prodId
                                                                         AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
                                                                         AND inv.id = :invId
+                                                                        
+                                                                    ")
+                ->setParameters(array(
+                    'from_'    => $from_->format('Y-m-d H:i:s'),
+                    'to_'      => $to_->format('Y-m-d H:i:s'),
+                    'prodId'   => $product->getId(),
+                    'invId'    => $inventory->getId(),
+                ))
+                ->getResult();*/
+            /*$Stats['' . $product->getId()] = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 10) AS jour, SUM(st.quantity) AS qtyTotal
+                                                                        FROM App\Entity\StockMovement st
+                                                                        JOIN st.commercialSheet cms
+                                                                        JOIN cms.inventory inv
+                                                                        JOIN st.lot l
+                                                                        JOIN l.product p
+                                                                        WHERE st.type = 'Sale Exit'
+                                                                        AND (st.createdAt >= :from_ AND st.createdAt <= :to_)                                                                                   
+                                                                        AND p.id = :prodId
+                                                                        AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
+                                                                        AND inv.id = :invId
+                                                                        GROUP BY jour
+                                                                        ORDER BY qtyTotal ASC
                                                                     ")
                 ->setParameters(array(
                     'from_'    => $from_->format('Y-m-d H:i:s'),
@@ -215,16 +227,44 @@ class InventoryController extends ApplicationController
                     'invId'    => $inventory->getId(),
                 ))
                 ->getResult();
+
+            $sum = 0.0;
+            $AVG = 0.0;
+            $nb = count($Stats['' . $product->getId()]);
+            $min = $Stats['' . $product->getId()][0]['qtyTotal'];
+            $max = $Stats['' . $product->getId()][$nb - 1]['qtyTotal'];
+            foreach ($Stats['' . $product->getId()] as $key => $value) {
+                $sum += $value['qtyTotal'];
+            }
+            $AVG = $sum / ($nb * 1.0);
+
+            $ET = 0;
+            foreach ($Stats['' . $product->getId()] as $key => $value) {
+                $ET += pow(($value['qtyTotal'] - $AVG), 2);
+            }
+
+            $ET = $ET / ($nb - 1);
+            $ET = pow($ET, 1 / 2);
+            $ET = number_format((float) $ET, 2, '.', '');
+            $AVG = number_format((float) $AVG, 2, '.', '');
+            $productStats[$product->getId()] = [
+                'AVG' => $AVG,
+                'ET'  => $ET,
+                'MAX' => $max,
+                'MIN' => $min,
+            ];*/
             $inventoryAvailabilityRepo = $manager->getRepository("App:InventoryAvailability");
             $inventoryAvailability['' . $product->getId()] = $inventoryAvailabilityRepo->findOneBy(['inventory' => $inventory, 'product' => $product]);
         }
+        //dump($Stats);
+
+        //dd($productStats);
         //dump($inventoryAvailability);
         //dd($productStats);
 
         $inventories = $inventoryRepo->findAll();
 
         return $this->render('inventory/inventory_dashboard.html.twig', [
-            'inventories'  => $inventories,
             'inventory'    => $inventory,
             'available'    => $inventoryAvailability,
             'productStats' => $productStats,
@@ -245,6 +285,7 @@ class InventoryController extends ApplicationController
     public function updateStockMovementTable(Request $request, EntityManagerInterface $manager)
     {
         $paramJSON = $this->getJSONRequest($request->getContent());
+        dump($paramJSON);
         if ((array_key_exists("startDate", $paramJSON) && !empty($paramJSON['startDate'])) && (array_key_exists("endDate", $paramJSON) && !empty($paramJSON['endDate'])) && (array_key_exists("inv", $paramJSON) && !empty($paramJSON['inv']))) {
             $startDate = new DateTime($paramJSON['startDate']);
             $endDate = new DateTime($paramJSON['endDate']);
@@ -285,14 +326,99 @@ class InventoryController extends ApplicationController
                     'invId'        => $inv
                 ))
                 ->getResult();
-            dump($stockMovements);
+            //dump($stockMovements);
             foreach ($stockMovements as $key => $value) {
                 $stockMovements[$key]['dat'] = $value['dat']->format('d M Y H:i:s');
                 $stockMovements[$key]['dlc'] = $value['dlc']->format('d M Y');
             }
-            dump($stockMovements);
+            //dump($stockMovements);
+
+            $productStats  = null;
+            $Stats         = [];
+            $inventoryAvailability = [];
+
+            $products = $manager->createQuery("SELECT p
+                                           FROM App\Entity\Product p, App\Entity\Lot l
+                                           JOIN l.inventory inv
+                                           WHERE inv.id = :invId
+                                           AND p.hasStock = 1
+                                           AND l.product = p.id
+                                        ")
+                ->setParameters(array(
+                    'invId'   => $inv,
+                ))
+                ->getResult();
+            //dump($products);
+
+            $inventory = $manager->getRepository("App:Inventory")->findOneBy(['id' => $inv]);
+            $inventoryAvailabilityRepo = $manager->getRepository("App:InventoryAvailability");
+
+            //dump($inventory);
+
+            foreach ($products as $product) {
+
+                $Stats['' . $product->getId()] = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 10) AS jour, SUM(st.quantity) AS qtyTotal
+                                                                        FROM App\Entity\StockMovement st
+                                                                        JOIN st.commercialSheet cms
+                                                                        JOIN cms.inventory inv
+                                                                        JOIN st.lot l
+                                                                        JOIN l.product p
+                                                                        WHERE st.type = 'Sale Exit'
+                                                                        AND (st.createdAt >= :from_ AND st.createdAt <= :to_)                                                                                   
+                                                                        AND p.id = :prodId
+                                                                        AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
+                                                                        AND inv.id = :invId
+                                                                        GROUP BY jour
+                                                                        ORDER BY qtyTotal ASC
+                                                                    ")
+                    ->setParameters(array(
+                        'from_'    => $startDate->format('Y-m-d H:i:s'),
+                        'to_'      => $endDate->format('Y-m-d H:i:s'),
+                        'prodId'   => $product->getId(),
+                        'invId'    => $inv,
+                    ))
+                    ->getResult();
+
+                $sum = 0.0;
+                $AVG = 0.0;
+                $nb = count($Stats['' . $product->getId()]);
+                $min = $Stats['' . $product->getId()][0]['qtyTotal'];
+                $max = $Stats['' . $product->getId()][$nb - 1]['qtyTotal'];
+                foreach ($Stats['' . $product->getId()] as $key => $value) {
+                    $sum += $value['qtyTotal'];
+                }
+                $AVG = $sum / ($nb * 1.0);
+
+                $ET = 0;
+                foreach ($Stats['' . $product->getId()] as $key => $value) {
+                    $ET += pow(($value['qtyTotal'] - $AVG), 2);
+                }
+
+                $ET = $ET / ($nb - 1);
+                $ET = pow($ET, 1 / 2);
+                $ET = number_format((float) $ET, 2, '.', '');
+                $AVG = number_format((float) $AVG, 2, '.', '');
+
+                $productStats[] = [
+                    'id'  => $product->getId(),
+                    'AVG' => $AVG,
+                    'ET'  => $ET,
+                    'MAX' => $max,
+                    'MIN' => $min,
+                ];
+
+                $inventoryAvailability[] = [
+                    'av' => $inventoryAvailabilityRepo->findOneBy(['inventory' => $inventory->getId(), 'product' => $product->getId()])->getAvailable(),
+                    'id' => $product->getId(),
+                ];
+            }
+            //dump($Stats);
+            dump($inventoryAvailability);
+            //dd($productStats);
             return $this->json([
                 'code'           => 200,
+                'available'      => $inventoryAvailability,
+                'productStats'   => $productStats,
                 'stockMovements' => $stockMovements,
             ], 200);
         }

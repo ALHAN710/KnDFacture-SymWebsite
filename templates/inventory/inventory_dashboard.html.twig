@@ -9,7 +9,13 @@
 <!-- Responsive datatable examples -->
 <link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" /> 
 <link href="/plugins/timepicker/bootstrap-material-datetimepicker.css" rel="stylesheet">
-<link href="/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">        
+<link href="/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">     
+
+<!-- Clock css -->
+<link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />  
+
+<!-- Sweet Alert -->
+<link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
 
 {% endblock %}
 
@@ -34,26 +40,23 @@
         <div class="col-lg-12 col-sm-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <h5 class="header-title">{{ inventory.name }} inventory dashboard
-                    </h5>
+                    <h5 class="header-title">{{ inventory.name }} inventory dashboard</h5>
                     
-                    <div class="row ">
-                        <div class="col"></div>
-                        <div class="col text-right">
-                            {# <div class="mt-2 mb-2">
-                                <a href="{{path('customers_index')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New product"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-cart-outline"></i></a>
-                            </div> #}
-                            {# <div class="mt-2 mb-2 savebtn">
-                                <button type="button" class="btn btn-primary" id="saveBtn" data-toggle="tooltip" data-placement="top" title="Save the Commercial Sheets Status">
-                                    <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
-                                    Save
-                                </button>
-                            </div> #}
-                        
+                    <div class="row my-3 align-items-center">
+                        <div class="col-lg-3 my-3">
+                            <a href="{{path('lot_create', {'prod':0, 'inv':inventory.id})}}"  class="btn btn-soft-primary btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot"><i class="fa fa-plus-circle"></i></a>
+                                        
                         </div>
-                    {# {{dump( available[37].available )}}
-                    {{dump(productStats[39][0]["qtyAVG"])}} #}
-                    </div>
+                        <div class="col-lg-9">
+                            <label class="">Choisir la plage de date</label>
+                            <div class="input-group">  
+                                <input type="text"  id="reportrange" class="form-control" value="10/24/1984">
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
@@ -67,6 +70,7 @@
 
                     <!-- Tab panes mdi mdi-dump-truck mdi mdi-truck-check -->
                     <div class="">    
+                        
                         {# {% autoescape %}{{ '<span class="badge bg">on pending</span>'|raw }}{% endautoescape %} #}
                         <div class="tab-content">
                             <div class="tab-pane active p-3" id="statisticsTab" role="tabpanel">    
@@ -105,24 +109,26 @@
                                             </td> #}
                                             <td>{{ product.sku }}</td>
                                             <td>{{ product.name }}</td>
-                                            <td>{{ productStats[product.id][0]["qtyAVG"] }}</td>
-                                            <td>{{ productStats[product.id][0]["ET"] }}</td>
-                                            <td>{{ productStats[product.id][0]["qtyMin"] }}</td>
-                                            <td>{{ productStats[product.id][0]["qtyMax"] }}</td>
-                                            <td>{{ available[product.id].available }}</td>
+                                            <td><span id="qtyAVG_{{product.id}}">0</span></td>
+                                            <td><span id="ET_{{product.id}}">0</span></td>
+                                            <td><span id="qtyMin_{{product.id}}">0</span></td>
+                                            <td><span id="qtyMax_{{product.id}}">0</span></td>
+                                            <td><span id="available_{{product.id}}">0</span></td>
+                                            
                                             <td>
                                                 {# <div class="checkbox checkbox-primary">
                                                     <input id="checkbox{{commercialSheet.id}}" type="checkbox" name="delivered" value="{{commercialSheet.id}}">
                                                     <label for="checkbox{{commercialSheet.id}}"></label>
                                                 </div> dripicons-warning #}
                                                 
-                                                {% set ss = productStats[product.id][0]["ET"] * inventory.const %}
+                                                {# {% set ss = productStats[product.id][0]["ET"] * inventory.const %}
                                                 {% set pc = ss + productStats[product.id][0]["qtyAVG"] * inventory.approvDelay %}
-                                                {% if available[product.id].available <= pc %}
-                                                <a href="" class="mr-2" data-toggle="tooltip" data-placement="top" title="Refueling Alert">
+                                                {% if available[product.id].available <= pc %} #}
+                                                <a href="" class="mr-2 d-none" id="alertRefuel_{{product.id}}" data-toggle="tooltip" data-placement="top" title="Refueling Alert">
                                                     <i class="fas fa-exclamation-triangle text-warning"></i>
                                                 </a>
-                                                {% endif %}
+                                                <span class="bg bg-soft-success d-none" id="noAlertRefuel_{{product.id}}"></span>
+                                                {# {% endif %} #}
                                                 {% set lotPeremp = [] %}
                                                 {% for lot in product.lots %}
                                                     {% if lot.alert == false and lot.quantity > 0 and lot.inventory == inventory %}
@@ -223,9 +229,9 @@
                                                 </div>
                                                 {% endif %}
                                             </td>
-                                            <td>{{ productStats[product.id][0]["qtyAVG"] * inventory.orderingFreq }}</td>
+                                            <td><span id="demand_{{product.id}}"></span></td>
                                             <td>
-                                                {# <a href="#custom-modal{{'0'}}" class="btn btn-primary btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Add New Lot"><i class="fa fa-plus-circle"></i></a> #}
+                                                {# {{ productStats[product.id][0]["qtyAVG"] * inventory.orderingFreq }} <a href="#custom-modal{{'0'}}" class="btn btn-primary btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Add New Lot"><i class="fa fa-plus-circle"></i></a> #}
                                                 <a href="{{path('lot_create', {'prod':product.id, 'inv':inventory.id})}}"  class="btn btn-soft-info btn-xs rounded " data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot"><i class="fa fa-plus-circle"></i></a>
                                                 <a href="{{path('lots_index', {'prod':product.id, 'inv':inventory.id})}}" class="btn btn-soft-purple btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir les Lots"><i class="far fa-eye"></i></a>
                                                 {# <a href="#custom-modal{{'1'}}" class="btn btn-danger btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-plas"top" title="Remove Lot"><i class="fas fa-trash"></i></a> #}
@@ -238,7 +244,7 @@
                             </div>
 
                             <div class="tab-pane p-3" id="stockMovementTab" role="tabpanel">
-                              <div class="form-group my-2">
+                              {# <div class="form-group my-2">
                                     <h6 class=" input-title mt-lg-3">Specify the Date Range</h6>
                                     <div class="row">
                                         <div class="input-daterange input-group col-6" id="date-range">
@@ -249,7 +255,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                </div>
+                                </div> #}
                                 <div class="">
                                     <table id="datatable-buttons" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
@@ -324,20 +330,10 @@
 <script src="/plugins/moment/moment.js"></script>
 <script src="/plugins/daterangepicker/daterangepicker.js"></script>
 <script src="/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
-{# <script src="/plugins/timepicker/tempusdominus-bootstrap-4.js"></script>
-<script src="/plugins/timepicker/bootstrap-material-datetimepicker.js"></script>
-<script src="/plugins/clockpicker/jquery-clockpicker.min.js"></script>
-<script src="/plugins/colorpicker/jquery-asColor.js"></script>
-<script src="/plugins/colorpicker/jquery-asGradient.js"></script>
-<script src="/plugins/colorpicker/jquery-asColorPicker.min.js"></script>
-<script src="/plugins/select2/select2.min.js"></script> #}
+<script src="/pages/jquery.forms-advanced.js"></script>
 
-{# <script src="/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
-<script src="/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
-<script src="/plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js"></script> #}
-
-{# <script src="/pages/jquery.clock-img.init.js"></script> #}
-<script src="/pages/jquery.forms-advanced.js"></script> 
+<!-- Sweet-Alert  -->
+<script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
 
 
 <script>
@@ -352,68 +348,260 @@
 
     table.buttons().container()
         .appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+    var const_ = {{ inventory.const }};
+    var approvDelay = {{ inventory.approvDelay }};
+    var freqReapp = {{ inventory.orderingFreq }};
+
+    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+        console.log(picker.startDate.format('YYYY-MM-DD'));
+        console.log(picker.endDate.format('YYYY-MM-DD'));
     
-    $('#reloadBtn').click(function(){
         $('.fa-sync').addClass('fa-spin');
-        var startDate = $('input[name=start]').val();
-        var endDate = $('input[name=end]').val();
+        var startDate = picker.startDate.format('YYYY-MM-DD');
+        var endDate = picker.endDate.format('YYYY-MM-DD');
         
         console.log('startDate = ' + startDate);
         console.log('endDate = ' + endDate);
-        var _url = "{{path('stock_movement_update')}}";
+        var _url = "{{path('enterprise_dash_update')}}";
         //block of code that runs when the click event triggers
         
         var $data = JSON.stringify({
             "startDate": startDate,//tabGridId,
             "endDate": endDate,//tabFuelId,
             "inv": inv
-        });
+        });   
 
-        $.ajax({
-            type: "POST",//method type
-            contentType: "application/json; charset=utf-8",
-            url: _url,///Target function that will be return result
-            data: $data,//parameter pass data is parameter name param is value 
-            dataType: "json",
-            timeout: 120000,//64241
-            success: function (data) {
-                $('.fa-sync').removeClass('fa-spin');
-                table
-                .clear()
-                .draw();
-                console.log(data);  
-                var stockMovementTab = data['stockMovements'];
-                if(stockMovementTab){
-                    console.log('Type = ' + typeof stockMovementTab.length);  
-                    console.log(stockMovementTab);  
-                    stockMovementTab.forEach(function (item, index) {
-                        {# var $dat = new moment(String(item['dat']));
-                        var date = $dat.format("DD MMM YYYY hh:mm:ss").toString();
+        //Danger
+        
+        swal.queue([{
+            title: 'The Dashboard Will Be Updated for this date range',
+            confirmButtonText: 'Confirm',
+            text: 'From ' + startDate + ' To ' + endDate,
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            confirmButtonClass: 'btn btn-primary',
+            cancelButtonClass: 'btn btn-info ml-2',
+            preConfirm: function () {
+                return new Promise(function (resolve) {
+                    /*$.get('https://api.ipify.org?format=json')
+                        .done(function (data) {
+                            swal.insertQueueStep(data.ip)
+                            resolve()
+                        })*/
+                    $.ajax({
+                        type: "POST",//method type
+                        contentType: "application/json; charset=utf-8",
+                        url: "{{path('stock_movement_update')}}",///Target function that will be return result
+                        data: $data,//parameter pass data is parameter name param is value 
+                        dataType: "json",
+                        timeout: 120000,//64241
+                        success: function (data) {
+                            //$('.fa-sync').removeClass('fa-spin');                                  
+                            console.log(data);
+                            
+                            console.log(data['productStats']);
+                            table
+                            .clear()
+                            .draw();
+                            var ss = 0, pc = 0.0; 
+                            
+                            data['productStats'].forEach(function (value, index) {
+                                console.log('value = ' + value);
+                                $('#qtyAVG_' + value['id']).text(value['AVG']);
+                                $('#ET_' + value['id']).text(value['ET']);
+                                $('#qtyMax_' + value['id']).text(value['MAX']);
+                                $('#qtyMin_' + value['id']).text(value['MIN']);
+
+                                ss = parseFloat(value['ET']) * const_;
+                                pc = ss + parseFloat(value['AVG']) * approvDelay;
+
+                                if(parseInt(data['available'][index]['av']) <= pc){
+                                    $('#alertRefuel_' + value['id']).removeClass('d-none');
+                                    $('#noAlertRefuel_' + value['id']).addClass('d-none');
+                                    var tmp = parseFloat(value['AVG']) * freqReapp;
+                                    $('#demand_' + value['id']).text(Math.ceil(tmp));
+                                    console.log('alert');
+                                }
+                                else {
+                                    $('#alertRefuel_' + value['id']).addClass('d-none');
+                                    $('#noAlertRefuel_' + value['id']).removeClass('d-none');
+                                    $('#demand_' + value['id']).text(0);
+                                    console.log('no alert');
+                                }
+                            });
+
+                            var stockMovementTab = data['stockMovements'];
+                            if(stockMovementTab){
+                                console.log('Type = ' + typeof stockMovementTab.length);  
+                                console.log(stockMovementTab);  
+                                stockMovementTab.forEach(function (item, index) {
+                                    {# var $dat = new moment(String(item['dat']));
+                                    var date = $dat.format("DD MMM YYYY hh:mm:ss").toString();
+                                    
+                                    $dat = new moment(String(item['dlc']));
+                                    var dlc = $dat.format("DD MMM YYYY").toString(); #}
                         
-                        $dat = new moment(String(item['dlc']));
-                        var dlc = $dat.format("DD MMM YYYY").toString(); #}
-            
-                        table
-                        .row.add( [ item['dat'], String(item['sku']), 
-                        String(item['nam']), String(item['numLot']),item['dlc'],
-                        String(item['typ']), String(item['qty'])] )
-                        .draw();
+                                    table
+                                    .row.add( [ item['dat'], String(item['sku']), 
+                                    String(item['nam']), String(item['numLot']),item['dlc'],
+                                    String(item['typ']), String(item['qty'])] )
+                                    .draw();
 
+                                });
+
+                            } 
+                            swal({
+                                type: 'success',
+                                title: 'Les Données de la page ont Mis à Jour avec succès !',
+                                //html: 'Submitted email: ' + email
+                            });
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 2000);
+                        },
+                        error: function (result) {
+                            //console.log("Error");
+                            //console.log(result);
+                            swal(
+                                'Oops...',
+                                'Something went wrong!',
+                                'error'
+                                //footer: '<a href>Why do I have this issue?</a>'
+                            );
+
+                            /*Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Something went wrong!',
+                                footer: '<a href>Why do I have this issue?</a>'
+                            });*/
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 5000);
+                        }
                     });
-
-                } 
-                                     
-                
+                })
             },
-            error: function (result) {
-                console.log("Error");
-                console.log(result);
-                $('.fa-sync').removeClass('fa-spin');
-                alert('Erreur !!!');
-            }
-        });
+            allowOutsideClick: false
+        }]);
+        
+
     });
+
+
+    var drp = $('#reportrange').data('daterangepicker');
+    //console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+    var startDate = drp.startDate.format('YYYY-MM-DD');
+    var endDate = drp.endDate.format('YYYY-MM-DD');
     
+    console.log('startDate = ' + startDate);
+    console.log('endDate = ' + endDate);
+    var _url = "{{path('enterprise_dash_update')}}";
+    //block of code that runs when the click event triggers
+    
+    var $data = JSON.stringify({
+        "startDate": startDate,//tabGridId,
+        "endDate": endDate,//tabFuelId,
+        "inv": inv
+    });   
+    
+    $.ajax({
+        type: "POST",//method type
+        contentType: "application/json; charset=utf-8",
+        url: "{{path('stock_movement_update')}}",///Target function that will be return result
+        data: $data,//parameter pass data is parameter name param is value 
+        dataType: "json",
+        timeout: 120000,//64241
+        success: function (data) {
+            //$('.fa-sync').removeClass('fa-spin');                                  
+            console.log(data);
+            
+            console.log(data['productStats']);
+            table
+            .clear()
+            .draw();
+            var ss = 0, pc = 0.0; 
+            
+            data['productStats'].forEach(function (value, index) {
+                console.log('value = ' + value);
+                $('#qtyAVG_' + value['id']).text(value['AVG']);
+                $('#ET_' + value['id']).text(value['ET']);
+                $('#qtyMax_' + value['id']).text(value['MAX']);
+                $('#qtyMin_' + value['id']).text(value['MIN']);
+
+                ss = parseFloat(value['ET']) * const_;
+                pc = ss + parseFloat(value['AVG']) * approvDelay;
+
+                if(parseInt(data['available'][index]['av']) <= pc){
+                    $('#alertRefuel_' + value['id']).removeClass('d-none');
+                    $('#noAlertRefuel_' + value['id']).addClass('d-none');
+                    var tmp = parseFloat(value['AVG']) * freqReapp;
+                    $('#demand_' + value['id']).text(Math.ceil(tmp));
+                    console.log('alert');
+                }
+                else {
+                    $('#alertRefuel_' + value['id']).addClass('d-none');
+                    $('#noAlertRefuel_' + value['id']).removeClass('d-none');
+                    $('#demand_' + value['id']).text(0);
+                    console.log('no alert');
+                }
+            });
+
+            var stockMovementTab = data['stockMovements'];
+            if(stockMovementTab){
+                console.log('Type = ' + typeof stockMovementTab.length);  
+                console.log(stockMovementTab);  
+                stockMovementTab.forEach(function (item, index) {
+                    {# var $dat = new moment(String(item['dat']));
+                    var date = $dat.format("DD MMM YYYY hh:mm:ss").toString();
+                    
+                    $dat = new moment(String(item['dlc']));
+                    var dlc = $dat.format("DD MMM YYYY").toString(); #}
+        
+                    table
+                    .row.add( [ item['dat'], String(item['sku']), 
+                    String(item['nam']), String(item['numLot']),item['dlc'],
+                    String(item['typ']), String(item['qty'])] )
+                    .draw();
+
+                });
+
+            } 
+            swal({
+                type: 'success',
+                title: 'Les Données de la page ont Mis à Jour avec succès !',
+                //html: 'Submitted email: ' + email
+            });
+
+            {# setTimeout(function () {
+                resolve()
+            }, 2000); #}
+        },
+        error: function (result) {
+            //console.log("Error");
+            //console.log(result);
+            swal(
+                'Oops...',
+                'Something went wrong!',
+                'error'
+                //footer: '<a href>Why do I have this issue?</a>'
+            );
+
+            /*Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong!',
+                footer: '<a href>Why do I have this issue?</a>'
+            });*/
+
+            setTimeout(function () {
+                resolve()
+            }, 5000);
+        }
+    });
+                  
     $('#saveBtn').click(function(){
         console.log('Lot To Remove Btn clicked');
         var tabLotToRemove = [];
