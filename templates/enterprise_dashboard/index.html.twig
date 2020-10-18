@@ -171,7 +171,7 @@
                                     <h3>#{{i + 1}}</h3>
                                     <h5><span id="ref_{{i}}">####</span></h5>
                                     <p class="font-12 text-muted"><span id="designation_{{i}}"></span></p>
-                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{i}}"></span>0 XAF</p>
+                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{i}}">0</span> XAF</p>
                                     <p class="font-12 text-muted">Total des ventes : <span id="totalSale_{{i}}">0</span></p>
                                     {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
                                     <div class="mt-2 align-item-center">
@@ -467,7 +467,7 @@
                             //$('.fa-sync').removeClass('fa-spin');                                  
                             console.log(data);
                             $('#turnOver').text(data['turnOverHT']);
-                            $('#expenses').text(data['expensesHT']);
+                            $('#expenses').text(data['expenses']);
                             $('#nbBill').text(data['billNb']);
                             $('#nbPurchaseOrder').text(data['purchaseNb']);
                             $('#nbQuote').text(data['quoteNb']);
