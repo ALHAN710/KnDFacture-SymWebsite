@@ -71,14 +71,23 @@ class CommercialSheetItem
     private $amount;
 
     private $available;
+
+    private $isChanged;
+
     /**
      * @ORM\Column(type="string", length=255)
      */
     private $itemOfferType;
 
+    /**
+     * @ORM\OneToMany(targetEntity=CommercialSheetItemLot::class, mappedBy="commercialSheetItem")
+     */
+    private $commercialSheetItemLots;
+
     public function __construct()
     {
         $this->commercialSheet = new ArrayCollection();
+        $this->commercialSheetItemLots = new ArrayCollection();
     }
 
     public function getProductPrice(): ?Product
@@ -125,6 +134,18 @@ class CommercialSheetItem
     public function setAvailable(int $available): self
     {
         $this->available = $available;
+
+        return $this;
+    }
+
+    public function getIsChanged(): ?int
+    {
+        return $this->isChanged;
+    }
+
+    public function setIsChanged(int $isChanged): self
+    {
+        $this->isChanged = $isChanged;
 
         return $this;
     }
@@ -240,6 +261,37 @@ class CommercialSheetItem
     public function setItemOfferType(string $itemOfferType): self
     {
         $this->itemOfferType = $itemOfferType;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommercialSheetItemLot[]
+     */
+    public function getCommercialSheetItemLots(): Collection
+    {
+        return $this->commercialSheetItemLots;
+    }
+
+    public function addCommercialSheetItemLot(CommercialSheetItemLot $commercialSheetItemLot): self
+    {
+        if (!$this->commercialSheetItemLots->contains($commercialSheetItemLot)) {
+            $this->commercialSheetItemLots[] = $commercialSheetItemLot;
+            $commercialSheetItemLot->setCommercialSheetItem($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommercialSheetItemLot(CommercialSheetItemLot $commercialSheetItemLot): self
+    {
+        if ($this->commercialSheetItemLots->contains($commercialSheetItemLot)) {
+            $this->commercialSheetItemLots->removeElement($commercialSheetItemLot);
+            // set the owning side to null (unless already changed)
+            if ($commercialSheetItemLot->getCommercialSheetItem() === $this) {
+                $commercialSheetItemLot->setCommercialSheetItem(null);
+            }
+        }
 
         return $this;
     }

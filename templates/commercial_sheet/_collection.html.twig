@@ -7,11 +7,11 @@
     <input type="hidden" id="commercialSheetItems-widgets-count">
     
     <div class="form-group mt-4 text-right">
-        <button type="button" id="add-commercialSheetItems" class="btn btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Add Product">
+        <button type="button" id="add-commercialSheetItems" class="btn btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Ajouter un produit enregistré">
             <i class="fas fa-plus-circle mr-2"></i><i class="dripicons-shopping-bag"></i>
         </button>
     
-        <button type="button" id="add-servItems" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Add Service">
+        <button type="button" id="add-servItems" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Ajouter par saisie un nouvel article">
             <i class="fas fa-plus-circle mr-2"></i><i class="fas fa-wrench"></i>
         </button>
     
@@ -28,7 +28,7 @@
     <div class="row form-group mb-0 align-items-center nbItems" id = "block_{{id}}">
         <div class="col-10 mt-4">
             <div class="row text-center">
-                <div class="col">
+                <div class="col colRef_{{id}}">
                     <div class="form-group">
                         <div class="input-group">
                             {# <div class="input-group-prepend">
@@ -39,6 +39,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="col d-none colSKU_{{id}}">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {# <div class="input-group-prepend">
+                                {{ form_label(form.productSku, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                            </div> #}
+                            {{ form_widget(form.productSku, {'attr': {'class': "form-control text-center"}}) }}
+                            
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="col coldesignation_{{id}}">
                     <div class="form-group">
                         <div class="input-group">
@@ -145,17 +157,6 @@
                                 {{ form_label(form.productPrice, null, {'label_attr': {'class': 'input-group-text'}}) }}
                             </div> #}
                             {{ form_widget(form.productPrice, {'attr': {'class': "form-control text-center"}}) }}
-                            
-                        </div>
-                    </div>
-                </div>
-                <div class="col d-none">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {# <div class="input-group-prepend">
-                                {{ form_label(form.productSku, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                            </div> #}
-                            {{ form_widget(form.productSku, {'attr': {'class': "form-control text-center"}}) }}
                             
                         </div>
                     </div>

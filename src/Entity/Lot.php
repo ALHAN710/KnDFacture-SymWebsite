@@ -78,9 +78,15 @@ class Lot
      */
     private $duration;
 
+    /**
+     * @ORM\OneToMany(targetEntity=CommercialSheetItemLot::class, mappedBy="lot")
+     */
+    private $commercialSheetItemLots;
+
     public function __construct()
     {
         $this->stockMovements = new ArrayCollection();
+        $this->commercialSheetItemLots = new ArrayCollection();
     }
 
     public function getAlert()
@@ -299,6 +305,37 @@ class Lot
     {
 
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommercialSheetItemLot[]
+     */
+    public function getCommercialSheetItemLots(): Collection
+    {
+        return $this->commercialSheetItemLots;
+    }
+
+    public function addCommercialSheetItemLot(CommercialSheetItemLot $commercialSheetItemLot): self
+    {
+        if (!$this->commercialSheetItemLots->contains($commercialSheetItemLot)) {
+            $this->commercialSheetItemLots[] = $commercialSheetItemLot;
+            $commercialSheetItemLot->setLot($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommercialSheetItemLot(CommercialSheetItemLot $commercialSheetItemLot): self
+    {
+        if ($this->commercialSheetItemLots->contains($commercialSheetItemLot)) {
+            $this->commercialSheetItemLots->removeElement($commercialSheetItemLot);
+            // set the owning side to null (unless already changed)
+            if ($commercialSheetItemLot->getLot() === $this) {
+                $commercialSheetItemLot->setLot(null);
+            }
+        }
 
         return $this;
     }

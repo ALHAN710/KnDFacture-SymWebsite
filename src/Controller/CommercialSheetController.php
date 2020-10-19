@@ -14,6 +14,7 @@ use App\Form\CommercialSheetType;
 use App\Repository\LotRepository;
 use App\Form\CommercialSheetItemType;
 use App\Repository\ProductRepository;
+use App\Entity\CommercialSheetItemLot;
 use App\Repository\InventoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
@@ -83,10 +84,12 @@ class CommercialSheetController extends ApplicationController
                 ->setUser($this->getUser())
                 ->setType($type);
             if ($iconStock == true) {
-                if ($type == 'bill') { //Récupération de l'inventaire du client Entreprise
+                if ($type == 'bill') {
+                    //Récupération de l'inventaire du client Entreprise
                     $inventory_ = $inventoryRepo->findOneBy(['id' => $stock, 'type' => 'PF']);
                     if ($inventory_) { //Si l'inventaire existe
                         $commercialSheet->setInventory($inventory_);
+                        //dump($inventory_);
                         //$lots = $inventory_->getLots();
                         //Recherche des disponibilités relatif à l'inventaire passé en paramètre à la route
                         foreach ($inventories as $inventory) {
@@ -132,14 +135,348 @@ class CommercialSheetController extends ApplicationController
         $message = "<ul>";
         if ($form->isSubmitted() && $form->isValid()) {
             $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
-            // dump($commercialSheet->getCommercialSheetItems());
+            //dump($commercialSheet->getCommercialSheetItems());
             foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
+                //dump($commercialSheetItem);
                 if ($commercialSheetItem->getQuantity() >= 1) { //On considère uniquement les items de Qty >= 1
                     if ($commercialSheetItem->getItemOfferType() == 'hasStock') { //Gestion des items avec des Products en stock 
                         //dump($type);
                         if ($type == 'bill') {
-                            //dump($iconStock);
+                            //dd($iconStock);
                             if ($iconStock == true) { //Si le client Entreprise à souscrit à un module KnD Stock
+                                //dump($commercialSheetItem->getProduct());
+                                //Recherche de la disponibilité du produit contenu dans l'item dans l'inventaire passé en paramètre
+                                $inventoryAvailability = $inventoryAvailabilityRepo->findOneBy(['inventory' => $inventory_, 'product' => $commercialSheetItem->getProduct()]);
+                                //dump($inventoryAvailability);
+                                if ($inventoryAvailability) { //Si cette disponibilité existe la mettre à jour ainsi que la quantité des lots relatifs à ce produit
+                                    if ($commercialSheetItem->getQuantity() <= $inventoryAvailability->getAvailable()) {
+
+                                        //Recherche des lots relatifs à ce produit dans l'inventaire reçu ordonné suivant le mode de management 
+                                        //de ce dernier
+                                        $order_ = $inventory_->getManagementMode() == 'FIFO' ? 'asc' : 'desc';
+                                        //dump($commercialSheetItem->getProduct());
+                                        $lots = $lotRepo->findBy(['inventory' => $inventory_, 'product' => $commercialSheetItem->getProduct()], ['dlc' => $order_]);
+                                        //dump($lots);
+                                        if (!empty($lots)) {
+                                            $qtyToRemove = $commercialSheetItem->getQuantity();
+                                            foreach ($lots as $lot) {
+                                                if ($lot->getQuantity() > 0) {
+                                                    //On vérifie si la lot n'est pas arrivé à date d'expiration
+                                                    $nowDate = new DateTime("now");
+                                                    $this->periodofvalidity = new DateTime($lot->getDlc()->format('Y/m/d'));
+                                                    //$this->periodofvalidity->add(new DateInterval('P' . $this->duration . 'D'));
+                                                    $interval = $nowDate->diff($this->periodofvalidity);
+                                                    //$valid = !$interval->invert;
+
+                                                    if (!$interval->invert) { // Si le lot est encore consommable
+                                                        $diff = $lot->getQuantity() - $qtyToRemove;
+                                                        //dump($lot);
+                                                        //dump('diff = ' . $diff);
+                                                        if ($diff >= 0) {
+                                                            //$qty = $diff == 0 ? $qtyToRemove : $diff;
+                                                            $lot->setQuantity($diff);
+                                                            //dump($lot);
+
+                                                            //Gestion du mouvement de stock
+                                                            $stockMovement = new StockMovement();
+                                                            $stockMovement->setCreatedAt($date)
+                                                                ->setLot($lot)
+                                                                ->setQuantity($qtyToRemove)
+                                                                ->setType('Sale Exit')
+                                                                ->setCommercialSheet($commercialSheet);
+                                                            //dump($stockMovement);
+                                                            $manager->persist($stockMovement);
+
+                                                            $cmsiLot = new CommercialSheetItemLot();
+                                                            $cmsiLot->setLot($lot)
+                                                                ->setCommercialSheetItem($commercialSheetItem)
+                                                                ->setQuantity($qtyToRemove);
+
+                                                            $lot->addCommercialSheetItemLot($cmsiLot);
+
+                                                            $commercialSheetItem->addCommercialSheetItemLot($cmsiLot)
+                                                                ->addCommercialSheet($commercialSheet);
+
+                                                            $manager->persist($cmsiLot);
+                                                            $manager->persist($commercialSheetItem);
+                                                            $manager->persist($lot); //Sauvegarde du lot en BDD
+
+                                                            $qtyToRemove = 0;
+                                                            break;
+                                                        } else {
+                                                            $qtyToRemove = $qtyToRemove - $lot->getQuantity();
+
+                                                            //Gestion du mouvement de stock
+                                                            $stockMovement = new StockMovement();
+                                                            $stockMovement->setCreatedAt($date)
+                                                                ->setLot($lot)
+                                                                ->setQuantity($lot->getQuantity())
+                                                                ->setType('Sale Exit')
+                                                                ->setCommercialSheet($commercialSheet);
+                                                            //dump($stockMovement);
+                                                            $manager->persist($stockMovement);
+
+                                                            $cmsiLot = new CommercialSheetItemLot();
+                                                            $cmsiLot->setLot($lot)
+                                                                ->setCommercialSheetItem($commercialSheetItem)
+                                                                ->setQuantity($lot->getQuantity());
+                                                            $lot->addCommercialSheetItemLot($cmsiLot);
+                                                            $commercialSheetItem->addCommercialSheetItemLot($cmsiLot)
+                                                                ->addCommercialSheet($commercialSheet);
+                                                            $manager->persist($cmsiLot);
+                                                            $manager->persist($commercialSheetItem);
+                                                            $lot->setQuantity(0);
+                                                            $manager->persist($lot); //Sauvegarde du lot en BDD
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            if ($qtyToRemove > 0) { //Si la quantité du produit est > 0 alors la commande n'est pas valide
+                                                $commercialSheetItemErrorFlag = true;
+                                                $message = $message . "<li>the quantity ({$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()} cannot be deducted from a consumable lot</li>";
+                                                //dump('commercialSheetItemErrorFlag = ' . $commercialSheetItemErrorFlag);
+                                            } else { //Sinon mettre à jour la disponibilité en stock de ce produit
+                                                //dump($inventoryAvailability);
+                                                $inventoryAvailability->setAvailable($commercialSheetItem->getAvailable());
+                                                //dump($inventoryAvailability);
+                                                $manager->persist($inventoryAvailability);
+                                            }
+                                        }
+                                    } else {
+                                        $commercialSheetItemErrorFlag = true;
+                                        $message = $message . "<li>the quantity ({$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()} is greater than the availability ({$inventoryAvailability->getAvailable()})</li>";
+                                    }
+
+                                    /*foreach ($inventoryAvailabilities as $inventoryAvailability) {
+                                        if ($commercialSheetItem->getProduct()->getId() == $inventoryAvailability->getProduct()->getId()) {
+                                            $inventoryAvailability->setAvailable($commercialSheetItem->getAvailable());
+                                            $manager->persist($inventoryAvailability);
+                                        }
+                                        $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
+                                        break;
+                                    }*/
+                                }
+                            }
+                        }
+                        //$manager->persist($commercialSheetItem);
+                    } else {
+                        $commercialSheetItem->setProduct(null);
+                    }
+
+                    //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
+                    /*$commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
+                        'designation' => $commercialSheetItem->getDesignation(),
+                        'pu' => $commercialSheetItem->getPU(),
+                        'quantity' => $commercialSheetItem->getQuantity()
+                    ]);
+
+                    if (empty($commercialSheetItem_)) {
+                        $commercialSheetItem->addCommercialSheet($commercialSheet);
+                        $manager->persist($commercialSheetItem);
+                        // dump('commercialSheetItem dont exists ');
+                    } else {
+                        //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
+                        //$commercialSheetItem = $commercialSheetItem_;
+                        $commercialSheetItem_->addCommercialSheet($commercialSheet);
+                        $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
+                        $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                    }*/
+                    //$commercialSheetItem->setProduct($service); 
+                    //dump($commercialSheetItem);
+                }
+            }
+            //die();
+            // dump($commercialSheet->getCommercialSheetItems());
+            if ($commercialSheet->getDeliveryStatus() == true) {
+                $commercialSheet->setDeliverAt($date);
+            }
+            if ($commercialSheet->getPaymentStatus() == true) {
+                $commercialSheet->setPayAt($date);
+            }
+            if ($commercialSheet->getCompletedStatus() == true) {
+                $commercialSheet->setDeliveryStatus(true)
+                    ->setPaymentStatus(true)
+                    ->setDeliverAt($date)
+                    ->setPayAt($date)
+                    ->setCompletedAt($date);
+            }
+
+            /*foreach ($commercialSheet->getReductions() as $reduction) {
+                dump($reduction);
+                $reduction->addOrder($commercialSheet);
+                $manager->persist($reduction);
+            }*/
+
+            //die();
+            //dump(date('Y-m'));
+            if ($sheetNumber) { //Si l'un des abonnements KnB Bill est activé pour le client Entreprise actuel
+                //Récupération de tous les documents de l'entreprise générés pendant le mois en cours
+                /*JOIN cms.businessContact bc   
+                JOIN bc.enterprise ent
+                AND ent.id = :entId*/
+                $sheets = $manager->createQuery("SELECT COUNT(cms.createdAt) AS CreatedDate
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u
+                                            JOIN u.enterprise e 
+                                            WHERE cms.createdAt LIKE :nowDate 
+                                            AND e.id = :entId                                                                   
+                                            ")
+                    ->setParameters(array(
+                        'nowDate' => '%' . date('Y-m') . '%',
+                        'entId'   => $this->getUser()->getEnterprise()->getId(),
+                    ))
+                    ->getResult();
+
+                //dump($sheetNumber);
+                //dd($sheets[0]['CreatedDate']);
+                $totalSheet = intval($sheets[0]['CreatedDate']);
+                //dd($totalSheet);
+                //die();
+                if ($totalSheet < $sheetNumber) { //Si la limite mensuel de document n'est pas encore atteinte
+
+                    if (!$commercialSheetItemErrorFlag) { //Si la commande est valide 
+                        //die();
+                        $manager->persist($commercialSheet);
+                        $manager->flush();
+
+                        $this->addFlash(
+                            'success',
+                            "The {$commercialSheet->getType()} has been registered successfully !"
+                        );
+
+                        return $this->redirectToRoute('commercial_sheet_print', [
+                            'inventories' => $inventories,
+                            'id' => $commercialSheet->getId(),
+                        ]);
+                    } else {
+                        $message = $message . "</ul>";
+                        //dd($message);
+                        $this->addFlash(
+                            'success',
+                            "The backup of the {$commercialSheet->getType()} failed because <p>" . $message . "</p>"
+                        );
+                    }
+                } else { //Sinon redirection vers la page des partenaires d'affaire
+                    $this->addFlash(
+                        'success',
+                        "The backup of the {$commercialSheet->getType()} failed because you have already reached the monthly document limit to generate"
+                    );
+
+                    $this->redirectToRoute("business_contacts_index", ['type' => 'customer']);
+                }
+            } else { //Sinon redirection vers la page de réabonnement
+                $message = $message . "</ul>";
+                $this->addFlash(
+                    'success',
+                    "The backup of the {$commercialSheet->getType()} failed because <p>" . $message . "</p>"
+                );
+
+                //++++++++++
+            }
+        }
+
+        return $this->render(
+            'commercial_sheet/new.html.twig',
+            [
+                'form'            => $form->createView(),
+                'businessContact' => $businessContact,
+                'commercialSheet' => $commercialSheet,
+                'availabilities'  => $availabilities,
+                'inventories'     => $inventories,
+            ]
+        );
+    }
+
+    /**
+     * Permet d'afficher le formulaire d'édition d'une commande (commercialSheet)
+     *
+     * @Route("/commercial/sheet/{id<\d+>}/edit", name="commercial_sheet_edit")
+     * 
+     * @Security("is_granted('ROLE_USER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
+     * 
+     * @return Response
+     */
+    public function edit(CommercialSheet $commercialSheet, Request $request, EntityManagerInterface $manager, InventoryRepository $inventoryRepo, InventoryAvailabilityRepository $inventoryAvailabilityRepo)
+    { //
+
+        //dump($commercialSheet);
+        //Variable déterminant le type d'abonnement du client Entreprise
+        //$iconBillOnly  = true;
+        // $iconStock = true;
+        // //$iconCombination = true;
+        // $productRefNumber = $this->getUser()->getEnterprise()->getSubscription()->getProductRefNumber();
+        // $sheetNumber = $this->getUser()->getEnterprise()->getSubscription()->getSheetNumber();
+        // //dump('Sheet Number = ' . $sheetNumber);
+        // //dump('Product Ref Number = ' . $productRefNumber);
+        // if ($productRefNumber == 0) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
+        //     $iconStock = false;
+        // }
+
+        $availabilities = [];
+        $inventoryAvailabilities = [];
+        $inventory_ = null;
+
+        if ($commercialSheet->getType() == 'bill') {
+            //Récupération de l'inventaire du client Entreprise
+            $inventory_ = $inventoryRepo->findOneBy(['id' => $commercialSheet->getInventory()->getId(), 'type' => 'PF']);
+            if ($inventory_) { //Si l'inventaire existe
+                //$lots = $inventory_->getLots();
+                //Recherche des disponibilités relatif à l'inventaire associé à la facture
+                //foreach ($inventories as $inventory) {
+                //if ($inventory == $inventory_) {
+                $inventoryAvailabilities = $inventoryAvailabilityRepo->findBy(['inventory' => $commercialSheet->getInventory()]);
+                //break;
+                //}
+                //}
+
+                foreach ($inventoryAvailabilities as $inventoryAvailability) {
+                    $productId = $inventoryAvailability->getProduct()->getId();
+                    $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
+                }
+            } else {
+                //Exception de l'erreur Inventory non défini pour ce document
+            }
+        } else if ($commercialSheet->getType() == 'quote') {
+            $commercialSheet->setInventory($inventory_);
+            //$inventory_ = $inventoryRepo->findOneBy(['id' => $stock]);
+        }
+
+
+        //Permet d'obtenir un constructeur de formulaire
+        // Externaliser la création du formulaire avec la cmd php bin/console make:form
+
+        //dump($inventory_);
+        /*$choices = [];
+        foreach ($inventories as $inventory) {
+            $choices['' . strtoupper($inventory)] = ucfirst($inventory);
+        }*/
+
+        //  instancier un form externe
+        $form = $this->createForm(CommercialSheetType::class, $commercialSheet, [
+            'entId'  => $this->getUser()->getEnterprise()->getId(),
+            'isEdit' => true,
+        ]);
+
+        $form->handleRequest($request);
+
+        //dump($this->getUser()->getEnterprise()->getSubscription());
+        $commercialSheetItemErrorFlag = false;
+        $message = "<ul>";
+
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            //dump($commercialSheet);
+            $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
+            //foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
+            //if ($commercialSheetItem->getQuantity() >= 1) { //On considère uniquement les items de Qty >= 1
+            // dd($commercialSheetItem->getIsChanged());
+            // if ($commercialSheetItem->getIsChanged()) {
+            /*if ($commercialSheetItem->getItemOfferType() == 'hasStock') { //Gestion des items avec des Products en stock 
+                            //dump($type);
+                            if ($commercialSheet->getType() == 'bill') {
+                                //dump($iconStock);
+
                                 //dump($commercialSheetItem->getItemOfferType());
                                 //Recherche de la disponibilité du produit contenu dans l'item dans l'inventaire passé en paramètre
                                 $inventoryAvailability = $inventoryAvailabilityRepo->findOneBy(['inventory' => $inventory_, 'product' => $commercialSheetItem->getProduct()]);
@@ -151,6 +488,7 @@ class CommercialSheetController extends ApplicationController
                                         //de ce dernier
                                         $order_ = $inventory_->getManagementMode() == 'FIFO' ? 'asc' : 'desc';
                                         //dump($commercialSheetItem->getProduct());
+                                        $lotRepo = $manager->getRepository('App:Lot');
                                         $lots = $lotRepo->findBy(['inventory' => $inventory_, 'product' => $commercialSheetItem->getProduct()], ['dlc' => $order_]);
                                         if (!empty($lots)) {
                                             $qtyToRemove = $commercialSheetItem->getQuantity();
@@ -216,23 +554,24 @@ class CommercialSheetController extends ApplicationController
                                         $message = $message . "<li>the quantity {$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()} is greater than the availability ({$inventoryAvailability->getAvailable()})</li>";
                                     }
 
-                                    /*foreach ($inventoryAvailabilities as $inventoryAvailability) {
-                                        if ($commercialSheetItem->getProduct()->getId() == $inventoryAvailability->getProduct()->getId()) {
-                                            $inventoryAvailability->setAvailable($commercialSheetItem->getAvailable());
-                                            $manager->persist($inventoryAvailability);
-                                        }
-                                        $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
-                                        break;
-                                    }*/
+                                    // foreach ($inventoryAvailabilities as $inventoryAvailability) {
+                                    //         if ($commercialSheetItem->getProduct()->getId() == $inventoryAvailability->getProduct()->getId()) {
+                                    //             $inventoryAvailability->setAvailable($commercialSheetItem->getAvailable());
+                                    //             $manager->persist($inventoryAvailability);
+                                    //         }
+                                    //         $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
+                                    //         break;
+                                    //     }
                                 }
                             }
+                            //$manager->persist($commercialSheetItem);
+                        } else {
+                            $commercialSheetItem->setProduct(null);
                         }
-                        //$manager->persist($commercialSheetItem);
-                    } else {
-                        $commercialSheetItem->setProduct(null);
-                    }
+                    }*/
 
-                    //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
+            //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
+            /*$commercialSheetItemRepo = $manager->getRepository('App:CommercialSheetItem');
                     $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
                         'designation' => $commercialSheetItem->getDesignation(),
                         'pu' => $commercialSheetItem->getPU(),
@@ -249,11 +588,11 @@ class CommercialSheetController extends ApplicationController
                         $commercialSheetItem_->addCommercialSheet($commercialSheet);
                         $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
                         $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
-                    }
-                    //$commercialSheetItem->setProduct($service); 
-                    //dump($commercialSheetItem);
-                }
-            }
+                    }*/
+            //$commercialSheetItem->setProduct($service); 
+            //dump($commercialSheetItem);
+            //}
+            //}
             //die();
             // dump($commercialSheet->getCommercialSheetItems());
             if ($commercialSheet->getDeliveryStatus() == true) {
@@ -270,160 +609,37 @@ class CommercialSheetController extends ApplicationController
                     ->setCompletedAt($date);
             }
 
-            /*foreach ($commercialSheet->getReductions() as $reduction) {
-                dump($reduction);
-                $reduction->addOrder($commercialSheet);
-                $manager->persist($reduction);
-            }*/
+            if (!$commercialSheetItemErrorFlag) { //Si la commande est valide 
+                //die();
+                $manager->persist($commercialSheet);
+                $manager->flush();
 
-            //die();
-            //dump(date('Y-m'));
-            if ($sheetNumber) { //Si l'un des abonnements KnB Bill est activé pour le client Entreprise actuel
-                //Récupération de tous les documents de l'entreprise générés pendant le mois en cours
-                /*JOIN cms.businessContact bc   
-                JOIN bc.enterprise ent
-                AND ent.id = :entId*/
-                $sheets = $manager->createQuery("SELECT COUNT(cms.createdAt) AS CreatedDate
-                                            FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u
-                                            JOIN u.enterprise e 
-                                            WHERE cms.createdAt LIKE :nowDate 
-                                            AND e.id = :entId                                                                   
-                                            ")
-                    ->setParameters(array(
-                        'nowDate' => '%' . date('Y-m') . '%',
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                    ))
-                    ->getResult();
+                $this->addFlash(
+                    'success',
+                    "The {$commercialSheet->getType()} has been registered successfully !"
+                );
 
-                //dump($sheetNumber);
-                //dd($sheets[0]['CreatedDate']);
-                $totalSheet = intval($sheets[0]['CreatedDate']);
-                //dd($totalSheet);
-
-                if ($totalSheet < $sheetNumber) { //Si la limite mensuel de document n'est pas encore atteinte
-
-                    if (!$commercialSheetItemErrorFlag) { //Si la commande est valide 
-                        //die();
-                        $manager->persist($commercialSheet);
-                        $manager->flush();
-
-                        $this->addFlash(
-                            'success',
-                            "The {$commercialSheet->getType()} has been registered successfully !"
-                        );
-
-                        return $this->redirectToRoute('commercial_sheet_print', [
-                            'inventories' => $inventories,
-                            'id' => $commercialSheet->getId(),
-                        ]);
-                    } else {
-                        $message = $message . "</ul>";
-                        $this->addFlash(
-                            'success',
-                            "The backup of the {$commercialSheet->getType()} failed because <p>" . $message . "</p>"
-                        );
-                    }
-                } else { //Sinon redirection vers la page des partenaires d'affaire
-                    $this->addFlash(
-                        'success',
-                        "The backup of the {$commercialSheet->getType()} failed because you have already reached the monthly document limit to generate"
-                    );
-
-                    $this->redirectToRoute("business_contacts_index", ['type' => 'customer']);
-                }
-            } else { //Sinon redirection vers la page de réabonnement
+                return $this->redirectToRoute('commercial_sheet_print', [
+                    'id' => $commercialSheet->getId(),
+                ]);
+            } else {
                 $message = $message . "</ul>";
                 $this->addFlash(
                     'success',
                     "The backup of the {$commercialSheet->getType()} failed because <p>" . $message . "</p>"
                 );
-
-                //++++++++++
             }
         }
 
         return $this->render(
-            'commercial_sheet/new.html.twig',
+            'commercial_sheet/edit.html.twig',
             [
                 'form'            => $form->createView(),
-                'businessContact' => $businessContact,
                 'commercialSheet' => $commercialSheet,
                 'availabilities'  => $availabilities,
-                'inventories'     => $inventories,
+
             ]
         );
-    }
-
-    /**
-     * Permet d'afficher le formulaire d'édition d'une commande (commercialSheet)
-     *
-     * @Route("/commercial/sheet/{id<\d+>}/edit", name="commercial_sheet_edit")
-     * 
-     * @Security("is_granted('ROLE_USER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
-     * 
-     * @return Response
-     */
-    public function edit(CommercialSheet $commercialSheet, Request $request, EntityManagerInterface $manager, InventoryRepository $inventoryRepo, InventoryAvailabilityRepository $inventoryAvailabilityRepo)
-    { //
-
-        //dump($commercialSheet);
-        $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
-        //  instancier un form externe
-        $form = $this->createForm(CommercialSheetType::class, $commercialSheet, array(
-            //'orderItem' => $order->getOrderItems(),
-        ));
-        $form->handleRequest($request);
-        $availabilities = [];
-        $inventoryAvailabilities = [];
-        //$inventoryAvailabilities = $inventoryAvailabilityRepo->findBy(['inventory' => $commercialSheet->getCustomer()->getDeliveryAddress()->getInventory()]);
-        foreach ($inventoryAvailabilities as $inventoryAvailability) {
-            $productId = $inventoryAvailability->getProduct()->getId();
-            $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
-        }
-        //dump($availabilities);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            //dump($commercialSheet->getCommercialSheetItems());
-            foreach ($commercialSheet->getCommercialSheetItems() as $orderItem) {
-                if ($orderItem->getQuantity() >= 1) {
-                    foreach ($inventoryAvailabilities as $inventoryAvailability) {
-                        if ($orderItem->getProduct()->getId() == $inventoryAvailability->getProduct()->getId()) {
-                            $inventoryAvailability->setAvailable($orderItem->getAvailable());
-                            $manager->persist($inventoryAvailability);
-                        }
-                        $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
-                    }
-                    //dump($orderItem);
-                    $manager->persist($orderItem);
-                }
-                $orderItem->addOrder($commercialSheet);
-            }
-            /*foreach ($order->getReductions() as $reduction) {
-                dump($reduction);
-                $reduction->addOrder($order);
-                $manager->persist($reduction);
-            }*/
-
-            $manager->persist($commercialSheet);
-            $manager->flush();
-
-            $this->addFlash(
-                'success',
-                "The modifications of the Order ID #<strong>{$commercialSheet->getNumber()} </strong> have been saved !"
-            );
-
-            return $this->redirectToRoute('commercial_sheet_bill', [
-                'inventories' => $inventories,
-            ]);
-        }
-
-        return $this->render('commercial_sheet/edit.html.twig', [
-            'form'            => $form->createView(),
-            'commercialSheet' => $commercialSheet,
-            'availabilities'  => $availabilities,
-            'inventories'     => $inventories,
-        ]);
     }
 
     /**
@@ -437,12 +653,37 @@ class CommercialSheetController extends ApplicationController
      * @param EntityManagerInterface $manager
      * @return void
      */
-    public function delete(CommercialSheet $commercialSheet, InventoryRepository $inventoryRepo, EntityManagerInterface $manager)
+    public function delete(CommercialSheet $commercialSheet, EntityManagerInterface $manager)
     {
+        $businessContact = $manager->getRepository('App:BusinessContact')->findOneBy(['id' => $commercialSheet->getBusinessContact()->getId()]);
+        //dump($businessContact);
         foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
+            $cmsiLots = $manager->getRepository('App:CommercialSheetItemLot')->findBy(['commercialSheetItem' => $commercialSheetItem]);
+            //dump($cmsiLots);
+            foreach ($cmsiLots as $cmsiLot) {
+                $lot = $cmsiLot->getLot();
+                //dump($lot);
+                $inventoryAvailability = $manager->getRepository('App:InventoryAvailability')->findOneBy(['inventory' => $lot->getInventory(), 'product' => $lot->getProduct()]);
+                if ($inventoryAvailability) {
+                    //dump($inventoryAvailability);
+                    $tmp = $inventoryAvailability->getAvailable() + $cmsiLot->getQuantity();
+                    $inventoryAvailability->setAvailable($tmp);
+                    //dump($inventoryAvailability);
+
+                    $manager->persist($inventoryAvailability);
+                }
+                $qty = $lot->getQuantity() + $cmsiLot->getQuantity();
+                $lot->setQuantity($qty);
+                //dump($lot);
+                $manager->persist($lot);
+            }
             $commercialSheetItem->removeCommercialSheet($commercialSheet);
+            //dump($commercialSheetItem);
             $manager->persist($commercialSheetItem);
         }
+        $businessContact->removeCommercialSheet($commercialSheet);
+        $manager->persist($businessContact);
+        //die();
         $manager->remove($commercialSheet);
         $manager->flush();
 
@@ -592,7 +833,7 @@ class CommercialSheetController extends ApplicationController
     /**
      * Permet d'afficher la fiche journalière de livraison ou de sortie de stock
      * 
-     * @Route("/journal/{journal<[a-z]+>}/{town<\d+>}", name="print_journal")
+     * @Route("/journal/{journal<[a-z]+>}", name="print_journal")
      *
      * @param [type] $journal
      * @param [type] $town
@@ -600,7 +841,7 @@ class CommercialSheetController extends ApplicationController
      * @param CommercialSheetRepository $orderRepo
      * @return void
      */
-    public function printJournal($journal, $town, Request $request, CommercialSheetRepository $commercialSheetRepo, InventoryRepository $inventoryRepo, ProductRepository $productRepo)
+    public function printJournal($journal, Request $request, CommercialSheetRepository $commercialSheetRepo, InventoryRepository $inventoryRepo, ProductRepository $productRepo)
     {
         //dump($request->request->get("commercialSheetIds"));
         $inventories = $inventoryRepo->findAll();
@@ -611,20 +852,20 @@ class CommercialSheetController extends ApplicationController
             if (!empty($paramJSON['commercialSheetIds'])) {
                 $commercialSheets = [];
                 foreach ($paramJSON['commercialSheetIds'] as $id) {
-                    $orders[] = $commercialSheetRepo->findOneBy(['id' => intval($id)]);
+                    $commercialSheets[] = $commercialSheetRepo->findOneBy(['id' => intval($id)]);
                 }
                 //dump($commercialSheets);
                 if ($journal == 'delivery') {
                     return $this->render('commercial_sheet/printDeliveryJournal.html.twig', [
                         'commercialSheets' => $commercialSheets,
-                        'town'             => $inventoryRepo->findOneBy(['id' => $town])->getName(),
+                        //'town'             => $inventoryRepo->findOneBy(['id' => $town])->getName(),
                         'inventories'      => $inventories
                     ]);
                 } else if ($journal == 'inventory') {
                     $products = $productRepo->findAll();
                     return $this->render('commercial_sheet/printInventoryExitJournal.html.twig', [
                         'commercialSheets'  => $commercialSheets,
-                        'town'              => $inventoryRepo->findOneBy(['id' => $town])->getName(),
+                        //'town'              => $inventoryRepo->findOneBy(['id' => $town])->getName(),
                         'products'          => $products,
                         'inventories'       => $inventories,
                     ]);

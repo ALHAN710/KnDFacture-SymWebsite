@@ -17,23 +17,34 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 class CommercialSheetItemType extends ApplicationType
 {
     private $entId;
+    private $isEdit;
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->entId = $options['entId'];
+        $this->entId  = $options['entId'];
+        $this->isEdit = $options['isEdit'];
+        //dump($this->isEdit);
         $builder
             ->add(
                 'reference',
                 TextType::class,
                 $this->getConfiguration("Reference", "Please enter the reference of Offer...", [
                     'required' => false,
+                    'attr' => [
+                        //'disabled' => true,
+                        'readonly' => $this->isEdit
+                    ]
 
                 ])
             )
             ->add(
                 'designation',
                 TextType::class,
-                $this->getConfiguration("Designation", "Please enter the designation of Offer...")
+                $this->getConfiguration("Designation", "Please enter the designation of Offer...", [
+                    'attr' => [
+                        'readonly' => $this->isEdit
+                    ]
+                ])
             )
             ->add(
                 'pu',
@@ -41,6 +52,7 @@ class CommercialSheetItemType extends ApplicationType
                 $this->getConfiguration("P.U (XAF)", "Please enter the unit price of service", [
                     'attr' => [
                         'min' => 0,
+                        'readonly' => $this->isEdit
                     ]
                 ])
             )
@@ -173,6 +185,14 @@ class CommercialSheetItemType extends ApplicationType
 
             //->add('commercialSheet')
         ;
+
+        if ($this->isEdit) {
+            $builder
+                ->add(
+                    'isChanged',
+                    IntegerType::class,
+                );
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -180,6 +200,7 @@ class CommercialSheetItemType extends ApplicationType
         $resolver->setDefaults([
             'data_class' => CommercialSheetItem::class,
             'entId'      => 0,
+            'isEdit'     => false,
         ]);
     }
 }

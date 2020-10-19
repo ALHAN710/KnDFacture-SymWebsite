@@ -102,7 +102,14 @@
         <!-- App js -->
         {# <script src="/js/jquery.core.js"></script> #}
         <script src="/js/app.js"></script>
-
+        {# <script>
+            $(window).load(function(){
+                $('body').backDetect(function(){
+                // Callback function
+                alert("Look forward to the future, not the past!");
+                });
+            });
+        </script> #}
         {% block javascripts %}{% endblock %}
     </body>
 </html>

@@ -33,19 +33,19 @@ class CommercialSheetType extends ApplicationType
                 'commercialSheetItems',
                 CollectionType::class,
                 [
-                    'entry_type'   => CommercialSheetItemType::class,
-                    'allow_add'    => true,
-                    'allow_delete' => true,
+                    'entry_type'    => CommercialSheetItemType::class,
+                    'allow_add'     => true,
+                    'allow_delete'  => true,
                     'entry_options' => array(
-
-                        'entId' => $options['entId']
+                        'isEdit' => $options['isEdit'],
+                        'entId'  => $options['entId']
                     ),
                 ]
             )
             ->add(
                 'itemsReduction',
                 NumberType::class,
-                $this->getConfiguration("Total reduction of items (%)", "Please enter the % reduction of items...", [
+                $this->getConfiguration("Reduction Totale sur les Articles (%)", "Veuillez spécifier la réducction totale sur les articles...", [
                     'attr' => [
                         'min'   => '0',
                         //'value' => '0'
@@ -55,7 +55,7 @@ class CommercialSheetType extends ApplicationType
             ->add(
                 'fixReduction',
                 NumberType::class,
-                $this->getConfiguration("Fix Reduction (XAF)", "Please enter the fix reduction...", [
+                $this->getConfiguration("Reductions Fixes (XAF)", "Veuillez spécifier le montant des réductions fixes...", [
                     'attr' => [
                         'min'   => '0',
                         //'value' => '0'
@@ -65,21 +65,21 @@ class CommercialSheetType extends ApplicationType
             ->add(
                 'deliveryMode',
                 TextType::class,
-                $this->getConfiguration("Delivery Mode", "Please enter the Delivery Mode...", [
+                $this->getConfiguration("Mode de Livraison", "Veuillez spécifier le mode de livraison...", [
                     'required' => false,
                 ])
             )
             ->add(
                 'paymentMode',
                 TextType::class,
-                $this->getConfiguration("Payment Mode", "Please enter the Payment Mode...", [
+                $this->getConfiguration("Mode de Paiement", "Veuillez spécifier le mode de paiement...", [
                     'required' => false,
                 ])
             )
             ->add(
                 'duration',
                 IntegerType::class,
-                $this->getConfiguration("Duration (days)", "Please enter the duration in days of Quote...", [
+                $this->getConfiguration("Durée (jours)", "Veuillez spécifier la durée de validité du devis...", [
                     'attr' => [
                         'min'   => '0',
                     ]
@@ -89,7 +89,7 @@ class CommercialSheetType extends ApplicationType
                 'paymentStatus',
                 CheckboxType::class,
                 [
-                    'label'    => 'Already Paid ?',
+                    'label'    => 'Payé ?',
                     'required' => false,
                 ]
             )
@@ -97,7 +97,7 @@ class CommercialSheetType extends ApplicationType
                 'completedStatus',
                 CheckboxType::class,
                 [
-                    'label'    => 'Already Complete ?',
+                    'label'    => 'Payé et Livré ?',
                     'required' => false,
                 ]
             )
@@ -105,14 +105,14 @@ class CommercialSheetType extends ApplicationType
                 'deliveryStatus',
                 CheckboxType::class,
                 [
-                    'label'    => 'Already Deliver ?',
+                    'label'    => 'Livré ?',
                     'required' => false,
                 ]
             )
             ->add(
                 'advancePayment',
                 NumberType::class,
-                $this->getConfiguration("Advance Payment (XAF)", "Please enter the Advance Payment...", [
+                $this->getConfiguration("Avance (XAF)", "Veuillez spécifier le montant avancé...", [
                     'attr' => [
                         'min'   => '0',
                         //'value' => '0'
@@ -137,6 +137,7 @@ class CommercialSheetType extends ApplicationType
         $resolver->setDefaults([
             'data_class' => CommercialSheet::class,
             'entId'      => 0,
+            'isEdit'     => false,
         ]);
     }
 }

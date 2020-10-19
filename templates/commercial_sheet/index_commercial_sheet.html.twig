@@ -11,17 +11,26 @@
 
 {% endblock %}
 
+{% set docType = '' %}
+{% if type == 'bill' %}
+    {% set docType = 'Facture' %}
+{% elseif type == 'quote' %}
+    {% set docType = 'Devis' %}
+{% elseif type == 'purchaseorder' %}
+    {% set docType = 'Bon de Commande' %}
+{% endif %}
+
 {% block pageTitle %}
-<h4 class="page-title mb-2"><i class="mdi mdi-file-table-outline mr-2"></i>Commercial Sheets</h4>  
+<h4 class="page-title mb-2"><i class="mdi mdi-file-table-outline mr-2"></i>Documents</h4>  
 {% endblock %}
 
 {% set iconStock = true %}
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">Commercial Sheets</li>
-            <li class="breadcrumb-item active">{% if type == 'purchaseorder' %}Purchase Order{% else %}{{type}}{% endif %}</li>
-            <li class="breadcrumb-item active">Dashboard</li>
+            <li class="breadcrumb-item active">Accueil</li>
+            <li class="breadcrumb-item active">Documents</li>
+            <li class="breadcrumb-item active">{{ docType }}</li>
         </ol>
     </div>
 {% endblock %}
@@ -32,17 +41,18 @@
         <div class="col-lg-12 col-sm-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <h5 class="header-title">Lists of {% if type == 'purchaseorder' %}Purchase Order{% else %}{{type}}{% endif %}
+                    <h5 class="header-title">Liste des {{docType ~ "S"}}
                     </h5>
                     {% if type != 'quote' %}
                     <div class="row ">
                         <div class="col"></div>
-                        <div class="col text-right">
+                        <div class="col text-right" id="colSaveBtn">
                             {# <div class="mt-2 mb-2">
                                 <a href="{{path('customers_index')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New product"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-cart-outline"></i></a>
                             </div> #}
+                                                        
                             <div class="mt-2 mb-2 savebtn">
-                                <button type="button" class="btn btn-primary" id="saveBtn" data-toggle="tooltip" data-placement="top" title="Save the Commercial Sheets Status">
+                                <button type="button" class="btn btn-primary" id="saveBtn" data-toggle="tooltip" data-placement="top" title="Sauvegarder les changements de status des commandes ?">
                                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
                                     Save
                                 </button>
@@ -54,13 +64,13 @@
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" href="#delivery" role="tab">Delivery On Pending</a>
+                            <a class="nav-link active" data-toggle="tab" href="#delivery" role="tab">En Attente de Livraison</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#payment" role="tab">Payment On Pending</a>
+                            <a class="nav-link" data-toggle="tab" href="#payment" role="tab">En Attente de Paiement</a>
                         </li>                                                
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#completed" role="tab">Completed</a>
+                            <a class="nav-link" data-toggle="tab" href="#completed" role="tab">Payés et Livrés</a>
                         </li>
                     </ul>
 
@@ -69,22 +79,22 @@
                     {# {% autoescape %}{{ '<span class="badge bg">on pending</span>'|raw }}{% endautoescape %} #}
                         <div class="tab-content">
                             <div class="tab-pane active p-3" id="delivery" role="tabpanel">    
-                                {# {% if type == 'bill' %}
-                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Delivery Journal"><i class="fa fa-print"></i></button>
-                                <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button> 
-                                {% endif %}  #}
+                                {% if type == 'bill' %}
+                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Imprimé les Commandes cochées dans le journal des livraisons du jour ?"><i class="fa fa-print"></i></button>
+                                {# <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button>  #}
+                                {% endif %} 
                                 <table id="datatableDelivery" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr class="text-center">
-                                            {# {% if type == 'bill' %}
-                                            <th style="width:0.5em"></th>
-                                            {% endif %} #}
-                                            <th>N° {{type|capitalize}}</th>
-                                            <th>Customer</th>
-                                            <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
+                                            {% if type == 'bill' %}
+                                            <th style="width:0.5em">À Livrer ?</th>
+                                            {% endif %}
+                                            <th>N° {{docType}}</th>
+                                            <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
+                                            <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                             {# <th>Payment Date</th> #}
-                                            <th>Amount (XAF)</th>
-                                            <th>Delivered</th>
+                                            <th>Montant (XAF)</th>
+                                            <th>Livré ?</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -93,14 +103,14 @@
                                         {% for commercialSheet in commercialSheets %}
                                         {% if commercialSheet.deliveryStatus == false %}
                                         <tr class="text-center">
-                                            {# {% if type == 'bill' %}
+                                            {% if type == 'bill' %}
                                             <td style="width:5px">
                                                 <div class="checkbox checkbox-primary">
                                                     <input id="Journal{{commercialSheet.id}}" type="checkbox" name="journal" value="{{commercialSheet.id}}">
                                                     <label for="Journal{{commercialSheet.id}}"></label>
                                                 </div>
                                             </td>
-                                            {% endif %} #}
+                                            {% endif %}
                                             <td>{{commercialSheet.number}}</td>
                                             <td>{{commercialSheet.businessContact.socialReason}}</td>
                                             <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
@@ -111,7 +121,7 @@
                                             {{commercialSheet.payAt|date("d/m/Y") }}
                                             {% endif %}
                                             </td> #}
-                                            <td>{{commercialSheet.amountNetToPaid}}</td>
+                                            <td>{{commercialSheet.amountRestToPaid}}</td>
                                             <td>
                                                 <div class="checkbox checkbox-primary">
                                                     <input id="checkbox{{commercialSheet.id}}" type="checkbox" name="delivered" value="{{commercialSheet.id}}">
@@ -119,9 +129,9 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {{commercialSheet.type|capitalize}}"><i class="far fa-edit"></i> </a> #}
-                                                <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline "></i> </a>
-                                                <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {{commercialSheet.type|capitalize}}"><i class="fas fa-trash"></i> </a>
+                                                <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifier la Commande"><i class="far fa-edit"></i> </a>
+                                                <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline "></i> </a>
+                                                <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer {{docType}}"><i class="fas fa-trash"></i> </a>
                                                 
                                             </td>
                                             
@@ -141,12 +151,12 @@
                                         <thead>
                                             <tr class="text-center">
                                                 {# <th style="width:0.5em"></th> #}
-                                                <th>N° {{type|capitalize}}</th>
-                                                <th>Customer</th>
-                                                <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
+                                                <th>N° {{docType}}</th>
+                                                <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
+                                                <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                                 {# <th>Delivery Date</th> #}
-                                                <th>Amount (XAF)</th>
-                                                <th>Paid</th>
+                                                <th>Montant (XAF)</th>
+                                                <th>Payé ?</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -160,7 +170,7 @@
                                                 <td>{{commercialSheet.businessContact.socialReason}}</td>
                                                 <td>{{commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
                                                 {# <td>{{commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td> #}
-                                                <td>{{commercialSheet.amountNetToPaid}}</td>
+                                                <td>{{commercialSheet.amountRestToPaid}}</td>
                                                 <td class="align-items-center">
                                                     <div class="checkbox checkbox-primary">
                                                         <input id="paidCheckbox{{commercialSheet.id}}" type="checkbox" name="paid" value="{{commercialSheet.id}}">
@@ -168,9 +178,9 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {{commercialSheet.type|capitalize}}"><i class="far fa-edit"></i> </a> #}
-                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline"></i> </a>
-                                                    <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete {{commercialSheet.type|capitalize}}"><i class="fas fa-trash"></i> </a>
+                                                    <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifier la Commande"><i class="far fa-edit"></i> </a>
+                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline"></i> </a>
+                                                    <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer {{docType}}"><i class="fas fa-trash"></i> </a>
                                                 </td>
                                                 
                                             </tr>
@@ -183,31 +193,21 @@
 
                             <div class="tab-pane p-3" id="completed" role="tabpanel">
                                 <div class="">
-                                    <table id="datatable4" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <table id="datatableCompleted" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr class="text-center">
-                                                <th>N° {{type|capitalize}}</th>
-                                                <th>Customer</th>
-                                                <th>{% if type == 'bill' %}Billing Date{% else %}Date of Issue{% endif %}</th>
-                                                <th>Delivery Date</th>
-                                                <th>Payment Date</th>
-                                                <th>Amount (XAF)</th>
+                                                <th>N° {{docType}}</th>
+                                                <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
+                                                <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
+                                                <th>Date de Livraison</th>
+                                                <th>Date de Paiement</th>
+                                                <th>Montant (XAF)</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
 
                                         <tbody>
                                             {% for commercialSheet in commercialSheets %}
-                                            {# {% set itemsAmount = 0 %}
-                                            {% set promoAmount = 0 %}
-                                            {% set total = 0 %}
-                                            {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
-                                                {% set itemsAmount = itemsAmount + (commercialSheetItem.quantity * commercialSheetItem.pu) %}
-                                            
-                                            {% endfor %}
-                                            {% set promoAmount = promoAmount + commercialSheet.itemsReduction + commercialSheet.fixReduction %}
-                                            {% set taxes = (app.user.enterprise.tva / 100.0) * itemsAmount %}
-                                            {% set total = itemsAmount + commercialSheet.deliveryFees + taxes - promoAmount %} #}
                                             {% if commercialSheet.completedStatus == true %}
                                             <tr class="text-center">
                                                 <td>{{commercialSheet.number}}</td>
@@ -215,9 +215,9 @@
                                                 <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
                                                 <td>{{ commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td>
                                                 <td>{{ commercialSheet.payAt is empty ? "-" : commercialSheet.payAt|date("d/m/Y") }}</td>
-                                                <td>{{commercialSheet.advancePayment}}</td>
+                                                <td>{{commercialSheet.amountNetToPaid}}</td>
                                                 <td>
-                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View {{commercialSheet.type|capitalize}}"><i class="mdi mdi-file-table-outline"></i> </a>    
+                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline"></i> </a>    
                                                 </td>
                                                 
                                             </tr>
@@ -253,12 +253,12 @@
                             <thead>
                                 <tr class="text-center">
                                     {# <th style="width:0.5em"></th> #}
-                                    <th>N° Quote</th>
-                                    <th>Customer</th>
-                                    <th>Date of Issue</th>
-                                    <th>Expiry Date</th>
-                                    <th>Invalidity Alert</th>
-                                    <th>Amount (XAF)</th>
+                                    <th>N° Devis</th>
+                                    <th>Client</th>
+                                    <th>Date d'émission</th>
+                                    <th>Date limite de validité</th>
+                                    <th>Alerte Invalidité</th>
+                                    <th>Montant (XAF)</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -278,9 +278,9 @@
                                     <td>{{commercialSheet.periodofvalidity|date("d/m/Y")}}</td>
                                     <td>
                                         {% if commercialSheet.alert %}
-                                        <span class="badge badge-success">valid</span>  
+                                        <span class="badge badge-soft-success">valide</span>  
                                         {% else %}  
-                                        <span class="badge badge-danger">invalid</span>  
+                                        <span class="badge badge-soft-danger">invalide</span>  
                                         {% endif %}
                                     </td>
                                     <td>{{commercialSheet.amountNetToPaid}}</td>
@@ -292,9 +292,10 @@
                                     </td> #}
                                     <td>
                                         {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Quote"><i class="far fa-edit"></i> </a> #}
-                                        <a href="{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}" class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Convert Quote To Bill"><i class="fas fa-exchange-alt"></i> </a>
-                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete Quote"><i class="fas fa-trash"></i> </a>
-                                        
+                                        <a href="{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}" class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Convertir le Devis en Facture"><i class="fas fa-exchange-alt"></i> </a>
+                                        <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir la Facture de la commande ?"><i class="mdi mdi-file-table-outline"></i> </a>    
+                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer le Devis"><i class="fas fa-trash"></i> </a>
+                                                
                                     </td>
                                     
                                 </tr>
@@ -346,62 +347,72 @@
         });
         console.log('Tab Mark Delivered : ' + tabDelivered)
         console.log('Tab Mark Paid : ' + tabPaid)
+        if (tabDelivered.length > 0 || tabPaid.length > 0){
+            var $data = JSON.stringify({
+                "commercialSheetDeliveredIds": tabDelivered,//tabGridId,
+                "commercialSheetPaidIds": tabPaid,//tabFuelId,
+                //"selectedDate": $date
+            });
 
-        var $data = JSON.stringify({
-            "commercialSheetDeliveredIds": tabDelivered,//tabGridId,
-            "commercialSheetPaidIds": tabPaid,//tabFuelId,
-            //"selectedDate": $date
-        });
+            $.ajax({
+                type: "POST",//method type
+                contentType: "application/json; charset=utf-8",
+                url: _url,///Target function that will be return result
+                data: $data,//parameter pass data is parameter name param is value 
+                dataType: "json",
+                timeout: 120000,//64241
+                success: function (data) {
+                    //alert("Success");
+                    console.log(data);  
+                    function reload_() {
+                        //window.location.replace("https://waytolearnx.com");
+                        location.reload(true);
+                    }      
+                    setTimeout(reload_, 5000);  
+                    
+                },
+                error: function (result) {
+                    console.log("Error");
+                    console.log(result);
+                }
+            });
 
-        $.ajax({
-            type: "POST",//method type
-            contentType: "application/json; charset=utf-8",
-            url: _url,///Target function that will be return result
-            data: $data,//parameter pass data is parameter name param is value 
-            dataType: "json",
-            timeout: 120000,//64241
-            success: function (data) {
-                //alert("Success");
-                console.log(data);  
-                function reload_() {
-                    //window.location.replace("https://waytolearnx.com");
-                    location.reload(true);
-                }      
-                setTimeout(reload_, 5000);  
-                
-            },
-            error: function (result) {
-                console.log("Error");
-                console.log(result);
-            }
-        });
+        }
+        else{
+            $('#colSaveBtn').
+            prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Aucune Commande n\'est cochée comme livré ou payé !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
+            
+        }
     });
-    {% if type != 'quote' %}
+    {# {% if type != 'quote' %}
     $('#completed').click(function(){
         $('.savebtn').addClass('d-none');
         console.log('completed tab clicked');
     });
-    {% endif %}
-    {# $('#deliveryJournalBtn').click(function(){
+    {% endif %} #}
+    $('#deliveryJournalBtn').click(function(){
         console.log('Delivery Journal Btn clicked');
         var tabJournal = [];
         $("input:checkbox[name=journal]:checked").each(function(){
             tabJournal.push($(this).val());
         });
         console.log('Tab Journal : ' + tabJournal);
-        if (tabJournal.length === 0){
+        if (tabJournal.length > 0){
 
-        }
-        else{
-            $.redirect("{{path('print_journal',{'journal':'delivery','town':inventory.id})}}",
+            $.redirect("{{path('print_journal',{'journal':'delivery'})}}",
                 {
                     commercialSheetIds: {'commercialSheetIds':tabJournal},
                 },
             "POST", "_blank");
 
         }
+        else{
+            $('#delivery').
+            prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Aucune Commande n\'est cochée pour le journal de livraison !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
+            
+        }
     });
-    $('#inventoryExitJournalBtn').click(function(){
+    {# $('#inventoryExitJournalBtn').click(function(){
         console.log('Inventory Exit Journal Btn clicked');
         var tabJournal = [];
         $("input:checkbox[name=journal]:checked").each(function(){
