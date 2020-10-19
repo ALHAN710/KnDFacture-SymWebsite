@@ -411,6 +411,7 @@
                                 $('#ET_' + value['id']).text(value['ET']);
                                 $('#qtyMax_' + value['id']).text(value['MAX']);
                                 $('#qtyMin_' + value['id']).text(value['MIN']);
+                                $('#available_' + value['id']).text(data['available'][index]['av']);
 
                                 ss = parseFloat(value['ET']) * const_;
                                 pc = ss + parseFloat(value['AVG']) * approvDelay;
