@@ -200,6 +200,8 @@ class EnterpriseDashboardController extends ApplicationController
             $purchaseNb = 0;
             $converted = 0;
             $per        = '';
+            $xturnOverPer = [];
+            $turnOverAmountPer = [];
             $xamountRecettesPer = [];
             $amountRecettesPer = [];
             $xexpensesPer = [];
