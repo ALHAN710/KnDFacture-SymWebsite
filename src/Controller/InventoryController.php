@@ -291,24 +291,26 @@ class InventoryController extends ApplicationController
             $endDate = new DateTime($paramJSON['endDate']);
 
             $nowTime = new DateTime("now");
-            $nowTime = $nowTime->format('d/m/Y');
+            //$nowTime = $nowTime->format('d/m/Y');
             //$nowTime = $nowTime->format('H:m:i');
             //dump($endDate);
             //dump($endDate->format('d-m-Y'));
             //dump($nowTime);
-
-            if ($endDate->format('d/m/Y') == $nowTime) {
-                $nowTime = new DateTime("now");
+            //dump($endDate->format('d/m/Y'));
+            if ($endDate == $startDate) {
+                //$nowTime = new DateTime("now");
+                //dump($nowTime);
+                $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
+                //dump($endDate->format('Y-m-d H:i:s'));
+            } else {
                 $nowTime = $nowTime->format('H:m:i');
                 $endDate = new DateTime($paramJSON['endDate'] . ' ' . $nowTime);
-                //dump($nowTime);
-            } else {
-                $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
+                //dump($startDate->format('Y-m-d H:i:s'));
+                //dump($endDate->format('Y-m-d H:i:s'));
             }
             // $startDate = new DateTime("yesterday");
             // $endDate = new DateTime("now");
             $inv = $paramJSON['inv'];
-            //dump($endDate);
             $stockMovements = $manager->createQuery("SELECT st.createdAt AS dat, p.sku AS sku, p.name AS nam, 
                                                     l.number AS numLot, l.dlc AS dlc, st.type AS typ, st.quantity AS qty
                                                     FROM App\Entity\StockMovement st
