@@ -19,6 +19,7 @@
     </div>
 {% endblock %}
 
+{% form_theme form 'category/_collection.html.twig' %}
 
 {% block body %}
 <div class="row ">
@@ -38,6 +39,8 @@
                     </div>
                 </div>
 
+                {{ form_widget(form.products) }}
+
                 <button type="submit" class="btn btn-primary mt-4" id="saveBtn">
                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
                     Save
@@ -51,7 +54,7 @@
 {% endblock %}
 
 {% block javascripts %}
-
+<script src="/js/category.js"></script>
 <script>
     $('#saveBtn').click(function(){
         //block of code that runs when the click event triggers

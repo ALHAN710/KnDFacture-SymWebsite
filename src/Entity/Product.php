@@ -94,6 +94,13 @@ class Product
      */
     private $categories;
 
+    private $product;
+    private $productName;
+    private $productPrice;
+    private $productSku;
+    private $productDescription;
+    private $productHasStock;
+
     public function __construct()
     {
         //$this->orderItems = new ArrayCollection();
@@ -333,6 +340,78 @@ class Product
             $this->categories->removeElement($category);
             $category->removeProduct($this);
         }
+
+        return $this;
+    }
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(Product $product): self
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    public function getProductName(): ?Product
+    {
+        return $this->productName;
+    }
+
+    public function setProductName(Product $productName): self
+    {
+        $this->productName = $productName;
+
+        return $this;
+    }
+
+    public function getProductPrice(): ?Product
+    {
+        return $this->productPrice;
+    }
+
+    public function setProductPrice(Product $productPrice): self
+    {
+        $this->productPrice = $productPrice;
+
+        return $this;
+    }
+
+    public function getProductSku(): ?Product
+    {
+        return $this->productSku;
+    }
+
+    public function setProductSku(Product $productSku): self
+    {
+        $this->productSku = $productSku;
+
+        return $this;
+    }
+
+    public function getProductDescription(): ?Product
+    {
+        return $this->productDescription;
+    }
+
+    public function setProductDescription(Product $productDescription): self
+    {
+        $this->productDescription = $productDescription;
+
+        return $this;
+    }
+
+    public function getProductHasStock(): ?Product
+    {
+        return $this->productHasStock;
+    }
+
+    public function setProductHasStock(Product $productHasStock): self
+    {
+        $this->productHasStock = $productHasStock;
 
         return $this;
     }

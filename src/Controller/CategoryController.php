@@ -41,15 +41,35 @@ class CategoryController extends AbstractController
 
         //Permet d'obtenir un constructeur de formulaire
         // Externaliser la création du formulaire avec la cmd php bin/console make:form
-
+        //dump($this->getUser()->getEnterprise()->getId());
         //  instancier un form externe
-        $form = $this->createForm(CategoryType::class, $category);
+        $form = $this->createForm(CategoryType::class, $category, [
+            'entId'       => $this->getUser()->getEnterprise()->getId(),
+            'forCategory' => true,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            //$manager = $this->getDoctrine()->getManager();
+            //dump($category);
+            foreach ($category->getProducts() as $product) {
+                $product_ = $product->getProductName();
 
+                if (empty($product_)) {
+                    $product->addCategory($category);
+                    $manager->persist($product);
+                    // dump('product dont exists ');
+                } else {
+                    //dump('product exists with id = ' . $product_->getId());
+                    //$product = $product_;
+                    $product_->addCategory($category);
+                    $category->addProduct($product_);
+                    $category->removeProduct($product);
+                }
+                // $manager->persist($category);
+                //$manager->persist($product);
+            }
+            //die();
             $manager->persist($category);
             $manager->flush();
             $this->addFlash(
@@ -86,14 +106,39 @@ class CategoryController extends AbstractController
     { //
 
         //  instancier un form externe
-        $form = $this->createForm(CategoryType::class, $category);
+        $form = $this->createForm(CategoryType::class, $category, [
+            'entId'       => $this->getUser()->getEnterprise()->getId(),
+            'forCategory' => true,
+        ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //dump($category->getProducts());
+            foreach ($category->getProducts() as $product) {
 
-            //$manager = $this->getDoctrine()->getManager();
+                //dump($product);
+                // $category->addProduct($product);
+                //$product->addCategory($category);
+                //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
+                $product_ = $product->getProductName();
+
+                if (empty($product_)) {
+                    $product->addCategory($category);
+                    $manager->persist($product);
+                    //dump('product dont exists ');
+                } else {
+                    //dump('product exists with id = ' . $product_->getId());
+                    //$product = $product_;
+                    $product_->addCategory($category);
+                    $category->addProduct($product_);
+                    $category->removeProduct($product);
+                }
+                // $manager->persist($category);
+                //$manager->persist($product);
+            }
             $manager->persist($category);
+            //die();
             $manager->flush();
 
             $this->addFlash(
@@ -123,6 +168,11 @@ class CategoryController extends AbstractController
      */
     public function delete(Category $category, EntityManagerInterface $manager)
     {
+        foreach ($category->getProducts() as $product) {
+            $product->removeCategory($category);
+
+            $manager->persist($product);
+        }
         $manager->remove($category);
         $manager->flush();
 

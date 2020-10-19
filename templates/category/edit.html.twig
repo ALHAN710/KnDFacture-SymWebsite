@@ -19,6 +19,7 @@
     </div>
 {% endblock %}
 
+{% form_theme form 'category/_collection.html.twig' %}
 
 {% block body %}
 <div class="row ">
@@ -38,6 +39,8 @@
                     </div>
                 </div>
 
+                {{ form_widget(form.products) }}
+
                 <button type="submit" class="btn btn-primary mt-4" id="saveBtn">
                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
                     Save
@@ -51,7 +54,6 @@
 {% endblock %}
 
 {% block javascripts %}
-
 <script>
     $('#saveBtn').click(function(){
         //block of code that runs when the click event triggers
@@ -59,7 +61,24 @@
         $(this).children('span').removeClass('d-none');
         //$('#saveBtn').prop('disabled', true);
     });
+
+    var nbItem = +$('button[data-action="delete"]').length;
+    
+    for (let index = 0; index < nbItem; index++) {
+        
+        $('.colName_category_products_' + index).removeClass('d-none');
+        $('.colproductName_category_products_' + index).addClass('d-none');
+
+        $('#category_products_' + index + '_name').attr('readonly', true);
+        //var Str = String($(productPriceId).val());
+        //var Name = $(productPriceId + ' option[value=\"' + Str + '\"]').text();
+        //var puId_ = String(Name); 
+        //$(puId).val(puId_);
+        
+        
+    }
     
 </script>
+<script src="/js/category.js"></script>
 
 {% endblock %}
