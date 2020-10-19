@@ -317,8 +317,8 @@ class EnterpriseDashboardController extends ApplicationController
 
                 foreach ($RecettesPer as $d) {
                     $xamountRecettesPer[] = $d['jour'];
-                    $tmp       = $d['amountRecettes'] == null ? '0' : number_format((float) floatval($d['amountRecettes']), 2, '.', '');
-                    $amountRecettesPer[]   = $tmp;
+                    $tmp                  = $d['amountRecettes'] == null ? '0' : number_format((float) floatval($d['amountRecettes']), 2, '.', '');
+                    $amountRecettesPer[]  = $tmp;
                 }
 
                 //Détermination des dépenses fournisseurs TTC
