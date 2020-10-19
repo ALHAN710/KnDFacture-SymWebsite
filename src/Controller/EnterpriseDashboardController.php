@@ -161,7 +161,7 @@ class EnterpriseDashboardController extends ApplicationController
     }
 
     /**
-     * Permet la MAJ du tableau des mouvements de stock
+     * Permet la MAJ du dashboard client entreprise
      * 
      * @Route("/enterprise/dashboard/update/", name="enterprise_dash_update") 
      *
