@@ -1,0 +1,196 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Informations {% if businessContact.type == 'customer' %}Client{% elseif businessContact.type == 'supplier' %}Fournisseur{% endif %}{% endblock %}
+
+{% block stylesheets %}
+
+<link href="/plugins/custombox/custombox.min.css" rel="stylesheet" type="text/css">
+
+<!-- DataTables -->
+<link href="/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<!-- Responsive datatable examples -->
+<link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />  
+
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="mdi mdi-account-multiple mr-2"></i>{% if businessContact.type == 'customer' %}Client{% elseif businessContact.type == 'supplier' %}Fournisseur{% endif %}</h4>  
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Informations</li>
+            <li class="breadcrumb-item active">{% if businessContact.type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block body %}
+{# {{ dump('iconStock = ' ~ iconStock) }} #}
+    {#<div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body">
+
+                    {% if customers|length > 0 %}
+                    <h4 class="mt-0 header-title">List of Customers</h4>
+                    <div class="mt-2 mr-5 text-right">
+                        <a href="{{path('customer_create')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New Customer"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-sm-12">
+                            <div class="card-box table-responsive">
+                                <table id="datatable-responsive1" class="table dt-responsive nowrap gridTabReport" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Tel</th>
+                                            <th>Address</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for customer in customers %}
+                                        <tr class="text-center">
+                                            <td>{{customer.id}}</td>
+                                            <td>{{customer.fullName}}</td>
+                                            <td>{{customer.phoneNumber}}</td>
+                                            <td>{{customer.address}}</td>
+                                            <td>
+                                                <a href="{{path('customer_edit', {'id':customer.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Customer"><i class="far fa-edit"></i> </a>
+                                                <a href="#" class="btn btn-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Place Order"><i class="mdi mdi-cart-outline"></i> 
+                                                </a>
+                                                <a href="{{path('customer_delete', {'id':customer.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete Customer"><i class="fas fa-trash"></i> </a>
+                                            
+                                            </td>
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+                    </div>
+                        
+                    {% else %}
+        
+                    {% endif %}                                           
+                    </div>        
+                </div>
+            </div>
+        </div>
+    </div>#}   
+    
+    <div class="row">
+        <div class="col-lg-12 col-sm-12">
+            <div class="card">
+                <div class="card-body table-responsive">
+                    <h5 class="header-title">Informations du {% if businessContact.type == 'customer' %}Client{% elseif businessContact.type == 'supplier' %}Fournisseur{% endif %} : {{businessContact.socialReason}}</h5>
+                    
+                    <div class="">
+                        <table id="datatable2" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr class="text-center">
+                                    {# <th>#</th> #}
+                                    <th>Nom</th>
+                                    <th class="d-none d-sm-table-cell">Addresse</th>
+                                    <th>Tel</th>
+                                    <th class="d-none d-sm-table-cell">{% if businessContact.type == 'customer' %}Revenues Générés (XAF){% elseif businessContact.type == 'supplier' %}Dépenses Générées (XAF){% endif %}</th>
+                                    <th class="d-none d-sm-table-cell">{% if businessContact.type == 'customer' %}Nombre de commande{% elseif businessContact.type == 'supplier' %}Number of Purchase Orders{% endif %}</th>
+                                    <th class="d-none d-sm-table-cell">{% if businessContact.type == 'customer' %}Créances (XAF){% elseif businessContact.type == 'supplier' %}Dettes (XAF){% endif %}</th>
+                                    
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% set rest = 0 %}
+                                <tr class="text-center">
+                                    {# <td>{{businessContact.id}}</td> #}
+                                    <td class="text-left">{{businessContact.socialReason}}</td>
+                                    <td class="d-none d-sm-table-cell text-left">{{businessContact.address}}</td>
+                                    <td>{{businessContact.phoneNumber }}</td>
+                                    <td class="d-none d-sm-table-cell">
+                                        {% if businessContact.type == 'customer' %}
+                                            {% set totalAmountBill = 0 %}
+                                            {% for commercialSheet in businessContact.commercialSheets %}
+                                                {% if commercialSheet.type == 'bill'  %}
+                                                    {% if commercialSheet.deliveryStatus == true  or commercialSheet.completedStatus == true %}
+                                                        {% set totalAmountBill = totalAmountBill + commercialSheet.amountNetToPaid %}
+                                                    {% endif %}
+                                                    {% set rest = rest + commercialSheet.amountRestToPaid %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {# {{ dump('bill') }} #}
+                                        {{ totalAmountBill }}
+                                        {% elseif businessContact.type == 'supplier' %}
+                                            {% set totalAmountPurchaseOrder = 0 %}
+                                            {% for commercialSheet in businessContact.commercialSheets %}
+                                                {% if commercialSheet.type == 'purchaseorder'%}
+                                                    {% if commercialSheet.deliveryStatus == true  or commercialSheet.completedStatus == true %}
+                                                        {% set totalAmountPurchaseOrder = totalAmountPurchaseOrder + commercialSheet.amountNetToPaid %}
+                                                    {% endif %}
+                                                    {% set rest = rest + commercialSheet.amountRestToPaid %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {# {{ dump('purchase_order') }} #}
+                                        {{ totalAmountPurchaseOrder }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="d-none d-sm-table-cell">
+                                        {% if businessContact.type == 'customer' %}
+                                            {% set completedBill = [] %}
+                                            {% for commercialSheet in businessContact.commercialSheets %}
+                                                {% if commercialSheet.type == 'bill' and (commercialSheet.completedStatus == true or commercialSheet.deliveryStatus == true) %}
+                                                    {% set completedBill = completedBill|merge([commercialSheet]) %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {# {{ dump('bill') }} #}
+                                        {{ completedBill|length }}
+                                        {% elseif businessContact.type == 'supplier' %}
+                                            {% set completedPurchaseOrder = [] %}
+                                            {% for commercialSheet in businessContact.commercialSheets %}
+                                                {% if commercialSheet.type == 'purchaseorder' and (commercialSheet.completedStatus == true or commercialSheet.deliveryStatus == true) %}
+                                                    {% set completedPurchaseOrder = completedPurchaseOrder|merge([commercialSheet]) %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {# {{ dump('purchase_order') }} #}
+                                            {{ completedPurchaseOrder|length }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="d-none d-sm-table-cell">{{ rest }}</td>
+                                    
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>           
+                </div>
+            </div>
+        </div>
+    </div><!--end row-->
+
+{% endblock %}
+
+{% block javascripts %}
+<!-- Required datatable js -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/jszip.min.js"></script>
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+<script src="/plugins/datatables/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="/plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="/pages/jquery.datatable.init.js"></script>    
+
+{% endblock %}

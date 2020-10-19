@@ -154,4 +154,18 @@ class BusinessContactController extends AbstractController
 
         return $this->redirectToRoute("business_contacts_index", ['type' => $businessContact->getType()]);
     }
+
+    /**
+     * @Route("/business/contact/{id<\d+>}", name="business_contact_details")
+     * 
+     * @IsGranted("ROLE_USER")
+     * 
+     */
+    public function details(BusinessContact $businessContact)
+    {
+        return $this->render('business_contact/business_contact_details.html.twig', [
+            'businessContact' => $businessContact,
+
+        ]);
+    }
 }

@@ -15,14 +15,14 @@
 {% endblock %}
 
 {% block pageTitle %}
-<h4 class="page-title mb-2"><i class="mdi mdi-account-multiple mr-2"></i>{% if type == 'customer' %}Customers{% elseif type == 'supplier' %}Suppliers{% endif %}</h4>  
+<h4 class="page-title mb-2"><i class="mdi mdi-account-multiple mr-2"></i>{% if type == 'customer' %}Clients{% elseif type == 'supplier' %}Fournisseurs{% endif %}</h4>  
 {% endblock %}
 
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">{% if type == 'customer' %}Customers{% elseif type == 'supplier' %}Suppliers{% endif %}</li>
-            <li class="breadcrumb-item active">Dashboard</li>
+            <li class="breadcrumb-item active">Accueil</li>
+            <li class="breadcrumb-item active">{% if type == 'customer' %}Clients{% elseif type == 'supplier' %}Fournisseurs{% endif %}</li>
         </ol>
     </div>
 {% endblock %}
@@ -98,13 +98,12 @@
                             <thead>
                                 <tr class="text-center">
                                     {# <th>#</th> #}
-                                    <th>Name</th>
-                                    {# <th>Tel</th> #}
-                                    <th>Address</th>
+                                    <th>Nom</th>
+                                    <th class="d-none d-sm-table-cell">Addresse</th>
                                     <th>Tel</th>
-                                    <th>{% if type == 'customer' %}Revenues Générés (XAF){% elseif type == 'supplier' %}Dépenses Générées (XAF){% endif %}</th>
-                                    <th>{% if type == 'customer' %}Nombre de commande{% elseif type == 'supplier' %}Number of Purchase Orders{% endif %}</th>
-                                    <th>{% if type == 'customer' %}Créances (XAF){% elseif type == 'supplier' %}Dettes (XAF){% endif %}</th>
+                                    {# <th class="d-none d-sm-table-cell">{% if type == 'customer' %}Revenues Générés (XAF){% elseif type == 'supplier' %}Dépenses Générées (XAF){% endif %}</th>
+                                    <th class="d-none d-sm-table-cell">{% if type == 'customer' %}Nombre de commande{% elseif type == 'supplier' %}Number of Purchase Orders{% endif %}</th>
+                                    <th class="d-none d-sm-table-cell">{% if type == 'customer' %}Créances (XAF){% elseif type == 'supplier' %}Dettes (XAF){% endif %}</th> #}
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -114,11 +113,10 @@
                                 {% set rest = 0 %}
                                 <tr class="text-center">
                                     {# <td>{{businessContact.id}}</td> #}
-                                    <td>{{businessContact.socialReason}}</td>
-                                    {# <td>{{businessContact.phoneNumber}}</td> #}
-                                    <td>{{businessContact.address}}</td>
+                                    <td class="text-left"><a href="{{path('business_contact_details', {'id':businessContact.id})}}"  class="" >{{businessContact.socialReason}}</a></td>
+                                    <td class="d-none d-sm-table-cell text-left">{{businessContact.address}}</td>
                                     <td>{{businessContact.phoneNumber }}</td>
-                                    <td>
+                                    {# <td class="d-none d-sm-table-cell">
                                         {% if type == 'customer' %}
                                             {% set totalAmountBill = 0 %}
                                             {% for commercialSheet in businessContact.commercialSheets %}
@@ -129,7 +127,6 @@
                                                     {% set rest = rest + commercialSheet.amountRestToPaid %}
                                                 {% endif %}
                                             {% endfor %}
-                                        {# {{ dump('bill') }} #}
                                         {{ totalAmountBill }}
                                         {% elseif type == 'supplier' %}
                                             {% set totalAmountPurchaseOrder = 0 %}
@@ -141,11 +138,10 @@
                                                     {% set rest = rest + commercialSheet.amountRestToPaid %}
                                                 {% endif %}
                                             {% endfor %}
-                                        {# {{ dump('purchase_order') }} #}
                                         {{ totalAmountPurchaseOrder }}
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td class="d-none d-sm-table-cell">
                                         {% if type == 'customer' %}
                                             {% set completedBill = [] %}
                                             {% for commercialSheet in businessContact.commercialSheets %}
@@ -153,7 +149,7 @@
                                                     {% set completedBill = completedBill|merge([commercialSheet]) %}
                                                 {% endif %}
                                             {% endfor %}
-                                            {# {{ dump('bill') }} #}
+                                            
                                         {{ completedBill|length }}
                                         {% elseif type == 'supplier' %}
                                             {% set completedPurchaseOrder = [] %}
@@ -162,35 +158,15 @@
                                                     {% set completedPurchaseOrder = completedPurchaseOrder|merge([commercialSheet]) %}
                                                 {% endif %}
                                             {% endfor %}
-                                            {# {{ dump('purchase_order') }} #}
+                                            
                                             {{ completedPurchaseOrder|length }}
                                         {% endif %}
                                     </td>
-                                    <td>{{ rest }}</td>
+                                    <td class="d-none d-sm-table-cell">{{ rest }}</td> #}
                                     <td>
                                         <a href="{{path('business_contact_edit', {'id':businessContact.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="far fa-edit"></i> </a>
                                         {% if type == 'customer' %}
-                                        {# <a href="{{ path('commercial_sheet_create', {'id':businessContact.id}) }}" class="btn btn-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Place Order"><i class="mdi mdi-cart-outline"></i></a> #}
-                                        {# <div class="animation-modal"> #}
                                         <a href="#custom-modal{{businessContact.id}}" class="btn btn-primary btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Place Document"><i class="mdi mdi-file-table-outline"></i></a>
-                                            {# 
-                                                <a href="#custom-modal" class="btn btn-primary btn-xs rounded waves-effect" data-animation="fadein" data-plugin="custommodal" data-overlayColor="#38414a"><i class="mdi mdi-file-table-outline"></i></a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="slide" data-plugin="custommodal" data-overlayColor="#38414a">Slide</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="newspaper" data-plugin="custommodal" data-overlayColor="#38414a">Newspaper</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="blur" data-plugin="custommodal" data-overlayColor="#38414a">Blur</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="superscaled" data-plugin="custommodal" data-overlayColor="#38414a">Super Scaled</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="rotate" data-plugin="custommodal" data-overlayColor="#38414a">Rotate</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="slip" data-plugin="custommodal" data-overlayColor="#38414a">Slip</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a">Corner</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="slidetogether" data-plugin="custommodal" data-overlayColor="#38414a">Slide Together</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="scale" data-plugin="custommodal" data-overlayColor="#38414a">Scale</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="door" data-plugin="custommodal" data-overlayColor="#38414a">Door</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="push" data-plugin="custommodal" data-overlayColor="#38414a">Push</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="contentscale" data-plugin="custommodal" data-overlayColor="#38414a">Content Scale</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="swell" data-plugin="custommodal" data-overlayColor="#38414a">Swell</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="rotatedown" data-plugin="custommodal" data-overlayColor="#38414a">Rotate Down</a>
-                                                <a href="#custom-modal" class="btn btn-primary waves-effect" data-animation="flash" data-plugin="custommodal" data-overlayColor="#38414a">Flash</a> #}
-                                        {# </div><!--end animation modal-->  #}
                                         {% if inventories|length > 0 %}
                                         <!-- Custom Modal -->
                                         <div id="custom-modal{{businessContact.id}}" class="modal-demo">
