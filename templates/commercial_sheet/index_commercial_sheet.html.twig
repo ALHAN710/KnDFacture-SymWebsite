@@ -93,7 +93,8 @@
                                             <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
                                             <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                             {# <th>Payment Date</th> #}
-                                            <th>Montant (XAF)</th>
+                                            <th>Avance(XAF)</th>
+                                            <th>Reste(XAF)</th>
                                             <th>Livré ?</th>
                                             <th>Actions</th>
                                         </tr>
@@ -121,6 +122,7 @@
                                             {{commercialSheet.payAt|date("d/m/Y") }}
                                             {% endif %}
                                             </td> #}
+                                            <td>{{commercialSheet.advancePayment}}</td>
                                             <td>{{commercialSheet.amountRestToPaid}}</td>
                                             <td>
                                                 <div class="checkbox checkbox-primary">
@@ -155,7 +157,8 @@
                                                 <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
                                                 <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                                 {# <th>Delivery Date</th> #}
-                                                <th>Montant (XAF)</th>
+                                                <th>Avance(XAF)</th>
+                                                <th>Reste(XAF)</th>
                                                 <th>Payé ?</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -170,6 +173,7 @@
                                                 <td>{{commercialSheet.businessContact.socialReason}}</td>
                                                 <td>{{commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
                                                 {# <td>{{commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td> #}
+                                                <td>{{commercialSheet.advancePayment}}</td>
                                                 <td>{{commercialSheet.amountRestToPaid}}</td>
                                                 <td class="align-items-center">
                                                     <div class="checkbox checkbox-primary">
