@@ -117,7 +117,7 @@ class CommercialSheet
     private $inventory;
 
     /**
-     * @ORM\OneToMany(targetEntity=StockMovement::class, mappedBy="commercialSheet")
+     * @ORM\OneToMany(targetEntity=StockMovement::class, mappedBy="commercialSheet", orphanRemoval=true)
      */
     private $stockMovements;
 
