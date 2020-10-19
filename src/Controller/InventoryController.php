@@ -296,15 +296,18 @@ class InventoryController extends ApplicationController
             //dump($endDate);
             //dump($endDate->format('d-m-Y'));
             //dump($nowTime);
-            //dump($endDate->format('d/m/Y'));
+            //dump($nowTime->format('Y-m-d H:i:s'));
             if ($endDate == $startDate) {
                 //$nowTime = new DateTime("now");
                 //dump($nowTime);
                 $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
                 //dump($endDate->format('Y-m-d H:i:s'));
             } else {
-                $nowTime = $nowTime->format('H:m:i');
-                $endDate = new DateTime($paramJSON['endDate'] . ' ' . $nowTime);
+                if ($endDate->format('Y-m-d') == $nowTime->format('Y-m-d')) {
+                    $nowTime = $nowTime->format('H:i:s');
+                    //dump($nowTime);
+                    $endDate = new DateTime($paramJSON['endDate'] . ' ' . $nowTime);
+                } else $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
                 //dump($startDate->format('Y-m-d H:i:s'));
                 //dump($endDate->format('Y-m-d H:i:s'));
             }
