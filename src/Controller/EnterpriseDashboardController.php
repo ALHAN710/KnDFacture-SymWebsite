@@ -251,7 +251,7 @@ class EnterpriseDashboardController extends ApplicationController
                     ->getResult();
 
                 //Détermination du chiffre d'affaire HT
-                $bills = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 13), SUM(cmsi.pu * cmsi.quantity) AS CAHT
+                $bills = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 13) AS jour, SUM(cmsi.pu * cmsi.quantity) AS CAHT
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.commercialSheetItems cmsi
                                             JOIN cms.user u 
@@ -260,7 +260,8 @@ class EnterpriseDashboardController extends ApplicationController
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
                                             AND cms.deliverAt LIKE :dat  
-                                            GROUP BY jour                                                                                
+                                            GROUP BY jour 
+                                            ORDER BY jour ASC                                                                               
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -276,7 +277,7 @@ class EnterpriseDashboardController extends ApplicationController
                 }
                 foreach ($bills as $d) {
                     $xturnOverPer[]       = $d['jour'];
-                    $tmp                  = $d['CAHT'] == null ? '0' : number_format((float) floatval($d['amountRecettes']), 2, '.', '');
+                    $tmp                  = $d['CAHT'] == null ? '0' : number_format((float) floatval($d['CAHT']), 2, '.', '');
                     $turnOverAmountPer[]  = $tmp;
                 }
 
@@ -306,7 +307,8 @@ class EnterpriseDashboardController extends ApplicationController
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
                                             AND cms.deliverAt LIKE :dat 
-                                            GROUP BY jour                                                                                 
+                                            GROUP BY jour 
+                                            ORDER BY jour ASC                                                                                
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -339,6 +341,7 @@ class EnterpriseDashboardController extends ApplicationController
                                             AND e.id = :entId
                                             AND cms.deliverAt LIKE :dat                                                                                  
                                             GROUP BY jour
+                                            ORDER BY jour ASC
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -354,7 +357,7 @@ class EnterpriseDashboardController extends ApplicationController
                 }
                 foreach ($purchaseOrders as $d) {
                     $xexpensesPer[]       = $d['jour'];
-                    $tmp                  = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['amountRecettes']), 2, '.', '');
+                    $tmp                  = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
                     $expensesAmountPer[]  = $tmp;
                 }
 
@@ -404,7 +407,7 @@ class EnterpriseDashboardController extends ApplicationController
                     ))
                     ->getResult();*/
             } else {
-                $per = 'days';
+                $per = 'day';
                 $startDate = new DateTime($paramJSON['startDate'] . ' 00:00:00');
                 $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
 
@@ -419,7 +422,8 @@ class EnterpriseDashboardController extends ApplicationController
                                             AND e.id = :entId
                                             AND cms.deliverAt >= :startDate                                                                                  
                                             AND cms.deliverAt <= :endDate  
-                                            GROUP BY jour                                                                                
+                                            GROUP BY jour 
+                                            ORDER BY jour ASC                                                                               
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
@@ -436,7 +440,7 @@ class EnterpriseDashboardController extends ApplicationController
                 }
                 foreach ($bills as $d) {
                     $xturnOverPer[]        = $d['jour'];
-                    $tmp                   = $d['CAHT'] == null ? '0' : number_format((float) floatval($d['amountRecettes']), 2, '.', '');
+                    $tmp                   = $d['CAHT'] == null ? '0' : number_format((float) floatval($d['CAHT']), 2, '.', '');
                     $turnOverAmountPer[]   = $tmp;
                 }
 
@@ -470,7 +474,8 @@ class EnterpriseDashboardController extends ApplicationController
                                             AND e.id = :entId
                                             AND cms.deliverAt >= :startDate                                                                                  
                                             AND cms.deliverAt <= :endDate   
-                                            GROUP BY jour                                                                                 
+                                            GROUP BY jour 
+                                            ORDER BY jour ASC                                                                                
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
@@ -505,6 +510,7 @@ class EnterpriseDashboardController extends ApplicationController
                                             AND cms.deliverAt >= :startDate                                                                                  
                                             AND cms.deliverAt <= :endDate                                                                                   
                                             GROUP BY jour
+                                            ORDER BY jour ASC
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
@@ -521,7 +527,7 @@ class EnterpriseDashboardController extends ApplicationController
                 }
                 foreach ($purchaseOrders as $d) {
                     $xexpensesPer[]       = $d['jour'];
-                    $tmp                  = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['amountRecettes']), 2, '.', '');
+                    $tmp                  = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
                     $expensesAmountPer[]  = $tmp;
                 }
 

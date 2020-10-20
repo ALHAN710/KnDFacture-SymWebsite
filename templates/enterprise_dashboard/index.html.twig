@@ -574,6 +574,13 @@
                             text: moment(dateopt).format('DD MMMM').toString(),
                         }
                     },*/
+                    tooltip: {
+                        x: {
+                            formatter: function (val) {
+                                return val 
+                            },
+                        },
+                    }
                 });
             }
             else if( xscale === 'month'){
