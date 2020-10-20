@@ -270,11 +270,14 @@ class EnterpriseDashboardController extends ApplicationController
                     ))
                     ->getResult();
 
-
+                dump($bills);
                 foreach ($bills as $bill_) {
                     $tmp         = $bill_['CAHT'] == null ? 0 : number_format((float) floatval($bill_['CAHT']), 2, '.', '');
                     $turnOverHT += $tmp;
                 }
+
+                $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
+
                 foreach ($bills as $d) {
                     $xturnOverPer[]       = $d['jour'];
                     $tmp                  = $d['CAHT'] == null ? '0' : number_format((float) floatval($d['CAHT']), 2, '.', '');
@@ -316,12 +319,12 @@ class EnterpriseDashboardController extends ApplicationController
                         'type_'   => 'bill',
                     ))
                     ->getResult();
-
+                dump($RecettesPer);
                 foreach ($RecettesPer as $amountRecettes_) {
                     $tmp       = $amountRecettes_['amountRecettes'] == null ? 0 : number_format((float) floatval($amountRecettes_['amountRecettes']), 2, '.', '');
                     $amountRecettes += $tmp;
                 }
-                $amountRecettes = number_format((float) $amountRecettes, 2, '.', '');
+                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');
 
                 foreach ($RecettesPer as $d) {
                     $xamountRecettesPer[] = $d['jour'];
@@ -355,6 +358,7 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp          = $purchaseOrder_['EXTTC'] == null ? 0 : number_format((float) floatval($purchaseOrder_['EXTTC']), 2, '.', '');
                     $expensesTTC += $tmp;
                 }
+                $expensesTTC = number_format((float) $expensesTTC, 2, '.', ' ');
                 foreach ($purchaseOrders as $d) {
                     $xexpensesPer[]       = $d['jour'];
                     $tmp                  = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
@@ -438,6 +442,7 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp         = $bill_['CAHT'] == null ? 0 : number_format((float) floatval($bill_['CAHT']), 2, '.', '');
                     $turnOverHT += $tmp;
                 }
+                $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
                 foreach ($bills as $d) {
                     $xturnOverPer[]        = $d['jour'];
                     $tmp                   = $d['CAHT'] == null ? '0' : number_format((float) floatval($d['CAHT']), 2, '.', '');
@@ -489,7 +494,7 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp       = $amountRecettes_['amountRecettes'] == null ? 0 : number_format((float) floatval($amountRecettes_['amountRecettes']), 2, '.', '');
                     $amountRecettes += $tmp;
                 }
-                $amountRecettes = number_format((float) $amountRecettes, 2, '.', '');
+                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');
 
                 foreach ($RecettesPer as $d) {
                     $xamountRecettesPer[] = $d['jour'];
@@ -525,6 +530,7 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp          = $purchaseOrder_['EXTTC'] == null ? 0 : number_format((float) floatval($purchaseOrder_['EXTTC']), 2, '.', '');
                     $expensesTTC += $tmp;
                 }
+                $expensesTTC = number_format((float) $expensesTTC, 2, '.', ' ');
                 foreach ($purchaseOrders as $d) {
                     $xexpensesPer[]       = $d['jour'];
                     $tmp                  = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
@@ -652,12 +658,12 @@ class EnterpriseDashboardController extends ApplicationController
             foreach ($billPaymentOnpending as $commercialSheet) {
                 $outstandingClaim += $commercialSheet['paymentOnPending']->getAmountRestToPaid();
             }
-
+            $outstandingClaim = number_format((float) $outstandingClaim, 2, '.', ' ');
             $outstandingDebt = 0.0;
             foreach ($purchaseOrderPaymentOnpending as $commercialSheet) {
                 $outstandingDebt += $commercialSheet['paymentOnPending']->getAmountRestToPaid();
             }
-
+            $outstandingDebt = number_format((float) $outstandingDebt, 2, '.', ' ');
             $bestSellingProducts = $manager->createQuery("SELECT cmsi.designation AS designation,
                                             cmsi.reference AS ref,cmsi.pu AS pu, SUM(cmsi.pu*cmsi.quantity) AS amount,
                                             SUM(cmsi.quantity) AS totalSale
