@@ -194,8 +194,28 @@ class CommercialSheetController extends ApplicationController
 
                                                             $lot->addCommercialSheetItemLot($cmsiLot);
 
-                                                            $commercialSheetItem->addCommercialSheetItemLot($cmsiLot)
-                                                                ->addCommercialSheet($commercialSheet);
+                                                            //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
+                                                            $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
+                                                                'designation' => $commercialSheetItem->getDesignation(),
+                                                                'pu' => $commercialSheetItem->getPU(),
+                                                                'quantity' => $commercialSheetItem->getQuantity()
+                                                            ]);
+
+                                                            if (empty($commercialSheetItem_)) {
+                                                                $commercialSheetItem->addCommercialSheet($commercialSheet);
+                                                                $manager->persist($commercialSheetItem);
+                                                                // dump('commercialSheetItem dont exists ');
+                                                            } else {
+                                                                //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
+                                                                //$commercialSheetItem = $commercialSheetItem_;
+
+                                                                $commercialSheetItem_->addCommercialSheet($commercialSheet)
+                                                                    ->addCommercialSheet($commercialSheet)
+                                                                    ->addCommercialSheetItemLot($cmsiLot);
+
+                                                                $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
+                                                                $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                                                            }
 
                                                             $manager->persist($cmsiLot);
                                                             $manager->persist($commercialSheetItem);
@@ -262,28 +282,27 @@ class CommercialSheetController extends ApplicationController
                         //$manager->persist($commercialSheetItem);
                     } else {
                         $commercialSheetItem->setProduct(null);
+                        //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
+                        $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
+                            'designation' => $commercialSheetItem->getDesignation(),
+                            'pu' => $commercialSheetItem->getPU(),
+                            'quantity' => $commercialSheetItem->getQuantity()
+                        ]);
+
+                        if (empty($commercialSheetItem_)) {
+                            $commercialSheetItem->addCommercialSheet($commercialSheet);
+                            $manager->persist($commercialSheetItem);
+                            // dump('commercialSheetItem dont exists ');
+                        } else {
+                            //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
+                            //$commercialSheetItem = $commercialSheetItem_;
+                            $commercialSheetItem_->addCommercialSheet($commercialSheet);
+                            $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
+                            $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                        }
+                        //$commercialSheetItem->setProduct($service); 
+                        //dump($commercialSheetItem);
                     }
-
-                    //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
-                    /*$commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
-                        'designation' => $commercialSheetItem->getDesignation(),
-                        'pu' => $commercialSheetItem->getPU(),
-                        'quantity' => $commercialSheetItem->getQuantity()
-                    ]);
-
-                    if (empty($commercialSheetItem_)) {
-                        $commercialSheetItem->addCommercialSheet($commercialSheet);
-                        $manager->persist($commercialSheetItem);
-                        // dump('commercialSheetItem dont exists ');
-                    } else {
-                        //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
-                        //$commercialSheetItem = $commercialSheetItem_;
-                        $commercialSheetItem_->addCommercialSheet($commercialSheet);
-                        $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
-                        $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
-                    }*/
-                    //$commercialSheetItem->setProduct($service); 
-                    //dump($commercialSheetItem);
                 }
             }
             //die();
