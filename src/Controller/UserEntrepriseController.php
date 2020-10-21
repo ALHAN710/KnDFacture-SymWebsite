@@ -19,6 +19,9 @@ class UserEntrepriseController extends AbstractController
 {
     /**
      * @Route("/user/enterprise", name="users_entreprise_index")
+     * 
+     * @IsGranted("ROLE_ADMIN")
+     * 
      */
     public function index(EntityManagerInterface $manager)
     {
