@@ -28,7 +28,7 @@
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">{% if docType != 'Facture' %}Nouveau{% else %}Nouvelle{% endif %}</li>
+            <li class="breadcrumb-item active">{% if docType != 'Devis' %}Nouvelle{% else %}Nouveau{% endif %}</li>
             <li class="breadcrumb-item active">
             {{ docType }}
             </li>
@@ -45,11 +45,11 @@
     <div class="col-12">       
         <div class="card">
             <div class="card-body">
-                <h4 class="mt-0 header-title">Information {% if docType != 'Facture' %}du{% else %}de la{% endif %} {{ docType }}</h4>
+                <h4 class="mt-0 header-title">Information {% if docType != 'Devis' %}de la{% else %}du{% endif %} {{ docType }}</h4>
                 {{ form_start(form) }}
                 <div class="card border mb-0 text-center">
                     <div class="card-header">
-                        Détails du {% if docType != 'Facture' %}Fournisseur{% else %}Client{% endif %}
+                        Détails du {% if docType != "Facture d'Achat" %}Client{% else %}Fournisseur{% endif %}
                     </div>
                     <div class="card-body text-left">
                         <h5 class="card-title"></h5>
@@ -302,7 +302,7 @@
         var price = parseFloat(puId);
         amountBrutHT[index] = price * parseFloat($(qtyId).val());
         //$(amountId).val(amount);
-        itemReductionTab[index] = ( ( amountBrutHT * parseFloat( $(remiseId).val() ) )/100.0 );
+        itemReductionTab[index] = ( ( amountBrutHT[index] * parseFloat( $(remiseId).val() ) )/100.0 );
 
         itemsAmount[index] = amountBrutHT[index] - itemReductionTab[index];
         //console.log('itemsAmount[' + index + '] = ' + itemsAmount[index]);

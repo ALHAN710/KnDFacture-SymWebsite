@@ -99,7 +99,7 @@ $('#add-commercialSheetItems').click(function () {
         $(amountBrutHTId).val(0.0);
         $(amountNetHTId).val(0.0);
         //Calcul du montant relatif à ce produit
-        computeItemsAmountTab(parseFloat($(puId).val()), qtyId, remiseId, index);
+        computeItemsAmountTab($(puId).val(), qtyId, remiseId, index);
 
         var precQty = parseInt($(qtyId).val());
         qtyTotal += parseInt($(qtyId).val());
@@ -841,8 +841,9 @@ function handleDeleteButton() {
             console.log('subItems index = ' + index);
             // itemsAmount.splice(index, 1);
 
-            itemsAmount[index] = 0; // Mise à zéro du montant Net HT de l'article
+            amountBrutHT[index] = 0; // Mise à zéro du montant Brut HT de l'article
             itemReductionTab[index] = 0; // Mise à zéro du montant de réduction de l'article
+            itemsAmount[index] = 0; // Mise à zéro du montant Net HT de l'article
 
             if (tabItemOfferType[index] === 'hasStock') {
                 //tabHideSKU.splice(index, 1);
