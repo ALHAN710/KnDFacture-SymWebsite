@@ -43,16 +43,6 @@ class CommercialSheetType extends ApplicationType
                 ]
             )
             ->add(
-                'itemsReduction',
-                NumberType::class,
-                $this->getConfiguration("Reduction Totale sur les Articles (%)", "Veuillez spécifier la réducction totale sur les articles...", [
-                    'attr' => [
-                        'min'   => '0',
-                        //'value' => '0'
-                    ]
-                ])
-            )
-            ->add(
                 'fixReduction',
                 NumberType::class,
                 $this->getConfiguration("Reductions Fixes (XAF)", "Veuillez spécifier le montant des réductions fixes...", [
@@ -89,7 +79,7 @@ class CommercialSheetType extends ApplicationType
                 'paymentStatus',
                 CheckboxType::class,
                 [
-                    'label'    => 'Payé ?',
+                    'label'    => 'Soldé ?',
                     'required' => false,
                 ]
             )
@@ -97,7 +87,7 @@ class CommercialSheetType extends ApplicationType
                 'completedStatus',
                 CheckboxType::class,
                 [
-                    'label'    => 'Payé et Livré ?',
+                    'label'    => 'Soldé et Livré ?',
                     'required' => false,
                 ]
             )

@@ -68,7 +68,9 @@ class CommercialSheetItem
 
     private $productType;
 
-    private $amount;
+    private $amountBrutHT;
+
+    private $amountNetHT;
 
     private $available;
 
@@ -83,6 +85,12 @@ class CommercialSheetItem
      * @ORM\OneToMany(targetEntity=CommercialSheetItemLot::class, mappedBy="commercialSheetItem")
      */
     private $commercialSheetItemLots;
+
+    /**
+     * @ORM\Column(type="float")
+     * @Assert\PositiveOrZero
+     */
+    private $remise;
 
     public function __construct()
     {
@@ -114,14 +122,26 @@ class CommercialSheetItem
         return $this;
     }
 
-    public function getAmount(): ?float
+    public function getAmountBrutHT(): ?float
     {
-        return $this->amount;
+        return $this->amountBrutHT;
     }
 
-    public function setAmount(float $amount): self
+    public function setAmountBrutHT(float $amountBrutHT): self
     {
-        $this->amount = $amount;
+        $this->amountBrutHT = $amountBrutHT;
+
+        return $this;
+    }
+
+    public function getAmountNetHT(): ?float
+    {
+        return $this->amountNetHT;
+    }
+
+    public function setAmountNetHT(float $amountNetHT): self
+    {
+        $this->amountNetHT = $amountNetHT;
 
         return $this;
     }
@@ -292,6 +312,18 @@ class CommercialSheetItem
                 $commercialSheetItemLot->setCommercialSheetItem(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRemise(): ?float
+    {
+        return $this->remise;
+    }
+
+    public function setRemise(float $remise): self
+    {
+        $this->remise = $remise;
 
         return $this;
     }

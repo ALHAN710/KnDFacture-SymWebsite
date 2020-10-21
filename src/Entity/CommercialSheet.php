@@ -62,12 +62,6 @@ class CommercialSheet
      * @ORM\Column(type="float")
      * @Assert\PositiveOrZero
      */
-    private $itemsReduction;
-
-    /**
-     * @ORM\Column(type="float")
-     * @Assert\PositiveOrZero
-     */
     private $fixReduction;
 
     /**
@@ -156,39 +150,75 @@ class CommercialSheet
         $this->commercialSheetItems = new ArrayCollection();
     }
 
-    public function getAmountHT(): float
+    private $totalAmountNetHT = 0.0;
+
+    private $itemsRemise = 0.0;
+
+    public function getTotalAmountBrutHT(): float
     {
-        $itemsAmountSubTotal = 0.0;
+        $totalAmountBrutHT = 0.0;
         $items = $this->getCommercialSheetItems();
         foreach ($items as $item) {
-            $itemsAmountSubTotal += ($item->getQuantity() * $item->getPu());
+            $tmp = ($item->getQuantity() * $item->getPu());
+            $totalAmountBrutHT += $tmp;
+            $remise = (($tmp * $item->getRemise()) / 100.0);
+            $this->itemsRemise += $remise;
+            $this->totalAmountNetHT += $tmp - $remise;
         }
+        //$totalAmountBrutHT = number_format((float) $totalAmountBrutHT, 2, '.', ' ');
+        return $totalAmountBrutHT;
+    }
 
-        return $itemsAmountSubTotal;
+    public function getItemAmountNetHT()
+    {
+        return $this->itemAmountNetHT;
+    }
+    public function getItemsRemise()
+    {
+        return $this->itemsRemise;
+    }
+
+    public function getTotalAmountNetHT(): float
+    {
+        /*$amountNetHT = 0.0;
+        $items = $this->getItemAmountNetHT();
+        dump($items);
+        foreach ($items as $key => $value) {
+            $amountNetHT += $value;
+            dump($value);
+        }*/
+        //$amountNetHT = number_format((float) $amountNetHT, 2, '.', ' ');
+        return $this->totalAmountNetHT;
     }
 
     public function getTaxes(): float
     {
-        $itemsAmountSubTotal = $this->getAmountHT();
-        $taxes = ($this->getUser()->getEnterprise()->getTva() * $itemsAmountSubTotal) / 100.0;
+        $totalAmountBrutHT = $this->getTotalAmountNetHT();
+        $taxes = ($this->getUser()->getEnterprise()->getTva() * $totalAmountBrutHT) / 100.0;
+        //$taxes = number_format((float) $taxes, 2, '.', ' ');
         return $taxes;
     }
 
     public function getAmountTTC(): float
     {
 
-        $itemsAmountSubTotal = $this->getAmountHT();
+        $itemsAmountSubTotal = $this->getTotalAmountNetHT();
         $taxes = $this->getTaxes();
         $totalTTC = $itemsAmountSubTotal + $taxes;
-
+        //$totalTTC = number_format((float) $totalTTC, 2, '.', ' ');
         return $totalTTC;
     }
 
     public function getAmountReduction(): float
     {
-        $amountHT = $this->getAmountHT();
-        $totalAmountReduction = ($amountHT * $this->getItemsReduction()) / 100.0 + $this->getFixReduction();
+        /*$items = $this->getItemsRemise();
+        $itemsRemise = $this->getItemsRemise();
+        foreach ($items as $key => $value) {
+            $itemsRemise += $value;
+        }*/
 
+        $totalAmountReduction = $this->getItemsRemise() + $this->getFixReduction();
+        //$totalAmountReduction = number_format((float) $totalAmountReduction, 2, '.', ' ');
         return $totalAmountReduction;
     }
 
@@ -198,6 +228,7 @@ class CommercialSheet
         $totalTTC = $this->getAmountTTC();
         $totalAmountReduction = $this->getAmountReduction();
         $totalAmountNetToPaid = $totalTTC - $totalAmountReduction;
+        //$totalAmountNetToPaid = number_format((float) $totalAmountNetToPaid, 2, '.', ' ');
 
         return $totalAmountNetToPaid;
     }
@@ -375,18 +406,6 @@ class CommercialSheet
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getItemsReduction(): ?float
-    {
-        return $this->itemsReduction;
-    }
-
-    public function setItemsReduction(float $itemsReduction): self
-    {
-        $this->itemsReduction = $itemsReduction;
 
         return $this;
     }

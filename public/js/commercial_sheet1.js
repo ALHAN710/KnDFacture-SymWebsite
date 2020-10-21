@@ -1,6 +1,11 @@
-
+var puIdTab = [];
+var qtyIdTab = [];
+var remiseIdTab = [];
 
 $('#add-commercialSheetItems').click(function () {
+    //Masque le tooltip(info à bulle) du bouton
+    $('[data-toggle="tooltip"]').tooltip("hide");
+
     //Je récupère le numéro du futur champ que je vais créer
     const index = +$('#commercialSheetItems-widgets-count').val();
     //console.log(index);
@@ -11,7 +16,7 @@ $('#add-commercialSheetItems').click(function () {
     //Je récupère le prototype des entrées(champs) et je remplace dans ce
     //prototype toutes les expressions régulières (drapeau g) "___name___" (/___name___/) par l'index
     const tmpl = $('#commercial_sheet_commercialSheetItems').data('prototype').replace(/__name__/g, index);
-    console.log(tmpl);
+    //console.log(tmpl);
 
     //Initialisation du facteur multiplicatif du compensateur de l'erreur sur la quantité total d'items relatif 
     //à la qty de cet item
@@ -36,7 +41,9 @@ $('#add-commercialSheetItems').click(function () {
         var puId = '#commercial_sheet_commercialSheetItems_' + index + '_pu';
         //var priceViewId = '#commercial_sheet_commercialSheetItems_' + index + '_priceView';//
         var qtyId = '#commercial_sheet_commercialSheetItems_' + index + '_quantity';
-        var amountId = '#commercial_sheet_commercialSheetItems_' + index + '_amount';
+        var amountBrutHTId = '#commercial_sheet_commercialSheetItems_' + index + '_amountBrutHT';
+        var remiseId = '#commercial_sheet_commercialSheetItems_' + index + '_remise';
+        var amountNetHTId = '#commercial_sheet_commercialSheetItems_' + index + '_amountNetHT';
         var available = '#commercial_sheet_commercialSheetItems_' + index + '_available';
         var itemOfferTypeId = '#commercial_sheet_commercialSheetItems_' + index + '_itemOfferType';//
 
@@ -85,9 +92,14 @@ $('#add-commercialSheetItems').click(function () {
         // $(available).val(+availabilitiesTab[$(productSKUId).val()]);
         $(puId).val(0.0);
         $(qtyId).val(0);
-        $(amountId).val(0);
+        $(remiseId).val(0);
+        $(qtyId).attr('readonly', true);
+        $(remiseId).attr('readonly', true);
+
+        $(amountBrutHTId).val(0.0);
+        $(amountNetHTId).val(0.0);
         //Calcul du montant relatif à ce produit
-        computeItemsAmountTab(0, qtyId, index);
+        computeItemsAmountTab(parseFloat($(puId).val()), qtyId, remiseId, index);
 
         var precQty = parseInt($(qtyId).val());
         qtyTotal += parseInt($(qtyId).val());
@@ -104,7 +116,8 @@ $('#add-commercialSheetItems').click(function () {
             $(productSKUId + " option[value='-1']").remove();
             $(productType + " option[value='-1']").remove();
             $(productPriceId + " option[value='-1']").remove();
-
+            $(qtyId).attr('readonly', false);
+            $(remiseId).attr('readonly', false);
             var Str = String($(productSKUId).val());
             //console.log('Product SKU value = ' + $(productSKUId).val());
             var Name = $(productSKUId + ' option[value=\"' + Str + '\"]').text();
@@ -181,12 +194,20 @@ $('#add-commercialSheetItems').click(function () {
             }
 
             $(qtyId).val(0);
+            $(remiseId).val(0);
             precQty = $(qtyId).val();
 
-            $(amountId).val(parseFloat(puId_) * parseInt($(qtyId).val()));
+            var tmp = parseFloat(puId_) * parseInt($(qtyId).val());
+            $(amountBrutHTId).val(tmp.toFixed(2));
+            tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+            $(amountNetHTId).val(tmp.toFixed(2));
 
             //Calcul du montant relatif à ce produit
-            computeItemsAmountTab(puId_, qtyId, index);
+            computeItemsAmountTab(puId_, qtyId, remiseId, index);
+
+            puIdTab[index] = $(puId).val();
+            qtyIdTab[index] = qtyId;
+            remiseIdTab[index] = remiseId;
 
             tabHideProduct[index] = $(productId).val();
             tabHideSKU[index] = $(productSKUId).val();
@@ -207,6 +228,8 @@ $('#add-commercialSheetItems').click(function () {
             $(productSKUId + " option[value='-1']").remove();
             $(productType + " option[value='-1']").remove();
             $(productPriceId + " option[value='-1']").remove();
+            $(qtyId).attr('readonly', false);
+            $(remiseId).attr('readonly', false);
 
             var Str = String($(productId).val());
             //console.log('Product  value = ' + $(productId).val());
@@ -283,12 +306,19 @@ $('#add-commercialSheetItems').click(function () {
             }
 
             $(qtyId).val(0);
+            $(remiseId).val(0);
             precQty = $(qtyId).val();
 
-            $(amountId).val(parseFloat(puId_) * parseInt($(qtyId).val()));
-
+            var tmp = parseFloat(puId_) * parseInt($(qtyId).val());
+            $(amountBrutHTId).val(tmp.toFixed(2));
+            tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+            $(amountNetHTId).val(tmp.toFixed(2));
             //Calcul du montant relatif à ce produit
-            computeItemsAmountTab(puId_, qtyId, index);
+            computeItemsAmountTab(puId_, qtyId, remiseId, index);
+
+            puIdTab[index] = $(puId).val();
+            qtyIdTab[index] = qtyId;
+            remiseIdTab[index] = remiseId;
 
             tabHideProduct[index] = $(productId).val();
             tabHideSKU[index] = $(productSKUId).val();
@@ -302,6 +332,36 @@ $('#add-commercialSheetItems').click(function () {
             //$(productSKUId).attr('disabled', true);
             $(productSKUId).off('change') // désactivation de l'évènement change sur cette entrée
 
+        });
+
+        //Gestion de l'évènement de changement de valeur de la remise sur l'article 
+        //pour mettre à jour les montants
+        $(remiseId).change(() => {
+            var tmp = parseFloat($(puId).val()) * parseInt($(qtyId).val());
+            if (!$(remiseId).val() == false && $.isNumeric($(remiseId).val())) {
+                if (!isNaN(parseInt($(remiseId).val()))) {
+                    if ($(remiseId).val() >= 0) {
+                        //console.log('P.U = ' + $(puId).val());
+                        $(amountBrutHTId).val(tmp.toFixed(2));
+                        tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+                        $(amountNetHTId).val(tmp.toFixed(2));
+                        //Calcul du montant relatif à ce produit
+                        computeItemsAmountTab($(puId).val(), qtyId, remiseId, index);
+                    }
+                }
+            }
+            else {
+                $(remiseId).val(0);
+                $(amountBrutHTId).val(tmp);
+                tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+                $(amountNetHTId).val(tmp);
+                //Calcul du montant relatif à ce produit
+                computeItemsAmountTab($(puId).val(), qtyId, remiseId, index);
+            }
+
+            puIdTab[index] = $(puId).val();
+            qtyIdTab[index] = qtyId;
+            remiseIdTab[index] = remiseId;
         });
 
         //Gestion de l'évènement de changement de valeur de la quantité du produit 
@@ -433,9 +493,16 @@ $('#add-commercialSheetItems').click(function () {
             else $('#saveBtn').attr('disabled', true);
 
             //console.log('Option selected : ' + String(Name));
-            $(amountId).val(parseFloat(puId_) * parseInt($(qtyId).val()));
+            var tmp = parseFloat(puId_) * parseInt($(qtyId).val());
+            $(amountBrutHTId).val(tmp.toFixed(2));
+            tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+            $(amountNetHTId).val(tmp.toFixed(2));
+
+            puIdTab[index] = $(puId).val();
+            qtyIdTab[index] = qtyId;
+            remiseIdTab[index] = remiseId;
             //Calcul du montant relatif à ce produit
-            computeItemsAmountTab(puId_, qtyId, index);
+            computeItemsAmountTab(puId_, qtyId, remiseId, index);
             precQty = $(qtyId).val();
             //console.log('new precQty = ' + parseInt(precQty));
             //console.log('precQty = ' + precQty);
@@ -470,6 +537,7 @@ $('#add-commercialSheetItems').click(function () {
     //console.log('widgets-count = ' + $('#commercialSheetItems-widgets-count').val());
     $('#commercial_sheet_commercialSheetItems_' + index + '_quantity').attr('type', 'number');
     $('#commercial_sheet_commercialSheetItems_' + index + '_pu').attr('type', 'number');
+    $('#commercial_sheet_commercialSheetItems_' + index + '_remise').attr('type', 'number');
 
     //$('.colpriceView_commercial_sheet_commercialSheetItems_' + index).removeClass('d-none');
     //$('.col3_commercial_sheet_commercialSheetItems_' + index).addClass('d-none');
@@ -498,6 +566,9 @@ $('#add-commercialSheetItems').click(function () {
 });
 
 $('#add-servItems').click(function () {
+    //Masque le tooltip(info à bulle) du bouton
+    $('[data-toggle="tooltip"]').tooltip("hide");
+
     //Je récupère le numéro du futur champ que je vais créer
     const index = +$('#commercialSheetItems-widgets-count').val();
     //console.log(index);
@@ -528,7 +599,9 @@ $('#add-servItems').click(function () {
         var puId = '#commercial_sheet_commercialSheetItems_' + index + '_pu';
         var priceInId = '#commercial_sheet_commercialSheetItems_' + index + '_priceIn';
         var qtyId = '#commercial_sheet_commercialSheetItems_' + index + '_quantity';
-        var amountId = '#commercial_sheet_commercialSheetItems_' + index + '_amount';
+        var amountBrutHTId = '#commercial_sheet_commercialSheetItems_' + index + '_amountBrutHT';
+        var remiseId = '#commercial_sheet_commercialSheetItems_' + index + '_remise';
+        var amountNetHTId = '#commercial_sheet_commercialSheetItems_' + index + '_amountNetHT';
         //var available = '#commercial_sheet_commercialSheetItems_' + index + '_available';
         var itemOfferTypeId = '#commercial_sheet_commercialSheetItems_' + index + '_itemOfferType';
 
@@ -543,31 +616,85 @@ $('#add-servItems').click(function () {
         if (isNaN(parseFloat($(qtyId).val())) || parseFloat($(qtyId).val()) < 0 || !$(qtyId).val() == true) {
             $(qtyId).val(0);
         }
+
+        $(remiseId).val(0.0);
+        $(remiseId).attr('readonly', true);
+        $(qtyId).attr('readonly', true);
+
         var precQty = parseInt($(qtyId).val());
         qtyTotal += parseInt($(qtyId).val());
         tabQty[index] = parseInt($(qtyId).val());
         tabQtyError[index] = (tabError[index] - 1) * tabQty[index];
-        $(amountId).val(parseFloat($(puId).val()) * parseInt($(qtyId).val()));
+
+        $(amountBrutHTId).val(0.0);
+        $(amountNetHTId).val(0.0);
         //Calcul du montant relatif à ce produit
-        computeItemsAmountTab(parseFloat($(puId).val()), qtyId, index);
+        computeItemsAmountTab(parseFloat($(puId).val()), qtyId, remiseId, index);
 
-        //Gestion des évènements de modification des entrées de l'commercialSheet item ajouté
-
+        //Gestion des évènements de modification du P.U de l'article ajouté
         $(puId).change(() => {
             //$(puId).val($(productId).val());
 
             //tabSKUIds[index] = $(SKUId).val();
             //tabProductIds[index] = $(productId).val();
 
-            if (isNaN(parseFloat($(this).val())) || parseFloat($(this).val()) < 0 || !$(this).val() == true) {
-                $(this).val(0.0);
+            if (!$(this).val() == false && $.isNumeric($(this).val())) {
+                if (!isNaN(parseInt($(this).val()))) {
+                    if ($(this).val() >= 0) {
+                        $(this).val(0.0);
+                        $(remiseId).attr('readonly', true);
+                        $(qtyId).attr('readonly', true);
+                    }
+                }
             }
-            $(amountId).val(parseFloat($(puId).val()) * parseInt($(qtyId).val()));
+            else {
+                $(remiseId).attr('readonly', false);
+                $(qtyId).attr('readonly', false);
+            }
+            var tmp = parseFloat($(puId).val()) * parseInt($(qtyId).val());
+            $(amountBrutHTId).val(tmp.toFixed(2));
+            tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+            $(amountNetHTId).val(tmp.toFixed(2));
             //Calcul du montant relatif à ce produit
-            computeItemsAmountTab(parseFloat($(puId).val()), qtyId, index);
+            computeItemsAmountTab($(puId).val(), qtyId, remiseId, index);
+            puIdTab[index] = $(puId).val();
+            qtyIdTab[index] = qtyId;
+            remiseIdTab[index] = remiseId;
         });
 
-        //Gestion de l'évènement de changement de vleur de la quantité du produit 
+        //Gestion de l'évènement de changement de valeur de la remise sur l'article 
+        //pour mettre à jour les montants
+        $(remiseId).change(() => {
+            if (!$(remiseId).val() == false && $.isNumeric($(remiseId).val())) {
+                if (!isNaN(parseInt($(remiseId).val()))) {
+                    if ($(remiseId).val() >= 0) {
+                        //console.log('P.U = ' + $(puId).val());
+                        var tmp = parseFloat($(puId).val()) * parseInt($(qtyId).val());
+                        $(amountBrutHTId).val(tmp.toFixed(2));
+                        tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+                        $(amountNetHTId).val(tmp.toFixed(2));
+                        //Calcul du montant relatif à ce produit
+                        computeItemsAmountTab($(puId).val(), qtyId, remiseId, index);
+                    }
+                }
+            }
+            else {
+                $(remiseId).val(0);
+                var tmp = parseFloat($(puId).val()) * parseInt($(qtyId).val());
+                $(amountBrutHTId).val(tmp);
+                tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+                $(amountNetHTId).val(tmp);
+                //Calcul du montant relatif à ce produit
+                computeItemsAmountTab($(puId).val(), qtyId, remiseId, index);
+            }
+
+            puIdTab[index] = $(puId).val();
+            qtyIdTab[index] = qtyId;
+            remiseIdTab[index] = remiseId;
+
+        });
+
+        //Gestion de l'évènement de changement de valeur de la quantité du produit 
         //pour mettre à jour les montants
         $(qtyId).change(() => {
             var add = false;
@@ -629,11 +756,18 @@ $('#add-servItems').click(function () {
 
             tabQty[index] = parseInt($(qtyId).val());
             tabQtyError[index] = (tabError[index] - 1) * tabQty[index];
-            $(amountId).val(parseFloat($(puId).val()) * parseInt($(qtyId).val()));
+            var tmp = parseFloat($(puId).val()) * parseInt($(qtyId).val());
+            $(amountBrutHTId).val(tmp.toFixed(2));
+            tmp = tmp - ((tmp * parseFloat($(remiseId).val())) / 100.0);
+            $(amountNetHTId).val(tmp.toFixed(2));
             //Calcul du montant relatif à ce produit
-            computeItemsAmountTab(parseFloat($(puId).val()), qtyId, index);
+            computeItemsAmountTab($(puId).val(), qtyId, remiseId, index);
             precQty = parseInt($(qtyId).val());
             //console.log('precQty = ' + precQty);
+            puIdTab[index] = $(puId).val();
+            qtyIdTab[index] = qtyId;
+            remiseIdTab[index] = remiseId;
+
         });
 
         handleDeleteButton();
@@ -642,6 +776,7 @@ $('#add-servItems').click(function () {
     //handleDeleteButton();
     $('#commercial_sheet_commercialSheetItems_' + index + '_quantity').attr('type', 'number');
     $('#commercial_sheet_commercialSheetItems_' + index + '_pu').attr('type', 'number');
+    $('#commercial_sheet_commercialSheetItems_' + index + '_remise').attr('type', 'number');
 
     /*$('#commercial_sheet_commercialSheetItems_' + index + '_product').attr('required', false);
     $('#commercial_sheet_commercialSheetItems_' + index + '_price').attr('required', false);
@@ -705,7 +840,10 @@ function handleDeleteButton() {
             index = parseInt(str.substr(posItems + subItems.length));
             console.log('subItems index = ' + index);
             // itemsAmount.splice(index, 1);
-            itemsAmount[index] = 0;
+
+            itemsAmount[index] = 0; // Mise à zéro du montant Net HT de l'article
+            itemReductionTab[index] = 0; // Mise à zéro du montant de réduction de l'article
+
             if (tabItemOfferType[index] === 'hasStock') {
                 //tabHideSKU.splice(index, 1);
                 // tabHideProduct.splice(index, 1);
@@ -717,6 +855,7 @@ function handleDeleteButton() {
             $('#add-commercialSheetItems').attr('disabled', false);
             tabHideProduct[index] = '';
             tabHideSKU[index] = '';
+
             //console.log('index = ' + index);
             //console.log('before Qty total = ' + qtyTotal);
             //console.log('tabQtyError[' + index + '] = ' + tabQtyError[index]);
@@ -730,6 +869,9 @@ function handleDeleteButton() {
 
             }
 
+            puIdTab[index] = 0;
+
+            //computeItemsAmountTab(puIdTab[index], qtyIdTab[index], remiseIdTab[index], index);
             //Calcul du sous montant Total des items
             computeItemsAmountSubTotal();
         }

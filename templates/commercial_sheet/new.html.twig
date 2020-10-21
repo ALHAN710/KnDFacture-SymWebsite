@@ -16,7 +16,7 @@
 {% elseif commercialSheet.type == 'quote' %}
     {% set docType = 'Devis' %}
 {% elseif commercialSheet.type == 'purchaseorder' %}
-    {% set docType = 'Bon de Commande' %}
+    {% set docType = "Facture d'Achat" %}
 {% endif %}
 
 {% block pageTitle %}
@@ -71,19 +71,48 @@
                     <div class="card-body">
                         <h5 class="card-title"></h5>
                         <div class="row text-center">
-                            <div class="col">Ref</div>
-                            <div class="col">Désignation</div>
-                            <div class="col">P.U (XAF)</div>
-                            <div class="col {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Available</div>
-                            <div class="col">Qty</div>
-                            <div class="col">Montant (XAF)</div>
-                            <div class="col"></div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="row">
+                                            <div class="col-4">Ref</div>
+                                            <div class="col-8">Désignation</div>
+                                        </div>
+                                    
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="row">
+                                            <div class="col">P.U (XAF)</div>
+                                            <div class="col">Qty</div>
+                                        
+                                        </div>
+                                    
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-4">Montant HT Brut(XAF)</div>
+                                            <div class="col-3">Remise(%)</div>
+                                            <div class="col-5">Montant HT Net(XAF)</div>
+                                        
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="row">
+                                    <div class="col-6 {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Dispo</div>
+                                    <div class="col-6"></div>
+                                
+                                </div>
+                            </div>
                         </div>
                         {{form_widget(form.commercialSheetItems)}}
-                        <p class="card-text">Quantité Totale  : <span id="itemsqtytotal">0</span></p>
-                        <p class="card-text">Montant HT       : <span id="itemsAmountSubtotal">0</span> XAF</p>
+                        <p class="card-text">Quantité Totale        : <span id="itemsqtytotal">0</span></p>
+                        <p class="card-text">Montant Total HT Brut  : <span id="itemsAmountBrutHT">0</span> XAF</p>
+                        <p class="card-text">Montant Total Remise   : <span id="itemsAmountRemise">0</span> XAF</p>
+                        <p class="card-text">Montant Total HT Net   : <span id="itemsAmountNetHT">0</span> XAF</p>
                         <p class="card-text">TVA ({{app.user.enterprise.tva}}%)     : <span id="taxes">0</span> XAF</p>
-                        <p class="card-text">Montant TTC      : <span id="amountTTC">0</span> XAF</p>
+                        <p class="card-text">Montant TTC            : <span id="amountTTC">0</span> XAF</p>
 
                     </div>
                     
@@ -96,7 +125,7 @@
                     <div class="card-body">
                         <h5 class="card-title"></h5>
                         {# {{form_widget(form.reductions)}} #}
-                        <div class="form-group">
+                        {# <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     {{ form_label(form.itemsReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
@@ -105,7 +134,7 @@
                                 {{ form_widget(form.itemsReduction, {'attr': {'class': "form-control text-center"}}) }}
                                 
                             </div>
-                        </div>
+                        </div> #}
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -126,7 +155,7 @@
                     <div class="card-header">Détails du Paiement</div>
                     <div class="card-body">
                         <h5 class="card-title"></h5>
-                        <p class="card-text">Total Net à payer : <span id="totalAmount">0</span> XAF</p>
+                        <p class="card-text">Montant Net à payer : <span id="totalAmount">0</span> XAF</p>
                         
                         <div class="form-group {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
                             <div class="input-group">
@@ -269,35 +298,40 @@
         }
     }
 
-    function computeItemsAmountTab(puId, qtyId, index) {
+    function computeItemsAmountTab(puId, qtyId, remiseId, index) {
         var price = parseFloat(puId);
-        var amount = price * parseFloat($(qtyId).val());
+        amountBrutHT[index] = price * parseFloat($(qtyId).val());
         //$(amountId).val(amount);
-        itemsAmount[index] = amount;
+        itemReductionTab[index] = ( ( amountBrutHT * parseFloat( $(remiseId).val() ) )/100.0 );
+
+        itemsAmount[index] = amountBrutHT[index] - itemReductionTab[index];
         //console.log('itemsAmount[' + index + '] = ' + itemsAmount[index]);
 
+        
         //Calcul du sous montant Total des items
         computeItemsAmountSubTotal();
     }
 
     //Procédure de calcul du sous montant Total des items
     function computeItemsAmountSubTotal() {
-        itemsAmountSubTotal = 0;
+        itemsAmountNetHT  = 0;
+        itemsReduction    = 0;
+        totalAmountBrutHT = 0;
         itemsAmount.forEach(function (item, index) {
-            itemsAmountSubTotal += item;
+            itemsAmountNetHT  += item;
+            itemsReduction    += itemReductionTab[index];
+            totalAmountBrutHT += amountBrutHT[index];
         });
-        //console.log(itemsAmountSubTotal);
-        $('#itemsAmountSubtotal').text(itemsAmountSubTotal);
-
-        //MAJ du montant de réduction sur la commande
-        itemsReduction = (parseFloat($('#commercial_sheet_itemsReduction').val()) / 100) * itemsAmountSubTotal;
-
+        //console.log(itemsAmountNetHT);
+        $('#itemsAmountNetHT').text(itemsAmountNetHT.toFixed(2));
+        $('#itemsAmountRemise').text(itemsReduction.toFixed(2));
+        $('#itemsAmountBrutHT').text(totalAmountBrutHT.toFixed(2));
         //MAJ du montant de taxes sur les items
-        taxes = itemsAmountSubTotal * tva;
-        $('#taxes').text(taxes);
+        taxes = itemsAmountNetHT * tva;
+        $('#taxes').text(taxes.toFixed(2));
 
-        amountTTC = itemsAmountSubTotal + taxes;
-        $('#amountTTC').text(amountTTC);
+        amountTTC = itemsAmountNetHT + taxes;
+        $('#amountTTC').text(amountTTC.toFixed(2));
 
         //Calcul du montant total de la promo
         computeTotalPromoAmount();
@@ -307,7 +341,7 @@
     //Procédure de calcul du montant total de la promo
     function computeTotalPromoAmount() {
         totalPromoAmount = itemsReduction + fixReductions;
-        $('#totalPromoAmount').text(totalPromoAmount);
+        $('#totalPromoAmount').text(totalPromoAmount.toFixed(2));
 
         //Calcul du montant Total Net à payer
         computeTotalAmount();
@@ -317,7 +351,7 @@
     function computeTotalAmount() {
         totalAmount = amountTTC - totalPromoAmount;
         if ($('#commercial_sheet_paymentStatus').is(':checked') || $('#commercial_sheet_completedStatus').is(':checked')) {
-            $('#commercial_sheet_advancePayment').val(totalAmount);
+            $('#commercial_sheet_advancePayment').val(totalAmount.toFixed(2));
             totalRestAmount = 0;
         }
         else {
@@ -329,10 +363,10 @@
             }
         }
 
-        $('#totalAmount').text(totalAmount);
-        $('#totalRestAmount').text(totalRestAmount);
+        $('#totalAmount').text(totalAmount.toFixed(2));
+        $('#totalRestAmount').text(totalRestAmount.toFixed(2));
     }
-
+    
     var tabproductSKUIds = [];
     var tabHideSKU = [];
     var tabHideProduct = [];
@@ -349,6 +383,8 @@
     var itemsAmountSubTotal = 0;
     var taxes = 0.0;
 
+    var totalAmountBrutHT = 0;
+    var amountBrutHT = [];
     // var reductionsAmount = [];
     // var reductionsAmountSubtotal = 0;
 
@@ -363,29 +399,8 @@
     //console.log(availabilities);
     //var availabilitiesTab = availabilities;
     var itemsReduction = 0.0;
+    var itemReductionTab = [];
     var fixReductions = 0;
-    
-    if (isNaN(parseFloat($('#commercial_sheet_itemsReduction').val())) || parseFloat($('#commercial_sheet_itemsReduction').val()) < 0 || !$('#commercial_sheet_itemsReduction').val() == true) {
-        $('#commercial_sheet_itemsReduction').val(0.0);
-    }
-    itemsReduction = parseFloat($('#commercial_sheet_itemsReduction').val());
-    //Gestion des évènements de modification sur l'entrée numérique du pourcentage 
-    //de réduction sur la commande
-    $('#commercial_sheet_itemsReduction').change(function () {
-        console.log($(this).val());
-        if (isNaN(parseFloat($(this).val())) || parseFloat($(this).val()) < 0 || !$(this).val() == true) {
-            $(this).val(0.0);
-            itemsReduction = 0.0;
-        }
-        else {
-            itemsReduction = (parseFloat($(this).val()) / 100) * parseFloat(itemsAmountSubTotal);
-        }
-
-        //Calcul du montant total de la promo
-        computeTotalPromoAmount();
-
-    });
-    //console.log(isNaN(parseFloat($('#commercial_sheet_fixReduction').val())) ? 0 : $('#commercial_sheet_fixReduction').val());
 
     if (isNaN(parseFloat($('#commercial_sheet_fixReduction').val())) || parseFloat($('#commercial_sheet_fixReduction').val()) < 0 || !$('#commercial_sheet_fixReduction').val() == true) {
         $('#commercial_sheet_fixReduction').val(0.0);

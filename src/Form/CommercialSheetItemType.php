@@ -57,6 +57,16 @@ class CommercialSheetItemType extends ApplicationType
                 ])
             )
             ->add(
+                'remise',
+                NumberType::class,
+                $this->getConfiguration("Remise (%)", "Please enter the % remise of item", [
+                    'attr' => [
+                        'min' => 0,
+
+                    ]
+                ])
+            )
+            ->add(
                 'quantity',
                 IntegerType::class,
                 $this->getConfiguration("Qty", "Please enter the quantity of Offer...", [
@@ -172,7 +182,18 @@ class CommercialSheetItemType extends ApplicationType
                 TextType::class
             )
             ->add(
-                'amount',
+                'amountBrutHT',
+                NumberType::class,
+                $this->getConfiguration("Amount", "", [
+                    'attr' => [
+                        'min'      => '0',
+                        //'value'    => '0',
+                        'readonly' => true,
+                    ]
+                ])
+            )
+            ->add(
+                'amountNetHT',
                 NumberType::class,
                 $this->getConfiguration("Amount", "", [
                     'attr' => [
