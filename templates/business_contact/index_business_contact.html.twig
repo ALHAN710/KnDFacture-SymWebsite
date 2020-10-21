@@ -89,7 +89,7 @@
         <div class="col-lg-12 col-sm-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <h5 class="header-title">List of {% if type == 'customer' %}Customers{% elseif type == 'supplier' %}Suppliers{% endif %}</h5>
+                    <h5 class="header-title">Liste des {% if type == 'customer' %}Clients{% elseif type == 'supplier' %}Fournisseurs{% endif %}</h5>
                     <div class="mt-2 mb-2 mr-5 text-right">
                         <a href="{{path('business_contact_create',{'type':type})}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
                     </div>
@@ -100,7 +100,7 @@
                                     {# <th>#</th> #}
                                     <th>Nom</th>
                                     <th class="d-none d-sm-table-cell">Addresse</th>
-                                    <th>Tel</th>
+                                    <th>Tél</th>
                                     {# <th class="d-none d-sm-table-cell">{% if type == 'customer' %}Revenues Générés (XAF){% elseif type == 'supplier' %}Dépenses Générées (XAF){% endif %}</th>
                                     <th class="d-none d-sm-table-cell">{% if type == 'customer' %}Nombre de commande{% elseif type == 'supplier' %}Number of Purchase Orders{% endif %}</th>
                                     <th class="d-none d-sm-table-cell">{% if type == 'customer' %}Créances (XAF){% elseif type == 'supplier' %}Dettes (XAF){% endif %}</th> #}
@@ -173,20 +173,20 @@
                                             <button type="button" class="close" onclick="Custombox.modal.close();">
                                                 <span>&times;</span><span class="sr-only">Close</span>
                                             </button>
-                                            <h4 class="custom-modal-title">Choose the document type</h4>
+                                            <h4 class="custom-modal-title">Choisir le type de document à créer</h4>
                                             <div class="custom-modal-text">
                                                 {# <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'quote'}) }}" class="btn btn-primary btn-lg rounded text-left">Quote</a> 
                                                 <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'bill'}) }}" class="btn btn-info btn-lg rounded float-right">Bill</a> #}
 
                                                 <div class="radio radio-info form-check-inline">
                                                     <input type="radio" id="inlineRadio1{{businessContact.id}}" value="quote" name="documentType{{businessContact.id}}">
-                                                    <label for="inlineRadio1{{businessContact.id}}"> Quote </label>
+                                                    <label for="inlineRadio1{{businessContact.id}}"> Devis </label>
                                                     {# <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'quote'}) }}" class="btn btn-primary btn-lg rounded text-left">Quote</a>  #}
                                                 
                                                 </div>
                                                 <div class="radio form-check-inline float-right">
                                                     <input type="radio" id="inlineRadio2{{businessContact.id}}" value="bill" name="documentType{{businessContact.id}}" checked="">
-                                                    <label for="inlineRadio2{{businessContact.id}}"> Bill </label>
+                                                    <label for="inlineRadio2{{businessContact.id}}"> Facture de vente </label>
                                                     {# <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'bill'}) }}" class="btn btn-info btn-lg rounded text-right">Bill</a> #}
 
                                                 </div>
