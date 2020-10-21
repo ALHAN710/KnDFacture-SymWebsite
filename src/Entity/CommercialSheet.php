@@ -249,12 +249,12 @@ class CommercialSheet
      * 
      * @return void
      */
-    public function initializeAdvancePayment()
+    /*public function initializeAdvancePayment()
     {
         if (($this->getCompletedStatus() == true) || ($this->getPaymentStatus() == true)) {
             $this->setAdvancePayment($this->getAmountNetToPaid());
         }
-    }
+    }*/
 
     /**
      * Permet d'initialiser le status de livraison de la commande à false
