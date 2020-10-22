@@ -97,7 +97,7 @@
                     <ul class="submenu">
                         <li><a href="{{ path('users_entreprise_index')}}"><i class="fas fa-users-cog mr-2"></i>Utilisateurs</a></li>{# {{ path('users_index') }} #}
                         <li><a href="{{ path('index_categories') }}"><i class="dripicons-network-1 mr-2"></i>Catégorie de produit</a></li>{# {{ path('jar_recycling_management_index') }} #}
-                        <li><a href="#"><i class="fas fa-user-cog mr-2"></i> Mon compte</a></li>{# dripicons-user-id {{ path('jar_recycling_management_index') }} #}
+                        <li><a href="{{ path('enterprise_account_profile',{'id':app.user.enterprise.id})}}"><i class="fas fa-user-cog mr-2"></i> Mon compte</a></li>{# dripicons-user-id {{ path('jar_recycling_management_index') }} #}
                     </ul>
                 </li>
             </ul>

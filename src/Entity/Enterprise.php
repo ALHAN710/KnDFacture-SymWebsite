@@ -3,17 +3,25 @@
 namespace App\Entity;
 
 use DateTime;
+use DateInterval;
 use DateTimeZone;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EnterpriseRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=EnterpriseRepository::class)
  * 
  * @ORM\HasLifecycleCallbacks()
+ * 
+ * @UniqueEntity(
+ *  fields={"socialReason", "phoneNumber"},
+ *  message="Une entreprise est déjà enregistrée avec ses paramètres(raison sociale et tél), veuillez les modifier svp !"
+ * )
  * 
  */
 class Enterprise
@@ -27,6 +35,8 @@ class Enterprise
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Veuillez renseigner la raison sociale ou le nom")
+     * @Assert\Length(max=255, minMessage="255 caractères Max !")
      */
     private $socialReason;
 
@@ -47,6 +57,7 @@ class Enterprise
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Veuillez renseigner le numéro de téléphone")
      */
     private $phoneNumber;
 
@@ -111,6 +122,16 @@ class Enterprise
      */
     private $categories;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $country;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $description;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -133,6 +154,90 @@ class Enterprise
         if (empty($this->createdAt)) {
             $this->createdAt = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
         }
+    }
+
+    public function subscriptionDeadLine()
+    {
+        $nowDate = new DateTime("now");
+        $periodofvalidity = new DateTime($this->subscribeAt->format('Y/m/d'));
+        $periodofvalidity->add(new DateInterval('P' . $this->subscriptionDuration . 'M'));
+
+        /*$interval = $nowDate->diff($this->subscribeAt);
+        //$interval = $this->periodofvalidity->diff($nowDate);
+        if ($interval) {
+            //return gettype($interval->format('d'));
+            return $interval->format('%R%a jours'); // '+29 days'
+            //return $interval->days; //Nombre de jour total de différence entre les dates 
+            //return !$interval->invert; // 
+        }
+        return '';*/
+
+        return $this->formatDateDiff($nowDate, $periodofvalidity); //
+    }
+
+    /**
+     * A sweet interval formatting, will use the two biggest interval parts.
+     * On small intervals, you get minutes and seconds.
+     * On big intervals, you get months and days.
+     * Only the two biggest parts are used.
+     *
+     * @param DateTime $start
+     * @param DateTime|null $end
+     * @return string
+     */
+    public function formatDateDiff($start, $end = null)
+    {
+        if (!($start instanceof DateTime)) {
+            $start = new DateTime($start);
+        }
+
+        if ($end === null) {
+            $end = new DateTime();
+        }
+
+        if (!($end instanceof DateTime)) {
+            $end = new DateTime($start);
+        }
+
+        $interval = $end->diff($start);
+        $doPlural = function ($nb, $str) {
+            if ($str !== 'Mois') return $nb > 1 ? $str . 's' : $str;
+            return $str;
+        }; // adds plurals
+
+        $format = array();
+        if ($interval->y !== 0) {
+            $format[] = "%y " . $doPlural($interval->y, "An");
+        }
+        if ($interval->m !== 0) {
+            $format[] = "%m " . $doPlural($interval->m, "Mois");
+        }
+        if ($interval->d !== 0) {
+            $format[] = "%d " . $doPlural($interval->d, "Jour");
+        }
+        if ($interval->h !== 0) {
+            $format[] = "%h " . $doPlural($interval->h, "Heure");
+        }
+        if ($interval->i !== 0) {
+            $format[] = "%i " . $doPlural($interval->i, "Minute");
+        }
+        if ($interval->s !== 0) {
+            if (!count($format)) {
+                return "less than a minute ago";
+            } else {
+                $format[] = "%s " . $doPlural($interval->s, "Seconde");
+            }
+        }
+
+        // We use the two biggest parts
+        if (count($format) > 1) {
+            $format = array_shift($format) . " et " . array_shift($format);
+        } else {
+            $format = array_pop($format);
+        }
+
+        // Prepend 'since ' or whatever you like
+        return $interval->format($format);
     }
 
     public function getId(): ?int
@@ -430,6 +535,30 @@ class Enterprise
                 $category->setEntreprise(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
