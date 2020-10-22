@@ -156,7 +156,10 @@ class CommercialSheet
 
     public function getTotalAmountBrutHT(): float
     {
+        $this->totalAmountNetHT = 0.0;
+        $this->itemsRemise = 0.0;
         $totalAmountBrutHT = 0.0;
+
         $items = $this->getCommercialSheetItems();
         foreach ($items as $item) {
             $tmp = ($item->getQuantity() * $item->getPu());
@@ -171,24 +174,27 @@ class CommercialSheet
 
     public function getItemAmountNetHT()
     {
+        $this->getTotalAmountBrutHT();
         return $this->itemAmountNetHT;
     }
     public function getItemsRemise()
     {
+        $this->getTotalAmountBrutHT();
         return $this->itemsRemise;
     }
 
     public function getTotalAmountNetHT(): float
     {
-        /*$amountNetHT = 0.0;
-        $items = $this->getItemAmountNetHT();
+        $this->getTotalAmountBrutHT();
+        $amountNetHT = $this->totalAmountNetHT - $this->getFixReduction();
+        /*$items = $this->getItemAmountNetHT();
         dump($items);
         foreach ($items as $key => $value) {
             $amountNetHT += $value;
             dump($value);
         }*/
         //$amountNetHT = number_format((float) $amountNetHT, 2, '.', ' ');
-        return $this->totalAmountNetHT;
+        return $amountNetHT;
     }
 
     public function getTaxes(): float
@@ -225,18 +231,19 @@ class CommercialSheet
     public function getAmountNetToPaid(): float
     {
         //totalAmount = itemsAmountSubTotal + deliveryFees + taxes - totalPromoAmount;
-        $totalTTC = $this->getAmountTTC();
-        $totalAmountReduction = $this->getAmountReduction();
-        $totalAmountNetToPaid = $totalTTC - $totalAmountReduction;
+        // $totalTTC = $this->getAmountTTC();
+        // $totalAmountReduction = $this->getAmountReduction();
+        // $totalAmountNetToPaid = $totalTTC - $totalAmountReduction;
         //$totalAmountNetToPaid = number_format((float) $totalAmountNetToPaid, 2, '.', ' ');
 
-        return $totalAmountNetToPaid;
+        // return $totalAmountNetToPaid;
+        return $this->getAmountTTC();
     }
 
     public function getAmountRestToPaid(): float
     {
-        $totalNetToPaid = $this->getAmountNetToPaid();
-        $totalAmountRestToPaid = $totalNetToPaid - $this->getAdvancePayment();
+        //$totalNetToPaid = $this->getAmountNetToPaid();
+        $totalAmountRestToPaid = $this->getAmountNetToPaid() - $this->getAdvancePayment();
 
         return $totalAmountRestToPaid;
     }

@@ -121,7 +121,7 @@
                                         </th>
                                     </tr>
                                     <tr>
-                                        <th>Ref</th>
+                                        {# <th>Ref</th> #}
                                         <th>Désignation</th>
                                         <th class="text-center">P.U(XAF)</th>
                                         <th class="text-center">Qté</th>
@@ -137,7 +137,7 @@
                                     {% set total = 0 %}
                                     {% for commercialSheetItem in commercialSheet.commercialSheetItems %}
                                     <tr>
-                                        <td>{{commercialSheetItem.reference}}</td>
+                                        {# <td>{{commercialSheetItem.reference}}</td> #}
                                         <td>{{commercialSheetItem.designation}}</td>
                                         <td class="text-center">{{commercialSheetItem.pu}}</td>
                                         <td class="text-center">{{commercialSheetItem.quantity}}</td>
@@ -183,22 +183,36 @@
                                         <td>$60.00</td>
                                     </tr>#}
                                     <tr>
-                                        <td colspan="5" class="border-0"></td>
-                                        <td  class="border-0 font-14 text-right pr-4"><b>Montant Brut HT :</b></td>
+                                        <td colspan="4" class="border-0"></td>
+                                        <td colspan="2" class="border-0 font-14 text-right pr-4"><b>Montant Brut HT :</b></td>
                                         <td  class="border-0 font-14 text-left pr-4"><b>{{commercialSheet.TotalAmountBrutHT|number_format(2, '.', ' ')}} XAF</b></td>
                                         {#<td colspan="2" class="border-0 font-14 text-right pr-4"><b>{{itemsAmount}} XAF</b></td>#}
                                     </tr>
 
                                     <tr>
-                                        <th colspan="5" class="border-0"></th>
-                                        <td class="border-0 font-14 text-right pr-4"><b>Montant Net HT :</b></td>
+                                        <th colspan="4" class="border-0"></th>
+                                        <td colspan="2" class="border-0 font-14 text-right pr-4"><b>Montant Total des Remises sur les articles:</b></td>
+                                        <td class="border-0 font-14 text-left pr-4"><b>{{commercialSheet.amountReduction|number_format(2, '.', ' ')}} XAF</b></td>
+                                        {#<td class="border-0 font-14"><b>{{commercialSheet.amountReduction}} XAF</b></td>#}
+                                    </tr>
+
+                                    <tr>
+                                        <th colspan="4" class="border-0"></th>
+                                        <td colspan="2" class="border-0 font-14 text-right pr-4"><b>Montant Total des Remises Forfaitaires:</b></td>
+                                        <td class="border-0 font-14 text-left pr-4"><b>{{commercialSheet.fixReduction|number_format(2, '.', ' ')}} XAF</b></td>
+                                        {#<td class="border-0 font-14"><b>{{commercialSheet.amountReduction}} XAF</b></td>#}
+                                    </tr>
+
+                                    <tr>
+                                        <th colspan="4" class="border-0"></th>
+                                        <td colspan="2" class="border-0 font-14 text-right pr-4"><b>Montant Net HT :</b></td>
                                         <td class="border-0 font-14 text-left pr-4"><b>{{commercialSheet.TotalAmountNetHT|number_format(2, '.', ' ')}} XAF</b></td>
                                         {#<td class="border-0 font-14"><b>{{promoAmount}} XAF</b></td>#}
                                     </tr>
 
                                     <tr>
                                         <th colspan="5" class="border-0"></th>
-                                        <td class="border-0 font-14 text-right pr-4"><b>TVA( {{app.user.enterprise.tva}}% ) :</b></td>
+                                        <td class="border-0 font-14 text-right pr-4"><b>Taxes{#( {{app.user.enterprise.tva}}% )#} :</b></td>
                                         <td class="border-0 font-14 text-left pr-4"><b>{{commercialSheet.Taxes|number_format(2, '.', ' ')}} XAF</b></td>
                                         {#<td class="border-0 font-14"><b>{{promoAmount}} XAF</b></td>#}
                                     </tr>
@@ -209,14 +223,7 @@
                                         <td class="border-0 font-14 text-left pr-4"><b>{{commercialSheet.AmountTTC|number_format(2, '.', ' ')}} XAF</b></td>
                                         {#<td class="border-0 font-14"><b>{{promoAmount}} XAF</b></td>#}
                                     </tr>
-
-                                    <tr>
-                                        <th colspan="5" class="border-0"></th>
-                                        <td class="border-0 font-14 text-right pr-4"><b>Montant Total des Remises:</b></td>
-                                        <td class="border-0 font-14 text-left pr-4"><b>{{commercialSheet.amountReduction|number_format(2, '.', ' ')}} XAF</b></td>
-                                        {#<td class="border-0 font-14"><b>{{commercialSheet.amountReduction}} XAF</b></td>#}
-                                    </tr>
-                                                                                                                                                 
+                                                                                                                                        
                                     <tr class="bg-dark text-white">
                                         <th colspan="5" class="border-0"></th>
                                         <td class="border-0 font-14"><b>Montant Net à Payer</b></td>

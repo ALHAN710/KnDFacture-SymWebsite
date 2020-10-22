@@ -555,8 +555,8 @@ $('#add-commercialSheetItems').click(function () {
         //console.log('available required false');
     }
     if (isEdit == false) {
-        $('.colRef_commercial_sheet_commercialSheetItems_' + index).addClass('d-none');
-        $('.colSKU_commercial_sheet_commercialSheetItems_' + index).removeClass('d-none');
+        // $('.colRef_commercial_sheet_commercialSheetItems_' + index).addClass('d-none');
+        // $('.colSKU_commercial_sheet_commercialSheetItems_' + index).removeClass('d-none');
     }
     // tabSKUIds[index] = '#commercialSheet_commercialSheetItems_' + index + '_sku';
     // tabProductIds[index] = '#commercialSheet_commercialSheetItems_' + index + '_product';

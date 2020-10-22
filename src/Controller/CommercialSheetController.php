@@ -139,6 +139,30 @@ class CommercialSheetController extends ApplicationController
             foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
                 //dump($commercialSheetItem);
                 if ($commercialSheetItem->getQuantity() >= 1) { //On considère uniquement les items de Qty >= 1
+                    //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
+                    $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
+                        'designation' => $commercialSheetItem->getDesignation(),
+                        'pu' => $commercialSheetItem->getPU(),
+                        'quantity' => $commercialSheetItem->getQuantity(),
+                        'remise'   => $commercialSheetItem->getRemise()
+                    ]);
+
+                    if (empty($commercialSheetItem_)) {
+                        $commercialSheetItem->addCommercialSheet($commercialSheet);
+                        //$manager->persist($commercialSheetItem);
+                        //dump('commercialSheetItem dont exists ');
+                    } else {
+                        //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
+                        //$commercialSheetItem = $commercialSheetItem_;
+                        $commercialSheetItem_->setRemise($commercialSheetItem->getRemise())
+                            ->setAvailable($commercialSheetItem->getAvailable())
+                            ->setItemOfferType($commercialSheetItem->getItemOfferType())
+                            ->addCommercialSheet($commercialSheet);
+                        $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
+                        $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                        $commercialSheetItem = $commercialSheetItem_;
+                    }
+
                     if ($commercialSheetItem->getItemOfferType() == 'hasStock') { //Gestion des items avec des Products en stock 
                         //dump($type);
                         if ($type == 'bill') {
@@ -194,31 +218,13 @@ class CommercialSheetController extends ApplicationController
 
                                                             $lot->addCommercialSheetItemLot($cmsiLot);
 
-                                                            //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
-                                                            $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
-                                                                'designation' => $commercialSheetItem->getDesignation(),
-                                                                'pu' => $commercialSheetItem->getPU(),
-                                                                'quantity' => $commercialSheetItem->getQuantity()
-                                                            ]);
-
-                                                            if (empty($commercialSheetItem_)) {
-                                                                $commercialSheetItem->addCommercialSheet($commercialSheet);
-                                                                $manager->persist($commercialSheetItem);
-                                                                // dump('commercialSheetItem dont exists ');
-                                                            } else {
-                                                                //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
-                                                                //$commercialSheetItem = $commercialSheetItem_;
-
-                                                                $commercialSheetItem_->addCommercialSheet($commercialSheet)
-                                                                    ->addCommercialSheet($commercialSheet)
-                                                                    ->addCommercialSheetItemLot($cmsiLot);
-
-                                                                $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
-                                                                $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
-                                                            }
+                                                            $commercialSheetItem->addCommercialSheetItemLot($cmsiLot)
+                                                                //->addCommercialSheet($commercialSheet)
+                                                                //->addCommercialSheet($commercialSheet)
+                                                            ;
 
                                                             $manager->persist($cmsiLot);
-                                                            $manager->persist($commercialSheetItem);
+                                                            //$manager->persist($commercialSheetItem);
                                                             $manager->persist($lot); //Sauvegarde du lot en BDD
 
                                                             $qtyToRemove = 0;
@@ -241,10 +247,11 @@ class CommercialSheetController extends ApplicationController
                                                                 ->setCommercialSheetItem($commercialSheetItem)
                                                                 ->setQuantity($lot->getQuantity());
                                                             $lot->addCommercialSheetItemLot($cmsiLot);
-                                                            $commercialSheetItem->addCommercialSheetItemLot($cmsiLot)
-                                                                ->addCommercialSheet($commercialSheet);
+
+                                                            $commercialSheetItem->addCommercialSheetItemLot($cmsiLot);
+
                                                             $manager->persist($cmsiLot);
-                                                            $manager->persist($commercialSheetItem);
+                                                            //$manager->persist($commercialSheetItem);
                                                             $lot->setQuantity(0);
                                                             $manager->persist($lot); //Sauvegarde du lot en BDD
                                                         }
@@ -263,6 +270,7 @@ class CommercialSheetController extends ApplicationController
                                                 $manager->persist($inventoryAvailability);
                                             }
                                         }
+                                        $manager->persist($commercialSheetItem);
                                     } else {
                                         $commercialSheetItemErrorFlag = true;
                                         $message = $message . "<li>the quantity ({$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()} is greater than the availability ({$inventoryAvailability->getAvailable()})</li>";
@@ -281,28 +289,15 @@ class CommercialSheetController extends ApplicationController
                         }
                         //$manager->persist($commercialSheetItem);
                     } else {
-                        $commercialSheetItem->setProduct(null);
-                        //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
-                        $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
-                            'designation' => $commercialSheetItem->getDesignation(),
-                            'pu' => $commercialSheetItem->getPU(),
-                            'quantity' => $commercialSheetItem->getQuantity()
-                        ]);
+                        $commercialSheetItem->setProduct(null)
+                            ->addCommercialSheet($commercialSheet);
 
-                        if (empty($commercialSheetItem_)) {
-                            $commercialSheetItem->addCommercialSheet($commercialSheet);
-                            $manager->persist($commercialSheetItem);
-                            // dump('commercialSheetItem dont exists ');
-                        } else {
-                            //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
-                            //$commercialSheetItem = $commercialSheetItem_;
-                            $commercialSheetItem_->addCommercialSheet($commercialSheet);
-                            $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
-                            $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
-                        }
+                        $manager->persist($commercialSheetItem);
                         //$commercialSheetItem->setProduct($service); 
                         //dump($commercialSheetItem);
                     }
+                } else {
+                    $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
                 }
             }
             //die();
@@ -355,7 +350,9 @@ class CommercialSheetController extends ApplicationController
                 if ($totalSheet < $sheetNumber) { //Si la limite mensuel de document n'est pas encore atteinte
 
                     if (!$commercialSheetItemErrorFlag) { //Si la commande est valide 
-                        //die();
+                        dump('$commercialSheetItemErrorFlag = ' . $commercialSheetItemErrorFlag);
+                        //$commercialSheetItem->addCommercialSheet($commercialSheet);
+                        //$manager->persist($commercialSheetItem);
                         $manager->persist($commercialSheet);
                         $manager->flush();
 
