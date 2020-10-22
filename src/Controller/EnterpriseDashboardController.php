@@ -252,7 +252,8 @@ class EnterpriseDashboardController extends ApplicationController
                     ->getResult();
 
                 //Détermination du chiffre d'affaire HT SUBSTRING(cms.deliverAt, 1, 13)
-                $bills = $manager->createQuery("SELECT cms.deliverAt AS jour, SUM(cmsi.pu * cmsi.quantity) AS CAHT
+                $bills = $manager->createQuery("SELECT cms.deliverAt AS jour,
+                                             SUM( (cmsi.pu * cmsi.quantity) - ( ( (cmsi.pu * cmsi.quantity) * cmsi.remise ) / 100.0 ) ) - cms.fixReduction AS CAHT
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.commercialSheetItems cmsi
                                             JOIN cms.user u 
@@ -404,8 +405,7 @@ class EnterpriseDashboardController extends ApplicationController
                 }*/
 
                 //Détermination des dépenses fournisseurs TTC
-                $purchaseOrders = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 13) AS jour,
-                                            SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cmsi.remise ) / 100.0) - cms.fixReduction AS EXTTC
+                $purchaseOrders = $manager->createQuery("SELECT cms.deliverAt AS jour, cms.advancePayment AS EXTTC
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -506,7 +506,8 @@ class EnterpriseDashboardController extends ApplicationController
                 $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
 
                 //Détermination du chiffre d'affaire HT
-                $bills = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour, SUM(cmsi.pu * cmsi.quantity) AS CAHT
+                $bills = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour,
+                                             SUM( (cmsi.pu * cmsi.quantity) - ( ( (cmsi.pu * cmsi.quantity) * cmsi.remise ) / 100.0 ) ) - cms.fixReduction AS CAHT
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -593,8 +594,7 @@ class EnterpriseDashboardController extends ApplicationController
                 }
 
                 //Détermination des dépenses fournisseurs TTC
-                $purchaseOrders = $manager->createQuery("SELECT cms.deliverAt AS jour,
-                                            SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cmsi.remise ) / 100.0) - cms.fixReduction AS EXTTC
+                $purchaseOrders = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour, cms.advancePayment AS EXTTC
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -719,7 +719,6 @@ class EnterpriseDashboardController extends ApplicationController
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
                                             WHERE cms.type = :type_
-                                            AND cms.paymentStatus = 0
                                             AND e.id = :entId
                                                                                                                              
                                         ")
@@ -734,7 +733,6 @@ class EnterpriseDashboardController extends ApplicationController
                                             LEFT JOIN cms.user u 
                                             JOIN u.enterprise e
                                             WHERE cms.type = :type_
-                                            AND cms.paymentStatus = 0
                                             AND e.id = :entId
                                                                                                                               
                                         ")
@@ -743,9 +741,10 @@ class EnterpriseDashboardController extends ApplicationController
                     'type_'   => 'purchaseorder',
                 ))
                 ->getResult();
-            // dump($billPaymentOnpending);
+            //dump($billPaymentOnpending);
             $outstandingClaim = 0.0;
             foreach ($billPaymentOnpending as $commercialSheet) {
+                dump($commercialSheet['paymentOnPending']->getAmountRestToPaid());
                 $outstandingClaim += $commercialSheet['paymentOnPending']->getAmountRestToPaid();
             }
             $outstandingClaim = number_format((float) $outstandingClaim, 2, '.', ' ');
