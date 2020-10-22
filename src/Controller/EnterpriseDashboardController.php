@@ -405,7 +405,7 @@ class EnterpriseDashboardController extends ApplicationController
 
                 //Détermination des dépenses fournisseurs TTC
                 $purchaseOrders = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 13) AS jour,
-                                            SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) - cms.fixReduction AS EXTTC
+                                            SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cmsi.remise ) / 100.0) - cms.fixReduction AS EXTTC
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -594,7 +594,7 @@ class EnterpriseDashboardController extends ApplicationController
 
                 //Détermination des dépenses fournisseurs TTC
                 $purchaseOrders = $manager->createQuery("SELECT cms.deliverAt AS jour,
-                                            SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) - cms.fixReduction AS EXTTC
+                                            SUM(cmsi.pu * cmsi.quantity) + ((SUM(cmsi.pu * cmsi.quantity) * e.tva) / 100.0) - ( ( SUM(cmsi.pu * cmsi.quantity) * cmsi.remise ) / 100.0) - cms.fixReduction AS EXTTC
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
