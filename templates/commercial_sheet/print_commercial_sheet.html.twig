@@ -76,7 +76,7 @@
                     <div class="col-md-4">
                         <div class="">
                             <h6 class="mb-0"><b>Date de {% if commercialSheet.type == 'bill' %}Facturation{% elseif commercialSheet.type == 'quote' %}Cotation{% endif %} :</b> {{commercialSheet.createdAt|date("d/m/Y")}}</h6>
-                            <h6><b>{% if commercialSheet.type == 'bill' %}Facture{% elseif commercialSheet.type == 'quote' %}Dévis{% endif %} </b>N°{{commercialSheet.number}}</h6>
+                            <h6><b>N° de {% if commercialSheet.type == 'bill' %}Facture : FV{% elseif commercialSheet.type == 'quote' %}Devis : D{% elseif commercialSheet.type == 'purchaseorder' %}Facture : FA{% endif %}</b>{{numOrder}}/{{commercialSheet.createdAt|date("m")}}/{{commercialSheet.createdAt|date("y")}}</h6>
                         </div>
                     </div>
                     <div class="col-md-4">

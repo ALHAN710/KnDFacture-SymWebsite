@@ -12,12 +12,16 @@
 {% endblock %}
 
 {% set docType = '' %}
+{% set prefix = '' %}
 {% if type == 'bill' %}
     {% set docType = 'Facture' %}
+    {% set prefix = 'FV' %}
 {% elseif type == 'quote' %}
     {% set docType = 'Devis' %}
+    {% set prefix = 'D' %}
 {% elseif type == 'purchaseorder' %}
-    {% set docType = 'Bon de Commande' %}
+    {% set docType = "Facture d'Achat" %}
+    {% set prefix = 'FA' %}
 {% endif %}
 
 {% block pageTitle %}
@@ -41,7 +45,7 @@
         <div class="col-lg-12 col-sm-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <h5 class="header-title">Liste des {{docType ~ "S"}}
+                    <h5 class="header-title">Liste des {{docType}}
                     </h5>
                     {% if type != 'quote' %}
                     <div class="row ">
@@ -80,7 +84,7 @@
                         <div class="tab-content">
                             <div class="tab-pane active p-3" id="delivery" role="tabpanel">    
                                 {% if type == 'bill' %}
-                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Imprimé les Commandes cochées dans le journal des livraisons du jour ?"><i class="fa fa-print"></i></button>
+                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Imprimer les Commandes cochées dans le journal des livraisons du jour ?"><i class="fa fa-print"></i></button>
                                 {# <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button>  #}
                                 {% endif %} 
                                 <table id="datatableDelivery" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -89,7 +93,7 @@
                                             {% if type == 'bill' %}
                                             <th style="width:0.5em">À Livrer ?</th>
                                             {% endif %}
-                                            <th>N° {{docType}}</th>
+                                            {# <th>N° Facture</th> #}
                                             <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
                                             <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                             {# <th>Payment Date</th> #}
@@ -112,7 +116,7 @@
                                                 </div>
                                             </td>
                                             {% endif %}
-                                            <td>{{commercialSheet.number}}</td>
+                                            {# <td>{{commercialSheet.number}}</td> #}
                                             <td>{{commercialSheet.businessContact.socialReason}}</td>
                                             <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
                                             {# <td>
@@ -153,7 +157,7 @@
                                         <thead>
                                             <tr class="text-center">
                                                 {# <th style="width:0.5em"></th> #}
-                                                <th>N° {{docType}}</th>
+                                                {# <th>N° Facture</th> #}
                                                 <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
                                                 <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                                 {# <th>Delivery Date</th> #}
@@ -169,7 +173,9 @@
                                             {# {{ commercialSheet.deliverAt|date("d/m/Y") }} #}
                                             {% if commercialSheet.paymentStatus == false %}
                                             <tr class="text-center align-items-center">
-                                                <td>{{commercialSheet.number}}</td>
+                                                {# <td>
+                                                {{prefix}}{{commercialSheet.id}}/{{commercialSheet.createdAt|date("m")}}/{{commercialSheet.createdAt|date("y")}}
+                                                </td> #}
                                                 <td>{{commercialSheet.businessContact.socialReason}}</td>
                                                 <td>{{commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
                                                 {# <td>{{commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td> #}
@@ -200,7 +206,7 @@
                                     <table id="datatableCompleted" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr class="text-center">
-                                                <th>N° {{docType}}</th>
+                                                {# <th>N° Facture</th> #}
                                                 <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
                                                 <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                                 <th>Date de Livraison</th>
@@ -214,7 +220,8 @@
                                             {% for commercialSheet in commercialSheets %}
                                             {% if commercialSheet.completedStatus == true %}
                                             <tr class="text-center">
-                                                <td>{{commercialSheet.number}}</td>
+                                                {# <td>{{prefix}}{{commercialSheet.id}}/{{commercialSheet.createdAt|date("m")}}/{{commercialSheet.createdAt|date("y")}} #}
+                                                </td>
                                                 <td>{{commercialSheet.businessContact.socialReason}}</td>
                                                 <td>{{ commercialSheet.createdAt is empty ? "-" : commercialSheet.createdAt|date("d/m/Y") }}</td>
                                                 <td>{{ commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td>
@@ -257,7 +264,7 @@
                             <thead>
                                 <tr class="text-center">
                                     {# <th style="width:0.5em"></th> #}
-                                    <th>N° Devis</th>
+                                    {# <th>N° Devis</th> #}
                                     <th>Client</th>
                                     <th>Date d'émission</th>
                                     <th>Date limite de validité</th>
@@ -276,7 +283,8 @@
                                             <label for="Journal{{commercialSheet.id}}"></label>
                                         </div>
                                     </td> #}
-                                    <td>{{commercialSheet.number}}</td>
+                                    {# <td>{{prefix}}{{commercialSheet.id}}/{{commercialSheet.createdAt|date("m")}}/{{commercialSheet.createdAt|date("y")}} #}
+                                    </td>
                                     <td>{{commercialSheet.businessContact.socialReason}}</td>
                                     <td>{{commercialSheet.createdAt|date("d/m/Y")}}</td>
                                     <td>{{commercialSheet.periodofvalidity|date("d/m/Y")}}</td>
@@ -296,9 +304,9 @@
                                     </td> #}
                                     <td>
                                         {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Quote"><i class="far fa-edit"></i> </a> #}
-                                        <a href="{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}" class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Convertir le Devis en Facture"><i class="fas fa-exchange-alt"></i> </a>
+                                        <a href="{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}" class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Convertir le Devis en Facture de vente ?"><i class="fas fa-exchange-alt"></i> </a>
                                         <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir la Facture de la commande ?"><i class="mdi mdi-file-table-outline"></i> </a>    
-                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer le Devis"><i class="fas fa-trash"></i> </a>
+                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer le Devis ?"><i class="fas fa-trash"></i> </a>
                                                 
                                     </td>
                                     

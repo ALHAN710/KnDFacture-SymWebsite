@@ -37,14 +37,15 @@ class CommercialSheetController extends ApplicationController
      * @Route("/commercial/sheet/{type<[a-z]+>}/dashboard", name="commercial_sheet_index")
      * @IsGranted("ROLE_USER")
      */
-    public function index($type, CommercialSheetRepository $commercialSheetRepo, InventoryRepository $inventoryRepo)
+    public function index($type, CommercialSheetRepository $commercialSheetRepo)
     {
-        $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
+        //$inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         $commercialSheets = $commercialSheetRepo->findBy(['type' => $type]);
         //$commercialSheets = [];
+
         return $this->render('commercial_sheet/index_commercial_sheet.html.twig', [
             'commercialSheets'      => $commercialSheets,
-            'inventories'           => $inventories,
+            //'inventories'           => $inventories,
             'type'                  => $type,
         ]);
     }
@@ -781,12 +782,56 @@ class CommercialSheetController extends ApplicationController
      * @param CommercialSheet $commercialSheet
      * @return void
      */
-    public function printBill(CommercialSheet $commercialSheet, InventoryRepository $inventoryRepo)
+    public function printBill(CommercialSheet $commercialSheet, EntityManagerInterface $manager)
     {
-        $inventories = $inventoryRepo->findAll();
+        //$inventories = $inventoryRepo->findAll();
+        //$date = $commercialSheet->getCreatedAt();
+        $cms = $manager->createQuery("SELECT cms
+                                     FROM App\Entity\CommercialSheet cms
+                                     JOIN cms.user u
+                                     JOIN u.enterprise e
+                                     WHERE cms.createdAt LIKE :dat
+                                     AND e.id = :entId
+
+                                    ")
+            ->setParameters([
+                'dat' => '%' . $commercialSheet->getCreatedAt()->format('Y-m') . '%',
+                'entId' => $this->getUser()->getEnterprise()->getId(),
+            ])
+            ->getResult();
+        $numOrder = 0;
+        $str = '';
+        foreach ($cms as $key => $value) {
+            if ($value === $commercialSheet) $numOrder = $key + 1;
+        }
+        //dump($numOrder);
+        //Check if the variable $numOrder is an integer:
+        if (!filter_var($numOrder, FILTER_VALIDATE_INT)) {
+            //echo "Only integer values are required!";
+            //exit();
+        } else {
+            // Convert the integer to array
+            $int_array  = array_map('intval', str_split($numOrder));
+            //get the lenght of the array
+            $int_lenght = count($int_array);
+        }
+        //Check to make sure the lenght of the int does not exceed or less than10
+        if ($int_lenght < 4) {
+            $rest  = 4 - $int_lenght;
+            for ($i = 0; $i < $rest; $i++) {
+                $str .= '0';
+            }
+            //echo "Only 10 digit numbers are allow ! nbdigit = " . $int_lenght;
+            //exit();
+        } else {
+            //echo $numOrder . " is an integer and its lenght is exactly " . $int_lenght;
+            //Then proceed with your code
+        }
+        $str .= $numOrder;
+
         return $this->render('commercial_sheet/print_commercial_sheet.html.twig', [
             'commercialSheet' => $commercialSheet,
-            'inventories'     => $inventories,
+            'numOrder'        => $str,
         ]);
     }
 
