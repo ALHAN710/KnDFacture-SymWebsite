@@ -141,32 +141,32 @@ class CommercialSheetController extends ApplicationController
                 //dump($commercialSheetItem);
                 if ($commercialSheetItem->getQuantity() >= 1) { //On considère uniquement les items de Qty >= 1
                     //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
-                    $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
-                        'designation' => $commercialSheetItem->getDesignation(),
-                        'pu' => $commercialSheetItem->getPU(),
-                        'quantity' => $commercialSheetItem->getQuantity(),
-                        'remise'   => $commercialSheetItem->getRemise()
-                    ]);
-
-                    if (empty($commercialSheetItem_)) {
-                        $commercialSheetItem->addCommercialSheet($commercialSheet);
-                        //$manager->persist($commercialSheetItem);
-                        //dump('commercialSheetItem dont exists ');
-                    } else {
-                        //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
-                        //$commercialSheetItem = $commercialSheetItem_;
-                        $commercialSheetItem_->setRemise($commercialSheetItem->getRemise())
-                            ->setAvailable($commercialSheetItem->getAvailable())
-                            ->setItemOfferType($commercialSheetItem->getItemOfferType())
-                            ->addCommercialSheet($commercialSheet);
-                        $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
-                        $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
-                        $commercialSheetItem = $commercialSheetItem_;
-                    }
 
                     if ($commercialSheetItem->getItemOfferType() == 'hasStock') { //Gestion des items avec des Products en stock 
                         //dump($type);
                         if ($type == 'bill') {
+                            $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
+                                'designation' => $commercialSheetItem->getDesignation(),
+                                'pu' => $commercialSheetItem->getPU(),
+                                'quantity' => $commercialSheetItem->getQuantity(),
+                                'remise'   => $commercialSheetItem->getRemise()
+                            ]);
+                            dd($commercialSheetItem->getAvailable());
+                            if (empty($commercialSheetItem_)) {
+                                $commercialSheetItem->addCommercialSheet($commercialSheet);
+                                //$manager->persist($commercialSheetItem);
+                                //dump('commercialSheetItem dont exists ');
+                            } else {
+                                //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
+                                //$commercialSheetItem = $commercialSheetItem_;
+                                $commercialSheetItem_->setRemise($commercialSheetItem->getRemise())
+                                    ->setAvailable($commercialSheetItem->getAvailable())
+                                    ->setItemOfferType($commercialSheetItem->getItemOfferType())
+                                    ->addCommercialSheet($commercialSheet);
+                                $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
+                                $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                                $commercialSheetItem = $commercialSheetItem_;
+                            }
                             //dd($iconStock);
                             if ($iconStock == true) { //Si le client Entreprise à souscrit à un module KnD Stock
                                 //dump($commercialSheetItem->getProduct());
@@ -290,8 +290,29 @@ class CommercialSheetController extends ApplicationController
                         }
                         //$manager->persist($commercialSheetItem);
                     } else {
-                        $commercialSheetItem->setProduct(null)
-                            ->addCommercialSheet($commercialSheet);
+                        $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
+                            'designation' => $commercialSheetItem->getDesignation(),
+                            'pu' => $commercialSheetItem->getPU(),
+                            'quantity' => $commercialSheetItem->getQuantity(),
+                            'remise'   => $commercialSheetItem->getRemise()
+                        ]);
+                        //dd($commercialSheetItem->getAvailable());
+                        if (empty($commercialSheetItem_)) {
+                            $commercialSheetItem->setProduct(null)
+                                ->addCommercialSheet($commercialSheet);
+                            //$manager->persist($commercialSheetItem);
+                            //dump('commercialSheetItem dont exists ');
+                        } else {
+                            //dump('commercialSheetItem exists with id = ' . $commercialSheetItem_->getId());
+                            //$commercialSheetItem = $commercialSheetItem_;
+                            $commercialSheetItem_->setRemise($commercialSheetItem->getRemise())
+                                ->setItemOfferType($commercialSheetItem->getItemOfferType())
+                                ->addCommercialSheet($commercialSheet);
+                            $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
+                            $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                            $commercialSheetItem = $commercialSheetItem_;
+                        }
+
 
                         $manager->persist($commercialSheetItem);
                         //$commercialSheetItem->setProduct($service); 
