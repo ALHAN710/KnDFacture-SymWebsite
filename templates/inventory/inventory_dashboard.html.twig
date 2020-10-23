@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Inventory Dashboard  {% endblock %}
+{% block title %} Dashboard Inventaire {{ inventory.name|capitalize }} {% endblock %}
 
 {% block stylesheets %}
 <!-- DataTables -->
@@ -8,6 +8,7 @@
 <link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 <!-- Responsive datatable examples -->
 <link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" /> 
+
 <link href="/plugins/timepicker/bootstrap-material-datetimepicker.css" rel="stylesheet">
 <link href="/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">     
 
@@ -20,15 +21,15 @@
 {% endblock %}
 
 {% block pageTitle %}
-<h4 class="page-title mb-2"><i class="mdi mdi-account-multiple mr-2"></i>Inventory</h4>  
+<h4 class="page-title mb-2"><i class="mdi mdi-buffer mr-2"></i>Inventaire</h4>  
 {% endblock %}
 
 {% set iconStock = true %}
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Inventaire</li>
             <li class="breadcrumb-item active">{{ (inventory.name)|capitalize }}</li>
-            <li class="breadcrumb-item active">Inventory</li>
             <li class="breadcrumb-item active">Dashboard</li>
         </ol>
     </div>
@@ -40,7 +41,7 @@
         <div class="col-lg-12 col-sm-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <h5 class="header-title">{{ inventory.name }} inventory dashboard</h5>
+                    <h5 class="header-title">Statistiques de l'inventaire de {{ inventory.name|capitalize }}</h5>
                     
                     <div class="row my-3 align-items-center">
                         <div class="col-lg-3 my-3">
@@ -50,7 +51,7 @@
                         <div class="col-lg-9">
                             <label class="">Choisir la plage de date</label>
                             <div class="input-group">  
-                                <input type="text"  id="reportrange" class="form-control" value="10/24/1984">
+                                <input type="text"  id="reportrange" class="form-control" value="07/10/2020">
                                 <div class="input-group-append">
                                     <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                 </div>
@@ -79,8 +80,8 @@
                                 <table id="statistics" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th colspan="2" class="text-center font-14">Product details</th>
-                                            <th colspan="4" class="text-center font-14">Sale Statistics</th>
+                                            <th colspan="2" class="text-center font-14">Details de Produit</th>
+                                            <th colspan="4" class="text-center font-14">Statistiques de vente</th>
                                         </tr>
                                         <tr class="text-center">
                                             <th>SKU</th>
@@ -97,9 +98,7 @@
                                     </thead>
 
                                     <tbody>
-                                        {% for product in products %}
-                                        
-                                        
+                                        {% for product in products %}                    
                                         <tr class="text-center">
                                             {# <td style="width:5px">
                                                 <div class="checkbox checkbox-primary">
@@ -124,7 +123,7 @@
                                                 {# {% set ss = productStats[product.id][0]["ET"] * inventory.const %}
                                                 {% set pc = ss + productStats[product.id][0]["qtyAVG"] * inventory.approvDelay %}
                                                 {% if available[product.id].available <= pc %} #}
-                                                <a href="" class="mr-2 d-none" id="alertRefuel_{{product.id}}" data-toggle="tooltip" data-placement="top" title="Refueling Alert">
+                                                <a href="" class="mr-2 d-none" id="alertRefuel_{{product.id}}" data-toggle="tooltip" data-placement="top" title="Alerte Réapprovisionnement">
                                                     <i class="fas fa-exclamation-triangle text-warning"></i>
                                                 </a>
                                                 <span class="bg bg-soft-success d-none" id="noAlertRefuel_{{product.id}}"></span>
@@ -140,7 +139,7 @@
                                                 {# <a href="#bd-example-modal-xl" class="waves-effect" data-animation="blur" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Click to see alerts">
                                                     <i class="fas fa-exclamation-triangle text-danger "></i>
                                                 </a> #}
-                                                <a href="" class="" data-toggle="modal" data-target=".bd-example-modal-xl_{{product.id}}" data-toggle="tooltip" data-placement="top" title="Peremption Alert"><i class="fas fa-exclamation-triangle text-danger "></i></a>
+                                                <a href="" class="" data-toggle="modal" data-target=".bd-example-modal-xl_{{product.id}}" data-toggle="tooltip" data-placement="top" title="Alerte Lots Expirés"><i class="fas fa-exclamation-triangle text-danger "></i></a>
                                                 <!-- Custom Modal -->
                                                 {# <div id="custom-modalAlert" class="modal-demo">
                                                     <button type="button" class="close" onclick="Custombox.modal.close();">
@@ -267,7 +266,7 @@
                                                 <th>N° Lot</th>
                                                 <th>DLC</th>
                                                 <th>Type</th>
-                                                <th>Qty</th>
+                                                <th>Qté</th>
                                             </tr>
                                         </thead>
 
@@ -307,6 +306,15 @@
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
 <!-- Buttons examples -->
+{# <!-- 
+
+https://code.jquery.com/jquery-3.5.1.js
+https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js
+https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js
+https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js
+https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
+
+--> #}
 <script src="/plugins/datatables/dataTables.buttons.min.js"></script>
 <script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
 <script src="/plugins/datatables/jszip.min.js"></script>
@@ -337,7 +345,19 @@
 
 
 <script>
+    var alertRefuel = '<a href="" class="mr-2 d-none" data-toggle="tooltip" data-placement="top" title="Alerte Réapprovisionnement"><i class="fas fa-exclamation-triangle text-warning"></i></a>';
+    
+    /*var rowHtml = $("#newRow").find("tr")[0].outerHTML
+    console.log(rowHtml);
+    t.row.add($(rowHtml)).draw();*/
+
     var inv = {{ inventory.id }};
+    
+    /*var statsTable = $('#statistics').DataTable({
+        lengthChange: false,
+        //buttons: ['pdf'],//'copy', 'excel', , 'colvis'
+        //ajax: "data.json"
+    });*/
     
     //Buttons examples
     var table = $('#datatable-buttons').DataTable({
@@ -352,17 +372,18 @@
     var approvDelay = {{ inventory.approvDelay }};
     var freqReapp = {{ inventory.orderingFreq }};
 
+    var _url = "{{path('stock_movement_update')}}";
+        
     $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-        console.log(picker.startDate.format('YYYY-MM-DD'));
-        console.log(picker.endDate.format('YYYY-MM-DD'));
+        //console.log(picker.startDate.format('YYYY-MM-DD'));
+        //console.log(picker.endDate.format('YYYY-MM-DD'));
     
-        $('.fa-sync').addClass('fa-spin');
+        //$('.fa-sync').addClass('fa-spin');
         var startDate = picker.startDate.format('YYYY-MM-DD');
         var endDate = picker.endDate.format('YYYY-MM-DD');
         
-        console.log('startDate = ' + startDate);
-        console.log('endDate = ' + endDate);
-        var _url = "{{path('enterprise_dash_update')}}";
+        //console.log('startDate = ' + startDate);
+        //console.log('endDate = ' + endDate);
         //block of code that runs when the click event triggers
         
         var $data = JSON.stringify({
@@ -374,7 +395,7 @@
         //Danger
         
         swal.queue([{
-            title: 'The Dashboard Will Be Updated for this date range',
+            title: 'Les données des tableaux seront mise à jour pour la plage de date suivante : ',
             confirmButtonText: 'Confirm',
             text: 'From ' + startDate + ' To ' + endDate,
             showCancelButton: true,
@@ -397,21 +418,27 @@
                         timeout: 120000,//64241
                         success: function (data) {
                             //$('.fa-sync').removeClass('fa-spin');                                  
-                            console.log(data);
+                            //console.log(data);
                             
-                            console.log(data['productStats']);
-                            table
-                            .clear()
-                            .draw();
+                            //console.log(data['productStats']);
+
+                             //statsTable.clear().draw(); 
+                            table.clear().draw();
                             var ss = 0, pc = 0.0; 
                             
                             data['productStats'].forEach(function (value, index) {
                                 console.log('value = ' + value);
                                 $('#qtyAVG_' + value['id']).text(value['AVG']);
                                 $('#ET_' + value['id']).text(value['ET']);
-                                $('#qtyMax_' + value['id']).text(value['MAX']);
                                 $('#qtyMin_' + value['id']).text(value['MIN']);
+                                $('#qtyMax_' + value['id']).text(value['MAX']);
                                 $('#available_' + value['id']).text(data['available'][index]['av']);
+                                
+                                /*statsTable
+                                    .row.add( [ value['Sku'], String(value['Name']), 
+                                    String(value['AVG']), String(value['ET']),value['MIN'],
+                                    String(value['MAX']), String(data['available'][index]['av'])] )
+                                    .draw();*/
 
                                 ss = parseFloat(value['ET']) * const_;
                                 pc = ss + parseFloat(value['AVG']) * approvDelay;
@@ -421,20 +448,20 @@
                                     $('#noAlertRefuel_' + value['id']).addClass('d-none');
                                     var tmp = parseFloat(value['AVG']) * freqReapp;
                                     $('#demand_' + value['id']).text(Math.ceil(tmp));
-                                    console.log('alert');
+                                    //console.log('alert');
                                 }
                                 else {
                                     $('#alertRefuel_' + value['id']).addClass('d-none');
                                     $('#noAlertRefuel_' + value['id']).removeClass('d-none');
                                     $('#demand_' + value['id']).text(0);
-                                    console.log('no alert');
+                                    //console.log('no alert');
                                 }
                             });
 
                             var stockMovementTab = data['stockMovements'];
                             if(stockMovementTab){
-                                console.log('Type = ' + typeof stockMovementTab.length);  
-                                console.log(stockMovementTab);  
+                                //console.log('Type = ' + typeof stockMovementTab.length);  
+                                //console.log(stockMovementTab);  
                                 stockMovementTab.forEach(function (item, index) {
                                     {# var $dat = new moment(String(item['dat']));
                                     var date = $dat.format("DD MMM YYYY hh:mm:ss").toString();
@@ -453,7 +480,7 @@
                             } 
                             swal({
                                 type: 'success',
-                                title: 'Les Données de la page ont Mis à Jour avec succès !',
+                                title: 'Les Données de la page ont été Mis à Jour avec succès !',
                                 //html: 'Submitted email: ' + email
                             });
 
@@ -470,13 +497,6 @@
                                 'error'
                                 //footer: '<a href>Why do I have this issue?</a>'
                             );
-
-                            /*Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Something went wrong!',
-                                footer: '<a href>Why do I have this issue?</a>'
-                            });*/
 
                             setTimeout(function () {
                                 resolve()
@@ -497,9 +517,8 @@
     var startDate = drp.startDate.format('YYYY-MM-DD');
     var endDate = drp.endDate.format('YYYY-MM-DD');
     
-    console.log('startDate = ' + startDate);
-    console.log('endDate = ' + endDate);
-    var _url = "{{path('enterprise_dash_update')}}";
+    // console.log('startDate = ' + startDate);
+    //console.log('endDate = ' + endDate); 
     //block of code that runs when the click event triggers
     
     var $data = JSON.stringify({
@@ -507,110 +526,130 @@
         "endDate": endDate,//tabFuelId,
         "inv": inv
     });   
+
+    //Danger
     
-    $.ajax({
-        type: "POST",//method type
-        contentType: "application/json; charset=utf-8",
-        url: "{{path('stock_movement_update')}}",///Target function that will be return result
-        data: $data,//parameter pass data is parameter name param is value 
-        dataType: "json",
-        timeout: 120000,//64241
-        success: function (data) {
-            //$('.fa-sync').removeClass('fa-spin');                                  
-            console.log(data);
-            
-            console.log(data['productStats']);
-            table
-            .clear()
-            .draw();
-            var ss = 0, pc = 0.0; 
-            
-            data['productStats'].forEach(function (value, index) {
-                console.log('value = ' + value);
-                $('#qtyAVG_' + value['id']).text(value['AVG']);
-                $('#ET_' + value['id']).text(value['ET']);
-                $('#qtyMax_' + value['id']).text(value['MAX']);
-                $('#qtyMin_' + value['id']).text(value['MIN']);
-                $('#available_' + value['id']).text(data['available'][index]['av']);
+    swal.queue([{
+        title: 'Les données des tableaux seront mise à jour pour la plage de date suivante : ',
+        confirmButtonText: 'Confirm',
+        text: 'Du ' + startDate + ' Au ' + endDate,
+        //showCancelButton: true,
+        showLoaderOnConfirm: true,
+        confirmButtonClass: 'btn btn-primary',
+        //cancelButtonClass: 'btn btn-info ml-2',
+        preConfirm: function () {
+            return new Promise(function (resolve) {
+                /*$.get('https://api.ipify.org?format=json')
+                    .done(function (data) {
+                        swal.insertQueueStep(data.ip)
+                        resolve()
+                    })*/
+                $.ajax({
+                    type: "POST",//method type
+                    contentType: "application/json; charset=utf-8",
+                    url: _url,///Target function that will be return result
+                    data: $data,//parameter pass data is parameter name param is value 
+                    dataType: "json",
+                    timeout: 120000,//64241
+                    success: function (data) {
+                        //$('.fa-sync').removeClass('fa-spin');                                  
+                        //console.log(data);
+                        
+                        //console.log(data['productStats']);
 
-                ss = parseFloat(value['ET']) * const_;
-                pc = ss + parseFloat(value['AVG']) * approvDelay;
+                        // statsTable.clear().draw(); 
+                        table.clear().draw();
+                        var ss = 0, pc = 0.0; 
+                        
+                        data['productStats'].forEach(function (value, index) {
+                            //console.log('value = ' + value);
+                            $('#qtyAVG_' + value['id']).text(value['AVG']);
+                            $('#ET_' + value['id']).text(value['ET']);
+                            $('#qtyMin_' + value['id']).text(value['MIN']);
+                            $('#qtyMax_' + value['id']).text(value['MAX']);
+                            $('#available_' + value['id']).text(data['available'][index]['av']);
+                            
+                            {# statsTable
+                                .row.add( [ value['Sku'], String(value['Name']), 
+                                String(value['AVG']), String(value['ET']),value['MIN'],
+                                String(value['MAX']), String(data['available'][index]['av'])] )
+                                .draw(); #}
 
-                if(parseInt(data['available'][index]['av']) <= pc){
-                    $('#alertRefuel_' + value['id']).removeClass('d-none');
-                    $('#noAlertRefuel_' + value['id']).addClass('d-none');
-                    var tmp = parseFloat(value['AVG']) * freqReapp;
-                    $('#demand_' + value['id']).text(Math.ceil(tmp));
-                    console.log('alert');
-                }
-                else {
-                    $('#alertRefuel_' + value['id']).addClass('d-none');
-                    $('#noAlertRefuel_' + value['id']).removeClass('d-none');
-                    $('#demand_' + value['id']).text(0);
-                    console.log('no alert');
-                }
-            });
+                            ss = parseFloat(value['ET']) * const_;
+                            pc = ss + parseFloat(value['AVG']) * approvDelay;
 
-            var stockMovementTab = data['stockMovements'];
-            if(stockMovementTab){
-                console.log('Type = ' + typeof stockMovementTab.length);  
-                console.log(stockMovementTab);  
-                stockMovementTab.forEach(function (item, index) {
-                    {# var $dat = new moment(String(item['dat']));
-                    var date = $dat.format("DD MMM YYYY hh:mm:ss").toString();
+                            if(parseInt(data['available'][index]['av']) <= pc){
+                                $('#alertRefuel_' + value['id']).removeClass('d-none');
+                                $('#noAlertRefuel_' + value['id']).addClass('d-none');
+                                var tmp = parseFloat(value['AVG']) * freqReapp;
+                                $('#demand_' + value['id']).text(Math.ceil(tmp));
+                                // console.log('alert'); 
+                            }
+                            else {
+                                $('#alertRefuel_' + value['id']).addClass('d-none');
+                                $('#noAlertRefuel_' + value['id']).removeClass('d-none');
+                                $('#demand_' + value['id']).text(0);
+                                // console.log('no alert'); 
+                            }
+                        });
+
+                        var stockMovementTab = data['stockMovements'];
+                        if(stockMovementTab){
+                            //console.log('Type = ' + typeof stockMovementTab.length);  
+                            //console.log(stockMovementTab);  
+                            stockMovementTab.forEach(function (item, index) {
+                                {# var $dat = new moment(String(item['dat']));
+                                var date = $dat.format("DD MMM YYYY hh:mm:ss").toString();
+                                
+                                $dat = new moment(String(item['dlc']));
+                                var dlc = $dat.format("DD MMM YYYY").toString(); #}
                     
-                    $dat = new moment(String(item['dlc']));
-                    var dlc = $dat.format("DD MMM YYYY").toString(); #}
-        
-                    table
-                    .row.add( [ item['dat'], String(item['sku']), 
-                    String(item['nam']), String(item['numLot']),item['dlc'],
-                    String(item['typ']), String(item['qty'])] )
-                    .draw();
+                                table
+                                .row.add( [ item['dat'], String(item['sku']), 
+                                String(item['nam']), String(item['numLot']),item['dlc'],
+                                String(item['typ']), String(item['qty'])] )
+                                .draw();
 
+                            });
+
+                        } 
+                        swal({
+                            type: 'success',
+                            title: 'Les Données de la page ont été Mis à Jour avec succès !',
+                            //html: 'Submitted email: ' + email
+                        });
+
+                        setTimeout(function () {
+                            resolve()
+                        }, 2000);
+                    },
+                    error: function (result) {
+                        //console.log("Error");
+                        //console.log(result);
+                        swal(
+                            'Oops...',
+                            'Something went wrong!',
+                            'error'
+                            //footer: '<a href>Why do I have this issue?</a>'
+                        );
+
+                        setTimeout(function () {
+                            resolve()
+                        }, 5000);
+                    }
                 });
-
-            } 
-            swal({
-                type: 'success',
-                title: 'Les Données de la page ont Mis à Jour avec succès !',
-                //html: 'Submitted email: ' + email
-            });
-
-            {# setTimeout(function () {
-                resolve()
-            }, 2000); #}
+            })
         },
-        error: function (result) {
-            //console.log("Error");
-            //console.log(result);
-            swal(
-                'Oops...',
-                'Something went wrong!',
-                'error'
-                //footer: '<a href>Why do I have this issue?</a>'
-            );
-
-            /*Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong!',
-                footer: '<a href>Why do I have this issue?</a>'
-            });*/
-
-            setTimeout(function () {
-                resolve()
-            }, 5000);
-        }
-    });
+        allowOutsideClick: false
+    }]);
                   
     $('#saveBtn').click(function(){
-        console.log('Lot To Remove Btn clicked');
+        //console.log('Lot To Remove Btn clicked');
         var tabLotToRemove = [];
         $("input:checkbox[name=lotToRemove]:checked").each(function(){
             tabLotToRemove.push($(this).val());
         });
-        console.log('Tab Lot To Remove : ' + tabLotToRemove);
+        //console.log('Tab Lot To Remove : ' + tabLotToRemove);
         if (tabLotToRemove.length > 0){
 
             var _url = "{{ path('lot_expired') }}";
@@ -627,12 +666,12 @@
                 dataType: "json",
                 timeout: 120000,//64241
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     location.reload(true);
                 },
                 error: function (result) {
-                    console.log("Error");
-                    console.log(result);
+                    //console.log("Error");
+                    //console.log(result);
                     alert('Erreur !!!');
                     //$('#modal').modal('toggle');
                 }

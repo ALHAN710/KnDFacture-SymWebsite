@@ -413,11 +413,13 @@ class InventoryController extends ApplicationController
                 $AVG = number_format((float) $AVG, 2, '.', '');
 
                 $productStats[] = [
-                    'id'  => $product->getId(),
-                    'AVG' => $AVG,
-                    'ET'  => $ET,
-                    'MAX' => $max,
-                    'MIN' => $min,
+                    'id'   => $product->getId(),
+                    'Sku'  => $product->getSku(),
+                    'Name' => $product->getName(),
+                    'AVG'  => $AVG,
+                    'ET'   => $ET,
+                    'MAX'  => $max,
+                    'MIN'  => $min,
                 ];
 
                 $inventoryAvailability[] = [

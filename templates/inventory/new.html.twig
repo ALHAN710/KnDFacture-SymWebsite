@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Création d'un Inventory {% endblock %}
+{% block title %} Création d'un Inventaire {% endblock %}
 
 {% block stylesheets %}
 
 {% endblock %}
 
 {% block pageTitle %}
-<h4 class="page-title mb-2"><i class="mdi mdi-account-multiple mr-2"></i>Inventory</h4>  
+<h4 class="page-title mb-2"><i class="mdi mdi-buffer mr-2"></i>Inventaire</h4>  
 {% endblock %}
 
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">Inventories</li>
-            <li class="breadcrumb-item active">New</li>
+            <li class="breadcrumb-item active">Nouvel</li>
+            <li class="breadcrumb-item active">Inventaire</li>
         </ol>
     </div>
 {% endblock %}
@@ -24,7 +24,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body mx-5">        
-                <h4 class="mt-2 mb-4 header-title">Create Inventory</h4>
+                <h4 class="mt-2 mb-4 header-title">Créer le nouvel Inventaire</h4>
                 {{ form_start(form) }}
                 {#{{ form_widget(form) }}#}
                 <div class="form-group">

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Inventories Dashboard  {% endblock %}
+{% block title %} Accueil Inventaire  {% endblock %}
 
 {% block stylesheets %}
 <!-- DataTables -->
@@ -12,14 +12,14 @@
 {% endblock %}
 
 {% block pageTitle %}
-<h4 class="page-title mb-2"><i class="mdi mdi-account-multiple mr-2"></i>Inventories</h4>  
+<h4 class="page-title mb-2"><i class="mdi mdi-buffer mr-2"></i>Inventaires</h4>  
 {% endblock %}
 
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">Inventories</li>
-            <li class="breadcrumb-item active">Dashboard</li>
+            <li class="breadcrumb-item active">Accueil</li>
+            <li class="breadcrumb-item active">Inventaires</li>
         </ol>
     </div>
 {% endblock %}
@@ -30,19 +30,19 @@
         <div class="col-lg-12 col-sm-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <h5 class="header-title">List of Inventories</h5>
+                    <h5 class="header-title">Liste des Inventaires</h5>
                     <div class="mt-2 mb-2 mr-5 text-right">
-                        <a href="{{path('inventory_create')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New Inventory"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-buffer"></i></a>
+                        <a href="{{path('inventory_create')}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Créer un nouvel inventaire"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-buffer"></i></a>
                     </div>
                     <div class="">
                         <table id="datatable2" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr class="text-center">
                                     {#<th>#</th>#}
-                                    <th>Name</th>
-                                    <th>Supply Delay (Days)</th>
-                                    <th>Ordering Freq (Days)</th>
-                                    <th>Service Scale</th>
+                                    <th>Nom</th>
+                                    <th>Délai d'approv.(jrs)</th>
+                                    <th>Fréquence réapprov.(jrs)</th>
+                                    <th>Coef Sécurité</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -56,10 +56,10 @@
                                     <td>{{inventory.orderingFreq}}</td>
                                     <td>{{inventory.txOfService}}</td>
                                     <td>
-                                        <a href="{{path('inventory_edit', {'id':inventory.id})}}" class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify inventory"><i class="far fa-edit"></i></a>
+                                        <a href="{{path('inventory_edit', {'id':inventory.id})}}" class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifier l'inventaire"><i class="far fa-edit"></i></a>
                                         <a href="{{path('lot_create', {'prod':0, 'inv':inventory.id})}}"  class="btn btn-soft-purple btn-xs rounded " data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot"><i class="fa fa-plus-circle"></i></a>
                                                 
-                                        <a href="{{path('inventory_delete', {'id':inventory.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Delete inventory"><i class="fas fa-trash"></i> </a>
+                                        <a href="{{path('inventory_delete', {'id':inventory.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer l'inventaire"><i class="fas fa-trash"></i> </a>
                                     </td>
                                     
                                 </tr>
