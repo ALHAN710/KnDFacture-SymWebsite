@@ -3,6 +3,12 @@
 {% block title %} {{app.user.enterprise.socialReason}} Dashboard  {% endblock %}
 
 {% block stylesheets %}
+<!-- DataTables -->
+<link href="/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<!-- Responsive datatable examples -->
+<link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" /> 
+
 <!-- Clock css -->
 <link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />  
 
@@ -189,18 +195,18 @@
                 <div class="card-body dash-info-carousel">                                        
                     <div id="carousel_best_sellingProduct" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
-                            {% for i in range(0,9) %}
-                            <div class="carousel-item {% if i == 0 %}active{% endif %}">
+                            {% for product in app.user.enterprise.products %}
+                            <div class="carousel-item {% if loop.first %}active{% endif %}">
                                 <div class="text-center">
                                     {# <img src="/images/users/user-4.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1"> #}
-                                    <h3>#{{i + 1}}</h3>
-                                    <h5><span id="ref_{{i}}">####</span></h5>
-                                    <p class="font-12 text-muted"><span id="designation_{{i}}"></span></p>
-                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{i}}">0</span> XAF</p>
-                                    <p class="font-12 text-muted">Total des ventes : <span id="totalSale_{{i}}">0</span></p>
+                                    <h3>#{{loop.index}}</h3>
+                                    <h5><span id="ref_{{loop.index0}}">######</span></h5>
+                                    <p class="font-12 text-muted"><span id="designation_{{loop.index0}}"></span></p>
+                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{loop.index0}}">0</span> XAF</p>
+                                    <p class="font-12 text-muted">Total des ventes : <span id="totalSale_{{loop.index0}}">0</span></p>
                                     {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
                                     <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_{{i}}">0</span> XAF</h5>
+                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_{{loop.index0}}">0</span> XAF</h5>
                                         {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
                                     </div>
                                 </div>
@@ -216,13 +222,63 @@
                             <span class="sr-only">Next</span>
                         </a>
                     </div>
+                    {# {% if app.user.enterprise.products|length > 10 %} #}
+                    <div class="pt-3 border-top text-right">
+                        <a href="#" class="text-primary" data-toggle="modal" data-target=".bd-example-modal-xl_productSchedule" data-toggle="tooltip" data-placement="top" title="Voir le Classement Général">Voir Tout <i class="mdi mdi-arrow-right"></i></a>
+                    </div>
+                    
+                    <!-- Custom Modal -->
+                    <div class="modal fade bd-example-modal-xl_productSchedule" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title mt-0" id="myModalLabel">Classement des produits par Total de Vente</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <table id="datatable-buttonsProd" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th>#</th>
+                                                <th>SKU</th>
+                                                <th>Nom</th>
+                                                <th>P.U</th>
+                                                <th>Qtés Vendues</th>
+                                                <th>Revenus Générés</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {# {% for lot_ in lotPeremp %}
+                                            <tr class="text-center">
+                                                <td>{{ lot_.number }}</td>
+                                                <td>{{ lot_.dlc|date('d-m-Y') }}</td>
+                                                <td style="width:5px">
+                                                    <div class="checkbox checkbox-primary">
+                                                        <input id="lot{{lot_.id}}" type="checkbox" name="lotToRemove" value="{{lot_.id}}">
+                                                        <label for="lot{{lot_.id}}"></label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %} #}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+                                    
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div>
+                    {# {% endif %} #}
                 </div><!--end card-body-->
             </div><!--end card-->
         </div><!--end col-->
 
-        {# <div class="col-lg-6">
+        <div class="col-lg-6">
             <div class="card overflow-hidden">
-                <div class="card-body bg-gradient1">
+                <div class="card-body bg-gradient3">
                     <div class="">
                         <div class="card-icon">
                             <i class="dripicons-network-1"></i>
@@ -238,8 +294,10 @@
                             <div class="carousel-item {% if loop.first %}active{% endif %}">
                                 <div class="text-center">
                                     <h3>#{{loop.index}}</h3>
-                                    <h5><span id="cat_{{loop.index0}}">Cat{{loop.index0}}</span></h5>
-                                    <p class="font-12 text-muted">Total de Vente : <span id="totalSaleCat_{{loop.index0}}"></span></p>
+                                    <h5><span id="nameCat_{{loop.index0}}">######</span></h5>
+                                    <br>
+                                    <br>
+                                    <p class="font-12 text-muted">Total des ventes : <span id="totalSaleCat_{{loop.index0}}">0</span></p>
                                     <div class="mt-2 align-item-center">
                                         <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amountCat_{{loop.index0}}">0</span> XAF</h5>
                                         
@@ -257,9 +315,46 @@
                             <span class="sr-only">Next</span>
                         </a>
                     </div>
+                    {# {% if app.user.enterprise.categories|length > 10 %} #}
+                    <div class="pt-3 border-top text-right">
+                        <a href="#" class="text-primary" data-toggle="modal" data-target=".bd-example-modal-xl_categorySchedule" data-toggle="tooltip" data-placement="top" title="Voir le Classement Général">Voir Tout <i class="mdi mdi-arrow-right"></i></a>
+                    </div>
+                    
+                    <!-- Custom Modal -->
+                    <div class="modal fade bd-example-modal-xl_categorySchedule" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel2" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title mt-0" id="myModalLabel2">Classement des Catégories de produits par Total de Vente</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <table id="datatable-buttonsCat" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th>#</th>
+                                                <th>Nom</th>
+                                                <th>Qtés Vendues</th>
+                                                <th>Revenus Générés</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+                                    
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div>
+                    {# {% endif %} #}
                 </div><!--end card-body-->
             </div><!--end card-->
-        </div><!--end col--> #}
+        </div><!--end col-->
 
     </div><!--end row-->
     
@@ -343,7 +438,7 @@
 
         <div class="col-lg-6">                
             <div class="card overflow-hidden">
-                <div class="card-body bg-gradient1">
+                <div class="card-body bg-gradient2">
                     <div class="">
                         <div class="card-icon">
                             <i class="mdi mdi-google-pages"></i>
@@ -407,19 +502,195 @@
 {# <script src="/pages/jquery.clock-img.init.js"></script> #}
 <script src="/pages/jquery.forms-advanced.js"></script>
 
+<!-- Required datatable js -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+{# <!-- 
+
+https://code.jquery.com/jquery-3.5.1.js
+https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js
+https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js
+https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js
+https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
+
+--> #}
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/jszip.min.js"></script>
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+<script src="/plugins/datatables/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="/plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="/pages/jquery.datatable.init.js"></script>    
+
+<script src="/plugins/custombox/custombox.min.js"></script>
+<script src="/plugins/custombox/custombox.legacy.min.js"></script>
+
+<script src="/pages/jquery.modal-animation.js"></script>
+
 <!-- Sweet-Alert  -->
 <script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
 
 <script>
     var ent = {{ app.user.enterprise.id }};
-    //var start = moment().subtract(29, 'days');
+
+    var tableProduct = $('#datatable-buttonsProd').DataTable({
+        lengthChange: false,
+        buttons: ['pdf'],//'copy', 'excel', , 'colvis'
+        columnDefs: [
+            {
+                targets: '_all',
+                className: 'text-center'
+            }
+        ]
+    });
+
+    tableProduct.buttons().container()
+        .appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+
+    var tableCategory = $('#datatable-buttonsCat').DataTable({
+        lengthChange: false,
+        buttons: ['pdf'],//'copy', 'excel', , 'colvis'
+        columnDefs: [
+            {
+                targets: '_all',
+                className: 'text-center'
+            }
+        ]
+    });
+
+    {# tableCategory.buttons().container()
+        .appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)'); #}
+
+    var drp = $('#reportrange').data('daterangepicker');
+    //console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+    var startDate = drp.startDate.format('YYYY-MM-DD');
+    var endDate = drp.endDate.format('YYYY-MM-DD');
+    
+    {# console.log('startDate = ' + startDate);
+    console.log('endDate = ' + endDate); #}
+    var _url = "{{path('enterprise_dash_update')}}";
+    
+    var $data = JSON.stringify({
+        "startDate": startDate,//tabGridId,
+        "endDate": endDate,//tabFuelId,
+        "ent": ent
+    });   
+
+    swal.queue([{
+        title: 'The Dashboard Will Be Updated for this date range',
+        confirmButtonText: 'Confirm',
+        text: 'From ' + startDate + ' To ' + endDate,
+        //showCancelButton: true,
+        showLoaderOnConfirm: true,
+        confirmButtonClass: 'btn btn-primary',
+        //cancelButtonClass: 'btn btn-danger ml-2',
+        preConfirm: function () {
+            return new Promise(function (resolve) {
+                /*$.get('https://api.ipify.org?format=json')
+                    .done(function (data) {
+                        swal.insertQueueStep(data.ip)
+                        resolve()
+                    })*/
+                $.ajax({
+                    type: "POST",//method type
+                    contentType: "application/json; charset=utf-8",
+                    url: _url,///Target function that will be return result
+                    data: $data,//parameter pass data is parameter name param is value 
+                    dataType: "json",
+                    timeout: 120000,//64241
+                    success: function (data) {
+                        //$('.fa-sync').removeClass('fa-spin');                                  
+                        console.log(data);
+                        $('#turnOver').text(data['turnOverHT']);
+                        $('#amountRecettes').text(data['amountRecettes']);
+                        $('#expenses').text(data['expenses']);
+                        $('#nbBill').text(data['billNb']);
+                        $('#nbPurchaseOrder').text(data['purchaseNb']);
+                        $('#nbQuote').text(data['quoteNb']);
+                        $('#nbConvertedQuote').text(data['converted']);
+                        $('#DFHT').text(data['outstandingDebt']);
+                        $('#outstandingClaim').text(data['outstandingClaim']);
+                        $('#nbProductsSold').text(data['nbProductsSold']);
+
+                        //console.log('Type of best : ' + typeof data['bestSellingProducts'] );
+                        data['bestSellingProducts'].forEach(function(item, index){
+                            $('#ref_' + index).text(item['ref']);
+                            $('#designation_' + index).text(item['designation']);
+                            $('#pu_' + index).text(item['pu']);
+                            $('#totalSale_' + index).text(item['totalSale']);
+                            $('#amount_' + index).text(item['amount']);
+
+                            tableProduct
+                                .row.add( [ String(index + 1), item['ref'], String(item['designation']), 
+                                String(item['pu']), String(item['totalSale']),String(item['amount'])] )
+                                .draw();
+                        });
+
+                        data['bestSellingProdCategory'].forEach(function(item, index){
+                            $('#nameCat_' + index).text(item['name']);
+                            $('#totalSaleCat_' + index).text(item['totalSale']);
+                            $('#amountCat_' + index).text(item['amount']);
+
+                            tableCategory
+                                .row.add( [ String(index + 1), item['name'], String(item['totalSale']),String(item['amount'])] )
+                                .draw();
+                        });
+                        
+                        displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
+                        displayNewData1(amountRecettesColumnChart, data['xamountRecettesPer'], data['amountRecettesPer'], /*dateopt, */1, data['per']);
+                        displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']);
+
+                        swal({
+                            type: 'success',
+                            title: 'The Dashboard has been updated !',
+                            //html: 'Submitted email: ' + email
+                        });
+
+                        setTimeout(function () {
+                            resolve()
+                        }, 2000);
+                    },
+                    error: function (result) {
+                        //console.log("Error");
+                        //console.log(result);
+                        swal(
+                            'Oops...',
+                            'Something went wrong!',
+                            'error'
+                            //footer: '<a href>Why do I have this issue?</a>'
+                        );
+
+                        /*Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!',
+                            footer: '<a href>Why do I have this issue?</a>'
+                        });*/
+
+                        setTimeout(function () {
+                            resolve()
+                        }, 5000);
+                    }
+                });
+            })
+        },
+        allowOutsideClick: false
+    }]);
+        
+    {# //var start = moment().subtract(29, 'days');
     //var end = moment();
     //console.log('start = ' + start);
     //console.log('end = ' + end);
 
     //change the selected date range of that picker
     //$('#reportrange').data('daterangepicker').setStartDate(start);
-    //$('#reportrange').data('daterangepicker').setEndDate(end);
+    //$('#reportrange').data('daterangepicker').setEndDate(end); #}
 
     $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
         console.log(picker.startDate.format('YYYY-MM-DD'));
@@ -431,7 +702,6 @@
         
         console.log('startDate = ' + startDate);
         console.log('endDate = ' + endDate);
-        var _url = "{{path('enterprise_dash_update')}}";
         //block of code that runs when the click event triggers
         
         var $data = JSON.stringify({
@@ -449,7 +719,7 @@
             showCancelButton: true,
             showLoaderOnConfirm: true,
             confirmButtonClass: 'btn btn-primary',
-            cancelButtonClass: 'btn btn-info ml-2',
+            cancelButtonClass: 'btn btn-danger ml-2',
             preConfirm: function () {
                 return new Promise(function (resolve) {
                     /*$.get('https://api.ipify.org?format=json')
@@ -485,6 +755,21 @@
                                 $('#pu_' + index).text(item['pu']);
                                 $('#totalSale_' + index).text(item['totalSale']);
                                 $('#amount_' + index).text(item['amount']);
+
+                                tableProduct
+                                    .row.add( [ String(index + 1), item['ref'], String(item['designation']), 
+                                    String(item['pu']), String(item['totalSale']),String(item['amount'])] )
+                                    .draw();
+                            });
+
+                            data['bestSellingProdCategory'].forEach(function(item, index){
+                                $('#nameCat_' + index).text(item['name']);
+                                $('#totalSaleCat_' + index).text(item['totalSale']);
+                                $('#amountCat_' + index).text(item['amount']);
+
+                                tableCategory
+                                    .row.add( [ String(index + 1), item['name'], String(item['totalSale']),String(item['amount'])] )
+                                    .draw();
                             });
                             
                             displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);

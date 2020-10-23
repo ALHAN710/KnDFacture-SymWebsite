@@ -26,11 +26,14 @@ class EnterpriseDashboardController extends ApplicationController
         // $entRepo = $manager->getRepository('App:EnterpriseRepository');
         // $ent = $entRepo->findOneBy(['id' => $id]);
         if ($this->getUser()->getEnterprise()->getId() == $id) {
+            $xturnOverPer = new ArrayCollection();
+            $turnOverAmountPer = new ArrayCollection();
             $startDate = new DateTime('2020-10-01 00:00:00 ');
-            $endDate = new DateTime('2020-10-09 23:59:59');
+            $endDate = new DateTime('2020-10-22 23:59:59');
             $endDate_ = $endDate->format('Y-m-d');
             $endDate_ = '%' . $endDate_ . '%';
-            $turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 13) AS jour, SUM(cms.advancePayment) AS amount
+
+            /*$turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 13) AS jour, SUM(cms.advancePayment) AS amount
                                             FROM App\Entity\CommercialSheet cms
                                             LEFT JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -48,7 +51,7 @@ class EnterpriseDashboardController extends ApplicationController
                     'endDate' => $endDate,
                     'type_'   => 'bill',
                 ))
-                ->getResult();
+                ->getResult();*/
             //dump($turnOverPer);
 
             /*$bestSellingProducts = $manager->createQuery("SELECT cmsi.designation AS designation, SUM(cmsi.quantity) AS totalSale
@@ -164,7 +167,9 @@ class EnterpriseDashboardController extends ApplicationController
     /**
      * Permet la MAJ du dashboard client entreprise
      * 
-     * @Route("/enterprise/dashboard/update/", name="enterprise_dash_update") 
+     * @Route("/enterprise/dashboard/update/", name="enterprise_dash_update")
+     * 
+     * @IsGranted("ROLE_ADMIN") 
      *
      * @param Request $request
      * @param EntityManagerInterface $manager
@@ -252,7 +257,7 @@ class EnterpriseDashboardController extends ApplicationController
                     ->getResult();
 
                 //Détermination du chiffre d'affaire HT SUBSTRING(cms.deliverAt, 1, 13)
-                $bills = $manager->createQuery("SELECT cms.deliverAt AS jour,
+                /*$bills = $manager->createQuery("SELECT cms.deliverAt AS jour,
                                              SUM( (cmsi.pu * cmsi.quantity) - ( ( (cmsi.pu * cmsi.quantity) * cmsi.remise ) / 100.0 ) ) - cms.fixReduction AS CAHT
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.commercialSheetItems cmsi
@@ -272,33 +277,6 @@ class EnterpriseDashboardController extends ApplicationController
                     ))
                     ->getResult();
 
-                //dump($bills);
-                /*foreach ($bills as $bill_) {
-                    $tmp         = $bill_['CAHT'] == null ? 0 : number_format((float) floatval($bill_['CAHT']), 2, '.', '');
-                    $turnOverHT += $tmp;
-                }
-
-                $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
-                dump($turnOverHT);*/
-                /*$bills = $manager->createQuery("SELECT cms.deliverAt AS jour, SUM(cmsi.pu * cmsi.quantity) AS CAHT
-                                            FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.commercialSheetItems cmsi
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = :type_
-                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                            AND e.id = :entId
-                                            AND cms.deliverAt LIKE :dat  
-                                            GROUP BY jour 
-                                            ORDER BY jour ASC                                                                               
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'dat'     => $endDate_,
-                        'type_'   => 'bill',
-                    ))
-                    ->getResult();*/
-
                 $index = 0;
                 $turnOverHT = 0;
                 foreach ($bills as $d) {
@@ -314,29 +292,70 @@ class EnterpriseDashboardController extends ApplicationController
                     }
                     $index++;
                 }
-                $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
-                // dump($turnOverHT);
-                // dump($xturnOverPer);
-                // dump($turnOverAmountPer);
-                //Détermination du montant des Réduction
-                /*$amountReduction = $manager->createQuery("SELECT cms.deliverAt AS jour, ((SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) + cms.fixReduction AS amountReduction
-                                            FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            JOIN cms.commercialSheetItems cmsi
-                                            WHERE cms.type = :type_
-                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                            AND e.id = :entId
-                                            AND cms.deliverAt LIKE :dat 
-                                            GROUP BY jour                                                                                 
+                $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');*/
+
+                $bills = $manager->createQuery("SELECT cms
+                                                FROM App\Entity\CommercialSheet cms
+                                                JOIN cms.user u 
+                                                JOIN u.enterprise e
+                                                WHERE cms.type = :type_
+                                                AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                AND e.id = :entId
+                                                AND cms.deliverAt LIKE :dat  
+                                                ORDER BY cms.deliverAt ASC                                                                               
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
                         'dat'     => $endDate_,
                         'type_'   => 'bill',
                     ))
-                    ->getResult();*/
-                $RecettesPer = $manager->createQuery("SELECT cms.deliverAt AS jour, cms.advancePayment AS amountRecettes
+                    ->getResult();
+
+                //dd($bills);
+                $index = 0;
+                $index2 = 0;
+                $precIndex = 0;
+                $precIndex2 = 0;
+                $turnOverHT = 0;
+                foreach ($bills as $commercialSheet) {
+                    $date        = $commercialSheet->getDeliverAt()->format('d-m-Y H'); //new DateTime();
+                    $tmp         = $commercialSheet->getTotalAmountNetHT();
+                    $tmp         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                    $turnOverHT += $tmp;
+                    if (!$xturnOverPer->contains($date)) {
+                        $xturnOverPer[]             = $date;
+                        $turnOverAmountPer[$index]  = $tmp;
+                        $precIndex                  = $index;
+                        $index++;
+                    } else {
+                        //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                        $turnOverAmountPer[$precIndex]  += $tmp;
+                    }
+
+                    //$date            = $commercialSheet->getDeliverAt()->format('d-m-Y H'); //new DateTime();
+                    $tmp             = $commercialSheet->getAdvancePayment();
+                    $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                    $amountRecettes += $tmp;
+                    if (!$xamountRecettesPer->contains($date)) {
+                        $xamountRecettesPer[]        = $date;
+                        $amountRecettesPer[$index2]  = $tmp;
+                        $precIndex2                  = $index2;
+                        $index2++;
+                    } else {
+                        //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                        $amountRecettesPer[$precIndex2]  += $tmp;
+                    }
+                }
+                $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
+                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');
+                // dump($turnOverHT);
+                // dump($xturnOverPer);
+                // dd($turnOverAmountPer);
+                // dump($turnOverHT);
+                // dump($xturnOverPer);
+                // dump($turnOverAmountPer);
+                //Détermination du montant des Réduction
+                /*$RecettesPer = $manager->createQuery("SELECT cms.deliverAt AS jour, cms.advancePayment AS amountRecettes
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -353,13 +372,7 @@ class EnterpriseDashboardController extends ApplicationController
                         'type_'   => 'bill',
                     ))
                     ->getResult();
-                //dump($RecettesPer);
-                /*foreach ($RecettesPer as $amountRecettes_) {
-                    $tmp             = $amountRecettes_['amountRecettes'] == null ? 0 : number_format((float) floatval($amountRecettes_['amountRecettes']), 2, '.', '');
-                    $amountRecettes += $tmp;
-                }
-                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');*/
-
+                
                 $index = 0;
                 $amountRecettes = 0;
                 foreach ($RecettesPer as $d) {
@@ -379,8 +392,9 @@ class EnterpriseDashboardController extends ApplicationController
                 // dump($amountRecettes);
                 // dump($xamountRecettesPer);
                 // dump($amountRecettesPer);
+                */
 
-                /*$RecettesPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 13) AS jour, cms.advancePayment AS amountRecettes
+                /*$RecettesPer = $manager->createQuery("SELECT cms
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -388,8 +402,7 @@ class EnterpriseDashboardController extends ApplicationController
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND e.id = :entId
                                             AND cms.deliverAt LIKE :dat 
-                                            GROUP BY jour 
-                                            ORDER BY jour ASC                                                                                
+                                            ORDER BY cms.deliverAt ASC                                                                               
                                         ")
                     ->setParameters(array(
                         'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -398,14 +411,31 @@ class EnterpriseDashboardController extends ApplicationController
                     ))
                     ->getResult();
 
-                foreach ($RecettesPer as $d) {
-                    $xamountRecettesPer[] = $d['jour'];
-                    $tmp                  = $d['amountRecettes'] == null ? '0' : number_format((float) floatval($d['amountRecettes']), 2, '.', '');
-                    $amountRecettesPer[]  = $tmp;
-                }*/
+                $index = 0;
+                $precIndex = 0;
+                $amountRecettes = 0;
+                foreach ($RecettesPer as $commercialSheet) {
+                    $date            = $commercialSheet->getDeliverAt()->format('d-m-Y H'); //new DateTime();
+                    $tmp             = $commercialSheet->getAdvancePayment();
+                    $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                    $amountRecettes += $tmp;
+                    if (!$xamountRecettesPer->contains($date)) {
+                        $xamountRecettesPer[]       = $date;
+                        $amountRecettesPer[$index]  = $tmp;
+                        $precIndex = $index;
+                        $index++;
+                    } else {
+                        //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                        $amountRecettesPer[$precIndex]  += $tmp;
+                    }
+                }
+                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');*/
 
+                // dump($amountRecettes);
+                // dump($xamountRecettesPer);
+                // dump($amountRecettesPer);
                 //Détermination des dépenses fournisseurs TTC
-                $purchaseOrders = $manager->createQuery("SELECT cms.deliverAt AS jour, cms.advancePayment AS EXTTC
+                /*$purchaseOrders = $manager->createQuery("SELECT cms.deliverAt AS jour, cms.advancePayment AS EXTTC
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -443,6 +473,44 @@ class EnterpriseDashboardController extends ApplicationController
                 // dump($expensesTTC);
                 // dump($xexpensesPer);
                 // dump($expensesAmountPer);
+                */
+
+                $purchaseOrders = $manager->createQuery("SELECT cms
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u 
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = :type_
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                            AND e.id = :entId
+                                            AND cms.deliverAt LIKE :dat                                                                                  
+                                            ORDER BY cms.deliverAt ASC
+                                        ")
+                    ->setParameters(array(
+                        'entId'   => $this->getUser()->getEnterprise()->getId(),
+                        'dat'     => $endDate_,
+                        'type_'   => 'purchaseorder',
+                    ))
+                    ->getResult();
+
+                $index = 0;
+                $precIndex = 0;
+                $expensesTTC = 0;
+                foreach ($purchaseOrders as $commercialSheet) {
+                    $date            = $commercialSheet->getDeliverAt()->format('d-m-Y H'); //new DateTime();
+                    $tmp             = $commercialSheet->getAdvancePayment();
+                    $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                    $expensesTTC += $tmp;
+                    if (!$xexpensesPer->contains($date)) {
+                        $xexpensesPer[]       = $date;
+                        $expensesAmountPer[$index]  = $tmp;
+                        $precIndex = $index;
+                        $index++;
+                    } else {
+                        //$tmp                         = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
+                        $expensesAmountPer[$precIndex]  += $tmp;
+                    }
+                }
+                $expensesTTC = number_format((float) $expensesTTC, 2, '.', ' ');
 
                 /*foreach ($purchaseOrders as $purchaseOrder_) {
                     $tmp          = $purchaseOrder_['EXTTC'] == null ? 0 : number_format((float) floatval($purchaseOrder_['EXTTC']), 2, '.', '');
@@ -506,7 +574,7 @@ class EnterpriseDashboardController extends ApplicationController
                 $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
 
                 //Détermination du chiffre d'affaire HT
-                $bills = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour,
+                /*$bills = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour,
                                              SUM( (cmsi.pu * cmsi.quantity) - ( ( (cmsi.pu * cmsi.quantity) * cmsi.remise ) / 100.0 ) ) - cms.fixReduction AS CAHT
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
@@ -539,6 +607,64 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp                   = $d['CAHT'] == null ? '0' : number_format((float) floatval($d['CAHT']), 2, '.', '');
                     $turnOverAmountPer[]   = $tmp;
                 }
+                */
+
+                $bills = $manager->createQuery("SELECT cms
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u 
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = :type_
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                            AND e.id = :entId
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate  
+                                            ORDER BY cms.deliverAt ASC                                                                               
+                                        ")
+                    ->setParameters(array(
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
+                        'startDate' => $startDate->format('Y-m-d H:m:i'),
+                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'type_'     => 'bill',
+                    ))
+                    ->getResult();
+
+
+                $index = 0;
+                $precIndex = 0;
+                $index2 = 0;
+                $precIndex2 = 0;
+                $turnOverHT = 0;
+                foreach ($bills as $commercialSheet) {
+                    $date        = $commercialSheet->getDeliverAt()->format('d-m-Y'); //new DateTime();
+                    $tmp         = $commercialSheet->getTotalAmountNetHT();
+                    $tmp         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                    $turnOverHT += $tmp;
+                    if (!$xturnOverPer->contains($date)) {
+                        $xturnOverPer[]             = $date;
+                        $turnOverAmountPer[$index]  = $tmp;
+                        $precIndex                  = $index;
+                        $index++;
+                    } else {
+                        //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                        $turnOverAmountPer[$precIndex]  += $tmp;
+                    }
+
+                    //$date            = $commercialSheet->getDeliverAt()->format('d-m-Y'); //new DateTime();
+                    $tmp             = $commercialSheet->getAdvancePayment();
+                    $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                    $amountRecettes += $tmp;
+                    if (!$xamountRecettesPer->contains($date)) {
+                        $xamountRecettesPer[]       = $date;
+                        $amountRecettesPer[$index2]  = $tmp;
+                        $precIndex2 = $index2;
+                        $index2++;
+                    } else {
+                        //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                        $amountRecettesPer[$precIndex2]  += $tmp;
+                    }
+                }
+                $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
+                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');
 
                 //Détermination du montant des Réduction
                 /*$amountReduction = $manager->createQuery("SELECT cms.deliverAt AS jour, ((SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) + cms.fixReduction AS amountReduction
@@ -560,7 +686,7 @@ class EnterpriseDashboardController extends ApplicationController
                         'type_'     => 'bill',
                     ))
                     ->getResult();*/
-                $RecettesPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour, cms.advancePayment AS amountRecettes
+                /*$RecettesPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour, cms.advancePayment AS amountRecettes
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -592,9 +718,51 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp                  = $d['amountRecettes'] == null ? '0' : number_format((float) floatval($d['amountRecettes']), 2, '.', '');
                     $amountRecettesPer[]  = $tmp;
                 }
+                */
+
+                /*$RecettesPer = $manager->createQuery("SELECT cms
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u 
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = :type_
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                            AND e.id = :entId
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate   
+                                            ORDER BY cms.deliverAt ASC                                                                                
+                                        ")
+                    ->setParameters(array(
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
+                        'startDate' => $startDate->format('Y-m-d H:m:i'),
+                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'type_'     => 'bill',
+                    ))
+                    ->getResult();
+
+
+                $index = 0;
+                $precIndex = 0;
+                $amountRecettes = 0;
+                foreach ($RecettesPer as $commercialSheet) {
+                    $date            = $commercialSheet->getDeliverAt()->format('d-m-Y'); //new DateTime();
+                    $tmp             = $commercialSheet->getAdvancePayment();
+                    $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                    $amountRecettes += $tmp;
+                    if (!$xamountRecettesPer->contains($date)) {
+                        $xamountRecettesPer[]       = $date;
+                        $amountRecettesPer[$index]  = $tmp;
+                        $precIndex = $index;
+                        $index++;
+                    } else {
+                        //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                        $amountRecettesPer[$precIndex]  += $tmp;
+                    }
+                }
+                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');
+                */
 
                 //Détermination des dépenses fournisseurs TTC
-                $purchaseOrders = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour, cms.advancePayment AS EXTTC
+                /*$purchaseOrders = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour, cms.advancePayment AS EXTTC
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
                                             JOIN u.enterprise e
@@ -626,6 +794,47 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp                  = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
                     $expensesAmountPer[]  = $tmp;
                 }
+                */
+
+                $purchaseOrders = $manager->createQuery("SELECT cms
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u 
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = :type_
+                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                            AND e.id = :entId
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate                                                                                   
+                                            ORDER BY cms.deliverAt ASC
+                                        ")
+                    ->setParameters(array(
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
+                        'startDate' => $startDate->format('Y-m-d H:m:i'),
+                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'type_'     => 'purchaseorder',
+                    ))
+                    ->getResult();
+
+
+                $index = 0;
+                $precIndex = 0;
+                $expensesTTC = 0;
+                foreach ($purchaseOrders as $commercialSheet) {
+                    $date            = $commercialSheet->getDeliverAt()->format('d-m-Y'); //new DateTime();
+                    $tmp             = $commercialSheet->getAdvancePayment();
+                    $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
+                    $expensesTTC += $tmp;
+                    if (!$xexpensesPer->contains($date)) {
+                        $xexpensesPer[]       = $date;
+                        $expensesAmountPer[$index]  = $tmp;
+                        $precIndex = $index;
+                        $index++;
+                    } else {
+                        //$tmp                         = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
+                        $expensesAmountPer[$precIndex]  += $tmp;
+                    }
+                }
+                $expensesTTC = number_format((float) $expensesTTC, 2, '.', ' ');
 
                 //Chiffre d'affaire HT par jour de l'intervalle de date
                 /*$turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour,
@@ -744,7 +953,7 @@ class EnterpriseDashboardController extends ApplicationController
             //dump($billPaymentOnpending);
             $outstandingClaim = 0.0;
             foreach ($billPaymentOnpending as $commercialSheet) {
-                dump($commercialSheet['paymentOnPending']->getAmountRestToPaid());
+                //dump($commercialSheet['paymentOnPending']->getAmountRestToPaid());
                 $outstandingClaim += $commercialSheet['paymentOnPending']->getAmountRestToPaid();
             }
             $outstandingClaim = number_format((float) $outstandingClaim, 2, '.', ' ');
@@ -761,7 +970,7 @@ class EnterpriseDashboardController extends ApplicationController
                                             JOIN cms.user u
                                             JOIN u.enterprise e
                                             WHERE cms.type = 'bill'
-                                            AND cms.deliveryStatus = 1
+                                            AND cms.deliveryStatus = 1 OR cms.completedStatus = 1
                                             AND cmsi.itemOfferType != 'Simple'
                                             AND e.id = :entId
                                             GROUP BY designation, ref, pu
@@ -771,10 +980,50 @@ class EnterpriseDashboardController extends ApplicationController
                 ->setParameters(array(
                     'entId'   => $this->getUser()->getEnterprise()->getId(),
                 ))
-                ->setMaxResults(10)
+                //->setMaxResults(10)
                 ->getResult();
             //dump($bestSellingProducts);
 
+            $bestSellingProdCategory = [];
+            $tmpArray = [];
+            // $categoryRepo = $manager->getRepository('App:Category');
+            // $categories   = $categoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
+            $productRepo  = $manager->getRepository('App:Product');
+            $index = 0;
+            foreach ($bestSellingProducts as $prodArray) {
+                if ((array_key_exists("designation", $prodArray) && !empty($prodArray['designation'])) && (array_key_exists("ref", $prodArray) && !empty($prodArray['ref'])) && (array_key_exists("pu", $prodArray) && !empty($prodArray['pu']))) {
+                    $product = $productRepo->findOneBy([
+                        'name'  => $prodArray['designation'],
+                        'sku'   => $prodArray['ref'],
+                        'price' => $prodArray['pu']
+                    ]);
+                    if ($product) {
+                        $categories = $product->getCategories();
+                        if (!empty($categories)) {
+                            foreach ($categories as $category) {
+                                $amount    = floatval($prodArray['amount']);
+                                $totalSale = intval($prodArray['totalSale']);
+                                if (array_key_exists('' . $category->getName(), $tmpArray)) {
+                                    $bestSellingProdCategory[$index]['totalSale'] += $totalSale;
+                                    $bestSellingProdCategory[$index]['totalSale'] += $amount;
+                                } else {
+                                    $tmpArray[] = '' . $category->getName();
+                                    $index++;
+                                    $bestSellingProdCategory[$index] = [
+                                        'name'      => $category->getName(),
+                                        'totalSale' => $totalSale,
+                                        'amount'    => $amount,
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            usort($bestSellingProdCategory, function ($item1, $item2) {
+                return $item2['totalSale'] <=> $item1['totalSale'];
+            });
+            dump($bestSellingProdCategory);
             /*foreach ($turnOverPer as $d) {
                 $xturnOverPer[] = $d['jour'];
                 $turnOverAmountPer[]   = number_format((float) $d['amount'], 2, '.', '');
@@ -784,7 +1033,7 @@ class EnterpriseDashboardController extends ApplicationController
                 $xexpensesPer[] = $d['jour'];
                 $expensesAmountPer[]   = number_format((float) $d['amount'], 2, '.', '');
             }*/
-            $nbProductsSold_ = $manager->createQuery("SELECT COUNT(DISTINCT cmsi.designation) AS Designation
+            $nbProductsSold_ = $manager->createQuery("SELECT COUNT(cmsi.designation) AS Designation
                                             FROM App\Entity\CommercialSheetItem cmsi
                                             JOIN cmsi.commercialSheet cms
                                             JOIN cms.user u
@@ -806,26 +1055,27 @@ class EnterpriseDashboardController extends ApplicationController
             $converted  = $convertedQuoteNb[0]['convertQuoteNb'];
 
             return $this->json([
-                'code'                => 200,
-                'turnOverHT'          => $turnOverHT,
-                'expenses'            => $expensesTTC,
-                'turnOverAmountPer'   => $turnOverAmountPer,
-                'xturnOverPer'        => $xturnOverPer,
-                'amountRecettesPer'   => $amountRecettesPer,
-                'xamountRecettesPer'  => $xamountRecettesPer,
-                'expensesAmountPer'   => $expensesAmountPer,
-                'xexpensesPer'        => $xexpensesPer,
-                'expensesPer'         => $expensesPer,
-                'billNb'              => $billNb,
-                'quoteNb'             => $quoteNb,
-                'purchaseNb'          => $purchaseNb,
-                'converted'           => $converted,
-                'per'                 => $per,
-                'bestSellingProducts' => $bestSellingProducts,
-                'nbProductsSold'      => $nbProductsSold,
-                'outstandingDebt'     => $outstandingDebt,
-                'outstandingClaim'    => $outstandingClaim,
-                'amountRecettes'      => $amountRecettes,
+                'code'                    => 200,
+                'turnOverHT'              => $turnOverHT,
+                'expenses'                => $expensesTTC,
+                'turnOverAmountPer'       => $turnOverAmountPer,
+                'xturnOverPer'            => $xturnOverPer,
+                'amountRecettesPer'       => $amountRecettesPer,
+                'xamountRecettesPer'      => $xamountRecettesPer,
+                'expensesAmountPer'       => $expensesAmountPer,
+                'xexpensesPer'            => $xexpensesPer,
+                'expensesPer'             => $expensesPer,
+                'billNb'                  => $billNb,
+                'quoteNb'                 => $quoteNb,
+                'purchaseNb'              => $purchaseNb,
+                'converted'               => $converted,
+                'per'                     => $per,
+                'bestSellingProducts'     => $bestSellingProducts,
+                'bestSellingProdCategory' => (array)$bestSellingProdCategory,
+                'nbProductsSold'          => $nbProductsSold,
+                'outstandingDebt'         => $outstandingDebt,
+                'outstandingClaim'        => $outstandingClaim,
+                'amountRecettes'          => $amountRecettes,
             ], 200);
         }
         return $this->json([
