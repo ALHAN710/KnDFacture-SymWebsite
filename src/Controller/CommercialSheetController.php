@@ -778,6 +778,8 @@ class CommercialSheetController extends ApplicationController
      * Permet d'afficher la facture d'un document commercial (bill ou quote) pour impression
      * 
      * @Route("/commercial/sheet/{id}/print", name="commercial_sheet_print")
+     * 
+     * @IsGranted("ROLE_USER")
      *
      * @param CommercialSheet $commercialSheet
      * @return void
@@ -869,7 +871,9 @@ class CommercialSheetController extends ApplicationController
                         $commercialSheet = $commercialSheetRepo->findOneBy(['id' => intval($Id)]);
                         $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
                         $commercialSheet->setPaymentStatus(true)
-                            ->setPayAt($date);
+                            ->setPayAt($date)
+                            ->setAdvancePayment($commercialSheet->getAmountNetToPaid());
+
                         if ($commercialSheet->getDeliveryStatus() && $commercialSheet->getPaymentStatus()) {
                             $commercialSheet->setCompletedStatus(true);
                             $commercialSheet->setCompletedAt($date);
