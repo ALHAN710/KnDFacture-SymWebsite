@@ -151,7 +151,7 @@ class CommercialSheetController extends ApplicationController
                                 'quantity' => $commercialSheetItem->getQuantity(),
                                 'remise'   => $commercialSheetItem->getRemise()
                             ]);
-                            dd($commercialSheetItem->getAvailable());
+                            //dd($commercialSheetItem->getAvailable());
                             if (empty($commercialSheetItem_)) {
                                 $commercialSheetItem->addCommercialSheet($commercialSheet);
                                 //$manager->persist($commercialSheetItem);
