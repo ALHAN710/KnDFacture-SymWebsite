@@ -283,8 +283,8 @@
                         <div class="card-icon">
                             <i class="dripicons-network-1"></i>
                         </div>
-                        <h2 class="font-weight-bold text-white">Classement par Catégorie</h2>
-                        <p class="text-white mb-0 font-16">Des Ventes de Produits</p>                                            
+                        <h2 class="font-weight-bold text-white">10</h2>
+                        <p class="text-white mb-0 font-16">Top 10 des Catégories les plus vendues</p>                                            
                     </div>
                 </div>
                 <div class="card-body dash-info-carousel">                                        
@@ -325,7 +325,7 @@
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title mt-0" id="myModalLabel2">Classement des Catégories de produits par Total de Vente</h5>
+                                    <h5 class="modal-title mt-0" id="myModalLabel2">Classement Général des Catégories de produits par Total de Vente</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                 </div>
                                 <div class="modal-body">
@@ -620,11 +620,14 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
 
                         //console.log('Type of best : ' + typeof data['bestSellingProducts'] );
                         data['bestSellingProducts'].forEach(function(item, index){
-                            $('#ref_' + index).text(item['ref']);
-                            $('#designation_' + index).text(item['designation']);
-                            $('#pu_' + index).text(item['pu']);
-                            $('#totalSale_' + index).text(item['totalSale']);
-                            $('#amount_' + index).text(item['amount']);
+                            if(index < 10){
+                                $('#ref_' + index).text(item['ref']);
+                                $('#designation_' + index).text(item['designation']);
+                                $('#pu_' + index).text(item['pu']);
+                                $('#totalSale_' + index).text(item['totalSale']);
+                                $('#amount_' + index).text(item['amount']);
+
+                            }
 
                             tableProduct
                                 .row.add( [ String(index + 1), item['ref'], String(item['designation']), 
@@ -633,9 +636,11 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                         });
 
                         data['bestSellingProdCategory'].forEach(function(item, index){
-                            $('#nameCat_' + index).text(item['name']);
-                            $('#totalSaleCat_' + index).text(item['totalSale']);
-                            $('#amountCat_' + index).text(item['amount']);
+                            if(index < 10){
+                                $('#nameCat_' + index).text(item['name']);
+                                $('#totalSaleCat_' + index).text(item['totalSale']);
+                                $('#amountCat_' + index).text(item['amount']);
+                            }
 
                             tableCategory
                                 .row.add( [ String(index + 1), item['name'], String(item['totalSale']),String(item['amount'])] )

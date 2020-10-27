@@ -985,7 +985,7 @@ class EnterpriseDashboardController extends ApplicationController
             //dump($bestSellingProducts);
 
             $bestSellingProdCategory = [];
-            $tmpArray = [];
+            $tmpArray = new ArrayCollection();
             // $categoryRepo = $manager->getRepository('App:Category');
             // $categories   = $categoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
             $productRepo  = $manager->getRepository('App:Product');
@@ -1003,11 +1003,13 @@ class EnterpriseDashboardController extends ApplicationController
                             foreach ($categories as $category) {
                                 $amount    = floatval($prodArray['amount']);
                                 $totalSale = intval($prodArray['totalSale']);
-                                if (array_key_exists('' . $category->getName(), $tmpArray)) {
+                                //if (array_key_exists('' . $category->getName(), $tmpArray)) {
+                                if ($tmpArray->contains($category)) {
                                     $bestSellingProdCategory[$index]['totalSale'] += $totalSale;
                                     $bestSellingProdCategory[$index]['totalSale'] += $amount;
                                 } else {
-                                    $tmpArray[] = '' . $category->getName();
+                                    //$tmpArray[] = '' . $category->getName();
+                                    $tmpArray[] = $category;
                                     $index++;
                                     $bestSellingProdCategory[$index] = [
                                         'name'      => $category->getName(),
