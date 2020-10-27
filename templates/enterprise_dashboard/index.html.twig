@@ -195,18 +195,18 @@
                 <div class="card-body dash-info-carousel">                                        
                     <div id="carousel_best_sellingProduct" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
-                            {% for product in app.user.enterprise.products %}
+                            {% for i in range(0,9) %}
                             <div class="carousel-item {% if loop.first %}active{% endif %}">
                                 <div class="text-center">
                                     {# <img src="/images/users/user-4.jpg" alt="user" class="rounded-circle thumb-xl img-thumbnail mb-1"> #}
-                                    <h3>#{{loop.index}}</h3>
-                                    <h5><span id="ref_{{loop.index0}}">######</span></h5>
-                                    <p class="font-12 text-muted"><span id="designation_{{loop.index0}}"></span></p>
-                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{loop.index0}}">0</span> XAF</p>
-                                    <p class="font-12 text-muted">Total des ventes : <span id="totalSale_{{loop.index0}}">0</span></p>
+                                    <h3>#{{i + 1}}</h3>
+                                    <h5><span id="ref_{{i}}">######</span></h5>
+                                    <p class="font-12 text-muted"><span id="designation_{{i}}"></span></p>
+                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{i}}">0</span> XAF</p>
+                                    <p class="font-12 text-muted">Total des ventes : <span id="totalSale_{{i}}">0</span></p>
                                     {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
                                     <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_{{loop.index0}}">0</span> XAF</h5>
+                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amount_{{i}}">0</span> XAF</h5>
                                         {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
                                     </div>
                                 </div>
@@ -290,16 +290,16 @@
                 <div class="card-body dash-info-carousel">                                        
                     <div id="carousel_sale_per_category" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
-                            {% for category in app.user.enterprise.categories %}
+                            {% for i in range(0,9) %}
                             <div class="carousel-item {% if loop.first %}active{% endif %}">
                                 <div class="text-center">
-                                    <h3>#{{loop.index}}</h3>
-                                    <h5><span id="nameCat_{{loop.index0}}">######</span></h5>
+                                    <h3>#{{ i + 1 }}</h3>
+                                    <h5><span id="nameCat_{{i}}">######</span></h5>
                                     <br>
                                     <br>
-                                    <p class="font-12 text-muted">Total des ventes : <span id="totalSaleCat_{{loop.index0}}">0</span></p>
+                                    <p class="font-12 text-muted">Total des ventes : <span id="totalSaleCat_{{i}}">0</span></p>
                                     <div class="mt-2 align-item-center">
-                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amountCat_{{loop.index0}}">0</span> XAF</h5>
+                                        <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center"><span id="amountCat_{{i}}">0</span> XAF</h5>
                                         
                                     </div>
                                 </div>

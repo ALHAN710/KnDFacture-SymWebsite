@@ -1006,7 +1006,7 @@ class EnterpriseDashboardController extends ApplicationController
                                 //if (array_key_exists('' . $category->getName(), $tmpArray)) {
                                 if ($tmpArray->contains($category)) {
                                     $bestSellingProdCategory[$index]['totalSale'] += $totalSale;
-                                    $bestSellingProdCategory[$index]['totalSale'] += $amount;
+                                    $bestSellingProdCategory[$index]['amount'] += $amount;
                                 } else {
                                     //$tmpArray[] = '' . $category->getName();
                                     $tmpArray[] = $category;
