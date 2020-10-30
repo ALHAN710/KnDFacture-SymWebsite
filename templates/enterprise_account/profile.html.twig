@@ -27,6 +27,7 @@
     </div>
 {% endblock %}
 
+{% set totalDoc = fv + fa + qte %}
 {% set sheetNumber = app.user.enterprise.subscription.sheetNumber %}
 {% set hasStockModule = false %}
 {% set productRefNumber = 0 %}
@@ -45,9 +46,12 @@
                         <div class="col-lg-4 mb-3 mb-lg-0">
                             <div class="fro_profile-main">
                                 <div class="fro_profile-main-pic">
-                                    <img src="/images/users/user-4.jpg" alt="" class="rounded-circle">
+                                    <img src="{{ app.user.enterprise.logo != null  ? '/images/uploads/logo/' ~ app.user.enterprise.logo : '/images/uploads/logo/logo.png' }}" alt="Logo entreprise" class="rounded-circle img-thumbnail mb-1">
+                    
+                                    {# <img src="{{ app.user.enterprise.logo != null  ? '/images/uploads/logo/' ~ app.user.enterprise.logo : '/images/uploads/logo/logo.png' }}" alt="Logo entreprise" class="rounded-circle"> #}
                                     {# <span class="fro-profile_main-pic-change">
                                         <i class="fas fa-camera"></i>
+                                        src="/images/users/user-4.jpg"
                                     </span> #}
                                 </div>
                                 <div class="fro_profile_user-detail">
@@ -86,7 +90,7 @@
                             <div class="row">
                                 <div class="col-7">
                                     <div class="seling-report">
-                                        <h3 class="seling-data mb-1">{{ ( (totalDoc * 100 ) / sheetNumber )|number_format('2','.',' ') }}%</h3>
+                                        <h3 class="seling-data mb-1">{{ ( (totalDoc * 100.0 ) / sheetNumber )|number_format('2','.',' ') }}%</h3>
                                         <ul class="list-inline mb-0">
                                             <li class="mb-2 list-inline-item text-muted font-13"><i class="mdi mdi-label text-success mr-2"></i>Factures</li>
                                             <li class="mb-2 list-inline-item text-muted font-13"><i class="mdi mdi-label text-danger mr-2"></i>Devis</li>
@@ -621,6 +625,11 @@
 {% endblock %}
 
 {% block javascripts %}
+<script>
+    var fv = {{fv}};
+    var fa = {{fa}};
+    var qte = {{qte}};
+</script>
 <script src="/plugins/moment/moment.js"></script>
 <script src="/plugins/apexcharts/apexcharts.min.js"></script>
 {# <script src="https://apexcharts.com/samples/assets/irregular-data-series.js"></script>
@@ -630,7 +639,7 @@
 {# <script src="/plugins/ticker/jquery.jConveyorTicker.min.js"></script> #}
 <script src="/plugins/peity-chart/jquery.peity.min.js"></script>
 <script src="/plugins/chartjs/chart.min.js"></script>
-<script src="/pages/jquery.profile.init.js"></script>
+<script src="/pages/jquery.profile.init1.js"></script>
 
 <script src="/plugins/datatables/dataTables.buttons.min.js"></script>
 <script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
