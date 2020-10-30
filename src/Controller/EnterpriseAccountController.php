@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -19,27 +20,38 @@ class EnterpriseAccountController extends AbstractController
     /**
      * @Route("/enterprise/{id<\d+>}/account/profile", name="enterprise_account_profile")
      * 
-     *  @IsGranted("ROLE_ADMIN")
+     *  @Security( "is_granted('ROLE_ADMIN') and enterprise === user.getEnterprise() " )
      */
     public function profile(Enterprise $enterprise, EntityManagerInterface $manager, Request $request)
     {
 
         $currentMonth = new DateTime('now');
         $dateProto = '%' . $currentMonth->format('Y-m') . '%';
-        $docs = $manager->createQuery("SELECT COUNT(cms.createdAt) AS NbDoc
-                                       FROM App\Entity\CommercialSheet cms
-                                       JOIN cms.user u
-                                       JOIN u.enterprise e
-                                       WHERE cms.createdAt LIKE :dat
-                                       AND e.id = :entId
+        $types   = ['bill', 'quote', 'purchaseorder'];
+        $sheetNb = [];
+        foreach ($types as $type) {
+            //dump($type);
+            $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
+                                                FROM App\Entity\CommercialSheet cms
+                                                LEFT JOIN cms.user u 
+                                                JOIN u.enterprise e
+                                                WHERE cms.type = :type_
+                                                AND e.id = :entId
+                                                AND cms.createdAt LIKE :dat                                                                                                                                  
+                                            ")
+                ->setParameters(array(
+                    'entId'   => $enterprise->getId(),
+                    'type_'   => $type,
+                    'dat'     => $dateProto,
+                ))
+                ->getResult();
+        }
 
-            ")
-            ->setParameters([
-                'dat' => $dateProto,
-                'entId' => $enterprise->getId(),
-            ])
-            ->getResult();
-        $totalDoc = intval($docs[0]['NbDoc']);
+        $billNb     = $sheetNb['bill'][0]['sheetNb'];
+        $quoteNb    = $sheetNb['quote'][0]['sheetNb'];
+        $purchaseNb = $sheetNb['purchaseorder'][0]['sheetNb'];
+        //$totalDoc = $billNb + $quoteNb + $purchaseNb;
+        // $totalDoc = intval($docs[0]['NbDoc']);
         //dump($totalDoc);
 
         $lastLogo = $enterprise->getLogo();
@@ -91,7 +103,10 @@ class EnterpriseAccountController extends AbstractController
         }
         return $this->render('enterprise_account/profile.html.twig', [
             'enterprise' => $enterprise,
-            'totalDoc'   => $totalDoc,
+            //'totalDoc'   => $totalDoc,
+            'fv'         => $billNb,
+            'fa'         => $purchaseNb,
+            'qte'        => $quoteNb,
             'form'       => $form->createView(),
         ]);
     }
