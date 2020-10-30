@@ -38,7 +38,7 @@
                         <li><a href="{{ path('order_index',{'id':inventory.id}) }}">{{inventory.name}}</a></li>
                         {% endfor %} #} 
                         <li>
-                            <a href="{{ path('commercial_sheet_index',{'type':'bill'}) }}">Facture</a>
+                            <a href="{{ path('commercial_sheet_index',{'type':'bill'}) }}">Factures</a>
                             {# {% if inventories|length > 0 %}
                             <ul class="submenu">
                                 {% for inventory in inventories %}
@@ -59,7 +59,7 @@
                             {% endif %} #}
                         </li>  
                         <li>
-                            <a href="{{ path('commercial_sheet_index',{'type':'purchaseorder'}) }}">Facture d'Achats</a>
+                            <a href="{{ path('commercial_sheet_index',{'type':'purchaseorder'}) }}">Factures d'Achats</a>
                         </li>  
                     </ul>
                 </li>

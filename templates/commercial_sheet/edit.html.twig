@@ -47,7 +47,7 @@
     <div class="col-12">       
         <div class="card">
             <div class="card-body">
-                <h4 class="mt-0 header-title">Information {% if docType != 'Facture' %}du{% else %}de la{% endif %} {{ docType }}</h4>
+                <h4 class="mt-0 header-title">Informations {% if docType != 'Facture' %}du{% else %}de la{% endif %} {{ docType }}</h4>
                 {{ form_start(form) }}
                 <div class="card border mb-0 text-center">
                     <div class="card-header">
@@ -113,7 +113,7 @@
                         <p class="card-text">Montant Total HT Brut  : <span id="itemsAmountBrutHT">0</span> XAF</p>
                         <p class="card-text">Montant Total Remise   : <span id="itemsAmountRemise">0</span> XAF</p>
                         <p class="card-text">Montant Total HT Net   : <span id="itemsAmountNetHT">0</span> XAF</p>
-                        <p class="card-text">TVA ({{app.user.enterprise.tva}}%)     : <span id="taxes">0</span> XAF</p>
+                        <p class="card-text">Taxes ({{app.user.enterprise.tva}}%)     : <span id="taxes">0</span> XAF</p>
                         <p class="card-text">Montant TTC            : <span id="amountTTC">0</span> XAF</p>
 
                     </div>
@@ -266,6 +266,8 @@
     $('#commercial_sheet_fixReduction').attr('type', 'number');
     $('#commercial_sheet_advancePayment').attr('type', 'number');
     
+    $('#add-commercialSheetItems').addClass('d-none');
+    $('#add-servItems').addClass('d-none');
     {# var val = $('#commercial_sheet_duration').val(); #}
     {# if($('#commercial_sheet_duration').val()) console.log('duration val = ' + val);
     else $('#commercial_sheet_duration').val(0); #}
@@ -303,7 +305,8 @@
         var price = parseFloat(puId);
         amountBrutHT[index] = price * parseFloat($(qtyId).val());
         //$(amountId).val(amount);
-        itemReductionTab[index] = ( ( amountBrutHT * parseFloat( $(remiseId).val() ) )/100.0 );
+        //console.log('remise '+index+ ': '+$(remiseId).val());
+        itemReductionTab[index] = ( ( amountBrutHT[index] * parseFloat( $(remiseId).val() ) )/100.0 );
 
         itemsAmount[index] = amountBrutHT[index] - itemReductionTab[index];
         //console.log('itemsAmount[' + index + '] = ' + itemsAmount[index]);
@@ -379,6 +382,7 @@
     var tabProductQtyIds = [];
 
     var tabQty = [];
+    var qtyMax = [];
     var tabItemOfferType = [];
     var qtyTotal = 0;
     var tabError = [];
@@ -450,14 +454,27 @@
     //var productPriceId = '#commercial_sheet_commercialSheetItems_' + index + '_productPrice';
     //var priceViewId = '#commercial_sheet_commercialSheetItems_' + index + '_priceView';//
     //
+    var amountBrutHTId = [];
+    var remiseId = [];
+    var amountNetHTId = [];
+    var productId = [];
+    var productSKUId = [];
+    var qtyId = [];
+    var available = [];
+    var puId = [];
+    var itemOfferTypeId = [];
+    var productType = [];
+    var precQty = [];
+    var initQty = [];
+
     for (let index = 0; index < nbItem; index++) {
         productSKUId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_productSku';
         productId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_product';
         {# isChangedIds[index] = '#commercial_sheet_commercialSheetItems_' + index + '_isChanged'; #}
         qtyId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_quantity';
-        var amountBrutHTId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_amountBrutHT';
-        var remiseId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_remise';
-        var amountNetHTId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_amountNetHT';
+        amountBrutHTId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_amountBrutHT';
+        remiseId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_remise';
+        amountNetHTId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_amountNetHT';
         available[index] = '#commercial_sheet_commercialSheetItems_' + index + '_available';
         puId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_pu';
         itemOfferTypeId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_itemOfferType';
@@ -522,7 +539,7 @@
     
     //Gestion de l'évènement de changement de vleur de la quantité du produit 
     //pour mettre à jour les montants
-    /*qtyId.forEach(function (value, index) {
+    {# qtyId.forEach(function (value, index) {
         $(value).change(() => {
 
             var add = false;
@@ -664,7 +681,7 @@
             //console.log('new precQty[index] = ' + parseInt(precQty[index]));
             //console.log('precQty[index] = ' + precQty[index]);
         });
-    });*/
+    }); #}
     
 </script>
 <script src="/js/commercial_sheet2.js" type="text/javascript"></script>

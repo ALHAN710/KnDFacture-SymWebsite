@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Edition d'un Product {% endblock %}
+{% block title %} Modification d'un Product {% endblock %}
 
 {% block stylesheets %}
 
 {% endblock %}
 
 {% block pageTitle %}
-<h4 class="page-title mb-2"><i class="dripicons-shopping-bag mr-2"></i>Product</h4>  
+<h4 class="page-title mb-2"><i class="dripicons-shopping-bag mr-2"></i>Produit</h4>  
 {% endblock %}
 
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">Products</li>
-            <li class="breadcrumb-item active">Edit</li>
+            <li class="breadcrumb-item active">Modification</li>
+            <li class="breadcrumb-item active">Produit</li>
         </ol>
     </div>
 {% endblock %}
@@ -26,7 +26,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body mx-5">        
-                <h4 class="mt-2 mb-4 header-title">Modify Product</h4>
+                <h4 class="mt-2 mb-4 header-title">Modification de Produit</h4>
                 {{ form_start(form) }}
                 {#{{ form_widget(form) }}#}
                 <div class="form-group">

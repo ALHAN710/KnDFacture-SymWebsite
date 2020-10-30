@@ -33,7 +33,7 @@
         <div class="page-wrapper-img">
             <div class="page-wrapper-img-inner">
                 <div class="sidebar-user media">                    
-                    <img src="{{ app.user.enterprise.logo != null  ? '/images/uploads/logo/' ~ app.user.enterprise.logo : '/images/uploads/logo/LBF.png' }}" alt="User Avatar" class="rounded-circle img-thumbnail mb-1">
+                    <img src="{{ app.user.enterprise.logo != null  ? '/images/uploads/logo/' ~ app.user.enterprise.logo : '/images/uploads/logo/logo.png' }}" alt="User Avatar" class="rounded-circle img-thumbnail mb-1">
                     {# <span class="online-icon"><i class="mdi mdi-record text-success"></i></span> #}
                     <div class="media-body align-item-center">
                         <h5 class="text-white">{{app.user.firstName}}</h5>
@@ -69,11 +69,12 @@
                 {% include 'partials/horizontalMenu.html.twig' %}
                 <!-- end Navbar Custom Menu -->
             </div>
+            <!--end page-wrapper-inner -->
 
             <!-- Page Content-->
             <div class="page-content">
-                <div class="container-fluid"> 
-                {% for label, messages in app.flashes %}
+                <div class="container-fluid mb-5"> 
+                    {% for label, messages in app.flashes %}
                     <div class="alert icon-custom-alert alert-outline-{{label}} alert-{{label}}-shadow alert-dismissible fade show" role="alert">
                         {% if label == 'success' %}<i class="mdi mdi-check-all alert-icon"></i>{% endif %}
                         <div class="alert-text">
@@ -85,13 +86,18 @@
                             <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
                         </button>                                        
                     </div>
-                    
-                {% endfor %}
-                {% block body %}
-                {% endblock %}
-            </div>
+                    {% endfor %}
+                    {% block body %}
+                    {% endblock %}
+                </div><!-- container -->
 
-        {% block footer %} {% include 'partials/footer.html.twig' %} {% endblock %}
+            
+            </div><!-- end page content -->
+                <div class="row mt-2">
+                    {% block footer %} {% include 'partials/footer.html.twig' %} {% endblock %}
+                
+                </div>
+        </div>
 
         <!-- jQuery  -->
         <script src="/js/jquery.min.js"></script>

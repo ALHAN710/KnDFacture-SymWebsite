@@ -34,15 +34,31 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 class CommercialSheetController extends ApplicationController
 {
     /**
-     * @Route("/commercial/sheet/{type<[a-z]+>}/dashboard", name="commercial_sheet_index")
+     * @Route("/commercial/sheet/{type<[a-z]+>}/home", name="commercial_sheet_index")
      * @IsGranted("ROLE_USER")
      */
-    public function index($type, CommercialSheetRepository $commercialSheetRepo)
+    public function index($type, EntityManagerInterface $manager)
     {
         //$inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
-        $commercialSheets = $commercialSheetRepo->findBy(['type' => $type]);
-        //$commercialSheets = [];
-
+        //$commercialSheets = $commercialSheetRepo->findBy(['type' => $type]);
+        $commercialSheets = [];
+        $commercialSheets_ = $manager->createQuery("SELECT cms
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = :type_
+                                            AND e.id = :entId                                                              
+                                        ")
+            ->setParameters(array(
+                'entId'   => $this->getUser()->getEnterprise()->getId(),
+                'type_'   => $type,
+            ))
+            //->setMaxResults(10)
+            ->getResult();
+        //dump($commercialSheets_);
+        foreach ($commercialSheets_ as $commercialSheet) {
+            $commercialSheets[] = $commercialSheet;
+        }
         return $this->render('commercial_sheet/index_commercial_sheet.html.twig', [
             'commercialSheets'      => $commercialSheets,
             //'inventories'           => $inventories,
@@ -128,6 +144,7 @@ class CommercialSheetController extends ApplicationController
         //  instancier un form externe
         $form = $this->createForm(CommercialSheetType::class, $commercialSheet, [
             'entId' => $this->getUser()->getEnterprise()->getId(),
+            'isEdit' => false,
         ]);
         $form->handleRequest($request);
 
@@ -795,6 +812,7 @@ class CommercialSheetController extends ApplicationController
 
         return $this->redirectToRoute("order_indexcommercial_sheet_index", ['type' => $commercialSheet->getType()]);
     }
+
     /**
      * Permet d'afficher la facture d'un document commercial (bill ou quote) pour impression
      * 

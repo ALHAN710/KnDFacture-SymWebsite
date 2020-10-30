@@ -87,7 +87,7 @@
                                 <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Imprimer les Commandes cochées dans le journal des livraisons du jour ?"><i class="fa fa-print"></i></button>
                                 {# <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button>  #}
                                 {% endif %} 
-                                <table id="datatableDelivery" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <table id="datatableDelivery" class="table table-striped table-fixed nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr class="text-center">
                                             {% if type == 'bill' %}
@@ -152,8 +152,8 @@
                                 <div class="float-right">
                                     
                                 </div>
-                                <div class="">
-                                    <table id="datatablePayment" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <div class="table-responsive">
+                                    <table id="datatablePayment" class="table table-striped table-fixed nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr class="text-center">
                                                 {# <th style="width:0.5em"></th> #}
@@ -202,8 +202,8 @@
                             </div>  
 
                             <div class="tab-pane p-3" id="completed" role="tabpanel">
-                                <div class="">
-                                    <table id="datatableCompleted" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <div class="table-responsive">
+                                    <table id="datatableCompleted" class="table table-striped table-fixed nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr class="text-center">
                                                 {# <th>N° Facture</th> #}
@@ -259,8 +259,8 @@
                     </div> <!--end div-->
                     {% else %}
                     {# {{dump(commercialSheets)}} #}
-                    <div class="">
-                        <table id="datatable2" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                    <div class="table-responsive">
+                        <table id="datatable2" class="table table-striped table-fixed nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr class="text-center">
                                     {# <th style="width:0.5em"></th> #}
