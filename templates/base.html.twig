@@ -72,7 +72,7 @@
             <!--end page-wrapper-inner -->
 
             <!-- Page Content-->
-            <div class="page-content">
+            <div class="page-content mb-4">
                 <div class="container-fluid mb-5"> 
                     {% for label, messages in app.flashes %}
                     <div class="alert icon-custom-alert alert-outline-{{label}} alert-{{label}}-shadow alert-dismissible fade show" role="alert">
@@ -93,10 +93,11 @@
 
             
             </div><!-- end page content -->
-                <div class="row mt-2">
-                    {% block footer %} {% include 'partials/footer.html.twig' %} {% endblock %}
-                
-                </div>
+
+            <div class="row mt-4">
+                {% block footer %} {% include 'partials/footer.html.twig' %} {% endblock %}
+            
+            </div>
         </div>
 
         <!-- jQuery  -->
