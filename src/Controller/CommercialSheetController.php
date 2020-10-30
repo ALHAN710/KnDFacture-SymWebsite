@@ -448,7 +448,7 @@ class CommercialSheetController extends ApplicationController
      *
      * @Route("/commercial/sheet/{id<\d+>}/edit", name="commercial_sheet_edit")
      * 
-     * @Security("is_granted('ROLE_USER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
+     * @Security( "is_granted('ROLE_USER') and commercialSheet.getUser().getEnterprise() === user.getEnterprise() " )
      * 
      * @return Response
      */
@@ -702,7 +702,7 @@ class CommercialSheetController extends ApplicationController
      * 
      * @Route("/commercial/sheet/{id}/delete", name="commercial_sheet_delete")
      * 
-     * @IsGranted("ROLE_USER")
+     * @Security( "is_granted('ROLE_USER') and commercialSheet.getUser().getEnterprise() === user.getEnterprise() " )
      *
      * @param CommercialSheet $commercialSheet
      * @param EntityManagerInterface $manager
@@ -755,6 +755,8 @@ class CommercialSheetController extends ApplicationController
      * 
      * @Route("/commercial/sheet/{id<\d+>}/convert", name="commercial_sheet_convert")
      *
+     * @Security( "is_granted('ROLE_USER') and commercialSheet.getUser().getEnterprise() === user.getEnterprise() " )
+     * 
      * @param CommercialSheet $commercialSheet
      * @param EntityManagerInterface $manager
      * @return void
@@ -818,7 +820,7 @@ class CommercialSheetController extends ApplicationController
      * 
      * @Route("/commercial/sheet/{id}/print", name="commercial_sheet_print")
      * 
-     * @IsGranted("ROLE_USER")
+     * @Security( "is_granted('ROLE_USER') and commercialSheet.getUser().getEnterprise() === user.getEnterprise() " )
      *
      * @param CommercialSheet $commercialSheet
      * @return void
@@ -895,14 +897,16 @@ class CommercialSheetController extends ApplicationController
                     foreach ($paramJSON['commercialSheetDeliveredIds'] as $Id) {
                         $commercialSheet = $commercialSheetRepo->findOneBy(['id' => intval($Id)]);
                         //dump($commercialSheet);
-                        $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
-                        $commercialSheet->setDeliveryStatus(true)
-                            ->setDeliverAt($date);
-                        if ($commercialSheet->getDeliveryStatus() && $commercialSheet->getPaymentStatus()) {
-                            $commercialSheet->setCompletedStatus(true);
-                            $commercialSheet->setCompletedAt($date);
+                        if ($commercialSheet->getUser()->getEnterprise() === $this->getUser()->getEnterprise()) {
+                            $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
+                            $commercialSheet->setDeliveryStatus(true)
+                                ->setDeliverAt($date);
+                            if ($commercialSheet->getDeliveryStatus() && $commercialSheet->getPaymentStatus()) {
+                                $commercialSheet->setCompletedStatus(true);
+                                $commercialSheet->setCompletedAt($date);
+                            }
+                            $manager->persist($commercialSheet);
                         }
-                        $manager->persist($commercialSheet);
                     }
                 }
                 if (!empty($paramJSON['commercialSheetPaidIds'])) {
@@ -956,7 +960,8 @@ class CommercialSheetController extends ApplicationController
             if (!empty($paramJSON['commercialSheetIds'])) {
                 $commercialSheets = [];
                 foreach ($paramJSON['commercialSheetIds'] as $id) {
-                    $commercialSheets[] = $commercialSheetRepo->findOneBy(['id' => intval($id)]);
+                    $commercialSheet = $commercialSheetRepo->findOneBy(['id' => intval($id)]);
+                    if ($commercialSheet->getUser()->getEnterprise() === $this->getUser()->getEnterprise()) $commercialSheets[] = $commercialSheet;
                 }
                 //dump($commercialSheets);
                 if ($journal == 'delivery') {
