@@ -37,9 +37,9 @@
             {# <h4 class="mt-0 header-title">Date Range Picker</h4>  
             <P class="mt-0 text-muted mb-4">A JavaScript component for choosing date ranges, dates and times.</P>  #}
             <div class="my-3">
-                <label class="my-3">Select Date Ranges</label>
+                <label class="my-3">Choisir la plage de date</label>
                 <div class="input-group">  
-                    <input type="text"  id="reportrange" class="form-control" value="10/24/1984">
+                    <input type="text"  id="reportrange" class="form-control" value="07/10/2020">
                     <div class="input-group-append">
                         <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                     </div>
@@ -86,6 +86,25 @@
 
     
     <div class="row">
+        <div class="col-lg-4">
+            <div class="card overflow-hidden">
+                <div class="card-body bg-gradient2">
+                    <div class="">
+                        <div class="card-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h2 class="font-weight-bold text-white">Flux de Trésorerie</h2>
+                        {# <p class="text-white mb-0 font-16"></p> #}
+                    </div>
+                </div><!--end card-body-->
+                <div class="card-body">
+                    <div class="">
+                        <div id="flux_tresorerie" class="apex-charts"></div>
+                    </div> 
+                </div><!--end card-body-->
+            </div><!--end card-->
+        </div><!--end col-->
+
         <div class="col-lg-8">
             <div class="card">    
                 <div class="card-body mb-0">
@@ -120,24 +139,7 @@
 
             </div><!--end card-->
         </div>
-        <div class="col-lg-4">
-            <div class="card overflow-hidden">
-                <div class="card-body bg-gradient2">
-                    <div class="">
-                        <div class="card-icon">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
-                        <h2 class="font-weight-bold text-white">Flux de Trésorerie</h2>
-                        {# <p class="text-white mb-0 font-16"></p>                                             #}
-                    </div>
-                </div><!--end card-body-->
-                <div class="card-body">
-                    <div class="">
-                        <div id="flux_tresorerie" class="apex-charts"></div>
-                    </div> 
-                </div><!--end card-body-->
-            </div><!--end card-->
-        </div><!--end col-->
+        
     </div>    
 
     {# <div class="card">    
@@ -256,8 +258,8 @@
                                     <h5 class="modal-title mt-0" id="myModalLabel">Classement des produits par Total de Vente</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                 </div>
-                                <div class="modal-body">
-                                    <table id="datatable-buttonsProd" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <div class="modal-body table-responsive">
+                                    <table id="datatable-buttonsProd" class="table table-striped table-fixed nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr class="text-center">
                                                 <th>#</th>
@@ -349,8 +351,8 @@
                                     <h5 class="modal-title mt-0" id="myModalLabel2">Classement Général des Catégories de produits par Total de Vente</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                 </div>
-                                <div class="modal-body">
-                                    <table id="datatable-buttonsCat" class="table dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <div class="modal-body table-responsive">
+                                    <table id="datatable-buttonsCat" class="table table-striped table-fixed nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr class="text-center">
                                                 <th>#</th>
@@ -502,7 +504,7 @@
 {# <script src="https://apexcharts.com/samples/assets/irregular-data-series.js"></script>
 <script src="https://apexcharts.com/samples/assets/series1000.js"></script>
 <script src="https://apexcharts.com/samples/assets/ohlc.js"></script> #}
-<script src="/pages/jquery.dashboard.init1.js"></script>
+<script src="/pages/jquery.dashboard.init2.js"></script>
 
 <!-- Plugins js -->
 {# <script src="/plugins/moment/moment.js"></script> #}
@@ -674,11 +676,11 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                         displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']); #}
                         
                         var dataArray = [parseFloat(data['flux_tresorerie'][0]),parseFloat(data['flux_tresorerie'][1])];
-                        updateDonutChart(fluxTresorerieDonutChart, ["Recettes", "Dépenses Fournisseurs TTC"], dataArray);
+                        updateDonutChart(fluxTresorerieDonutChart, [String("Recettes : " + String(data['flux_tresorerie'][0]) + " XAF"), String("Dépenses : " + data['flux_tresorerie'][1] + " XAF")], dataArray);
 
                         swal({
                             type: 'success',
-                            title: 'The Dashboard has been updated !',
+                            title: 'Le tableau de bord a été mis à jour !',
                             //html: 'Submitted email: ' + email
                         });
 
@@ -807,11 +809,11 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                             displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']); #}
 
                             var dataArray = [parseFloat(data['flux_tresorerie'][0]),parseFloat(data['flux_tresorerie'][1])];
-                            updateDonutChart(fluxTresorerieDonutChart, ["Recettes", "Dépenses Fournisseurs TTC"], dataArray);
+                            updateDonutChart(fluxTresorerieDonutChart, [String("Recettes : " + data['flux_tresorerie'][0] + " XAF"), String("Dépenses : " + data['flux_tresorerie'][1] + " XAF")], dataArray);
 
                             swal({
                                 type: 'success',
-                                title: 'The Dashboard has been updated !',
+                                title: 'Le tableau de bord a été mis à jour !',
                                 //html: 'Submitted email: ' + email
                             });
 

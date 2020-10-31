@@ -37,7 +37,7 @@ new ApexCharts(document.querySelector("#dash_spark_1"), dash_spark_1).render();
 var options = {
 
   chart: {
-    height: 195,
+    height: 257,
     animations: {
       enabled: false
     },
@@ -109,7 +109,7 @@ turnOverColumnChart.render();
 
 var options = {
   chart: {
-    height: 240,
+    height: 300,
     type: 'donut',
   },
   series: [0, 0],
@@ -121,15 +121,15 @@ var options = {
     floating: false,
     fontSize: '14px',
     offsetX: 0,
-    offsetY: -14
+    offsetY: -5
   },
-  labels: ["Recettes", "Dépenses Fournisseurs TTC"],
+  labels: ["Recettes", "Dépenses"],
   colors: ["#00dd9f", "#f65f4d"],
   responsive: [{
     breakpoint: 600,
     options: {
       chart: {
-        height: 240
+        height: 300
       },
       legend: {
         show: false
