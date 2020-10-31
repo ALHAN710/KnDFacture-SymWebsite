@@ -90,7 +90,7 @@
                             <div class="row">
                                 <div class="col-7">
                                     <div class="seling-report">
-                                        <h3 class="seling-data mb-1">{{ ( (totalDoc * 100.0 ) / sheetNumber )|number_format('2','.',' ') }}%</h3>
+                                        {% if sheetNumber != 7102020 %}<h3 class="seling-data mb-1">{{ ( (totalDoc * 100.0 ) / sheetNumber )|number_format('2','.',' ') }}%</h3>{% endif %}
                                         <ul class="list-inline mb-0">
                                             <li class="mb-2 list-inline-item text-muted font-13"><i class="mdi mdi-label text-success mr-2"></i>Factures</li>
                                             <li class="mb-2 list-inline-item text-muted font-13"><i class="mdi mdi-label text-danger mr-2"></i>Devis</li>
