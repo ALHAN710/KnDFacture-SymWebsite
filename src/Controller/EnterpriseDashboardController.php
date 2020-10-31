@@ -336,7 +336,7 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp             = $commercialSheet->getAdvancePayment();
                     $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
                     $amountRecettes += $tmp;
-                    if (!$xamountRecettesPer->contains($date)) {
+                    /*if (!$xamountRecettesPer->contains($date)) {
                         $xamountRecettesPer[]        = $date;
                         $amountRecettesPer[$index2]  = $tmp;
                         $precIndex2                  = $index2;
@@ -344,10 +344,10 @@ class EnterpriseDashboardController extends ApplicationController
                     } else {
                         //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
                         $amountRecettesPer[$precIndex2]  += $tmp;
-                    }
+                    }*/
                 }
                 $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
-                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');
+                $amountRecettes = number_format((float) $amountRecettes, 2, '.', '');
                 // dump($turnOverHT);
                 // dump($xturnOverPer);
                 // dd($turnOverAmountPer);
@@ -500,7 +500,7 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp             = $commercialSheet->getAdvancePayment();
                     $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
                     $expensesTTC += $tmp;
-                    if (!$xexpensesPer->contains($date)) {
+                    /*if (!$xexpensesPer->contains($date)) {
                         $xexpensesPer[]       = $date;
                         $expensesAmountPer[$index]  = $tmp;
                         $precIndex = $index;
@@ -508,9 +508,9 @@ class EnterpriseDashboardController extends ApplicationController
                     } else {
                         //$tmp                         = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
                         $expensesAmountPer[$precIndex]  += $tmp;
-                    }
+                    }*/
                 }
-                $expensesTTC = number_format((float) $expensesTTC, 2, '.', ' ');
+                $expensesTTC = number_format((float) $expensesTTC, 2, '.', '');
 
                 /*foreach ($purchaseOrders as $purchaseOrder_) {
                     $tmp          = $purchaseOrder_['EXTTC'] == null ? 0 : number_format((float) floatval($purchaseOrder_['EXTTC']), 2, '.', '');
@@ -653,7 +653,7 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp             = $commercialSheet->getAdvancePayment();
                     $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
                     $amountRecettes += $tmp;
-                    if (!$xamountRecettesPer->contains($date)) {
+                    /*if (!$xamountRecettesPer->contains($date)) {
                         $xamountRecettesPer[]       = $date;
                         $amountRecettesPer[$index2]  = $tmp;
                         $precIndex2 = $index2;
@@ -661,10 +661,10 @@ class EnterpriseDashboardController extends ApplicationController
                     } else {
                         //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
                         $amountRecettesPer[$precIndex2]  += $tmp;
-                    }
+                    }*/
                 }
                 $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
-                $amountRecettes = number_format((float) $amountRecettes, 2, '.', ' ');
+                $amountRecettes = number_format((float) $amountRecettes, 2, '.', '');
 
                 //Détermination du montant des Réduction
                 /*$amountReduction = $manager->createQuery("SELECT cms.deliverAt AS jour, ((SUM(cmsi.pu * cmsi.quantity) * cms.itemsReduction ) / 100.0) + cms.fixReduction AS amountReduction
@@ -824,7 +824,7 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp             = $commercialSheet->getAdvancePayment();
                     $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
                     $expensesTTC += $tmp;
-                    if (!$xexpensesPer->contains($date)) {
+                    /*if (!$xexpensesPer->contains($date)) {
                         $xexpensesPer[]       = $date;
                         $expensesAmountPer[$index]  = $tmp;
                         $precIndex = $index;
@@ -832,9 +832,9 @@ class EnterpriseDashboardController extends ApplicationController
                     } else {
                         //$tmp                         = $d['EXTTC'] == null ? '0' : number_format((float) floatval($d['EXTTC']), 2, '.', '');
                         $expensesAmountPer[$precIndex]  += $tmp;
-                    }
+                    }*/
                 }
-                $expensesTTC = number_format((float) $expensesTTC, 2, '.', ' ');
+                $expensesTTC = number_format((float) $expensesTTC, 2, '.', '');
 
                 //Chiffre d'affaire HT par jour de l'intervalle de date
                 /*$turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.deliverAt, 1, 10) AS jour,
@@ -962,28 +962,82 @@ class EnterpriseDashboardController extends ApplicationController
                 $outstandingDebt += $commercialSheet['paymentOnPending']->getAmountRestToPaid();
             }
             $outstandingDebt = number_format((float) $outstandingDebt, 2, '.', ' ');
-            $bestSellingProducts = $manager->createQuery("SELECT cmsi.designation AS designation,
+
+            $bestSellingProducts = [];
+            /*$bestSellingProducts = $manager->createQuery("SELECT cmsi.designation AS designation,
                                             cmsi.reference AS ref,cmsi.pu AS pu, SUM(cmsi.pu*cmsi.quantity) AS amount,
                                             SUM(cmsi.quantity) AS totalSale
-                                            FROM App\Entity\CommercialSheetItem cmsi
-                                            JOIN cmsi.commercialSheet cms
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.commercialSheetItems cmsi
                                             JOIN cms.user u
                                             JOIN u.enterprise e
                                             WHERE cms.type = 'bill'
+                                            AND e.id = :entId
                                             AND cms.deliveryStatus = 1 OR cms.completedStatus = 1
                                             AND cmsi.itemOfferType != 'Simple'
-                                            AND e.id = :entId
                                             GROUP BY designation, ref, pu
-                                            ORDER BY totalSale DESC 
-                                                                                                                            
+                                            ORDER BY totalSale DESC                                                       
+                                        ")
+                ->setParameters(array(
+                    'entId'   => $this->getUser()->getEnterprise()->getId(),
+                ))
+                //->setMaxResults(10)
+                ->getResult();*/
+            /*$bestSellingProducts = $manager->createQuery("SELECT cms
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = 'bill'
+                                            AND e.id = :entId
+                                            AND cms.deliveryStatus = 1 OR cms.completedStatus = 1
+                                                                                                   
                                         ")
                 ->setParameters(array(
                     'entId'   => $this->getUser()->getEnterprise()->getId(),
                 ))
                 //->setMaxResults(10)
                 ->getResult();
-            //dump($bestSellingProducts);
+            dump($bestSellingProducts);*/
+            $cmss = $manager->getRepository('App:CommercialSheet')->findAll();
+            $index = 0;
+            foreach ($cmss as $cms) {
+                if (($cms->getType() === 'bill') && ($cms->getUser()->getEnterprise() === $this->getUser()->getEnterprise())) {
+                    if ($cms->getDeliveryStatus() == true || $cms->getCompletedStztus() == true) {
+                        foreach ($cms->getCommercialSheetItems() as $cmsi) {
+                            if ($cmsi->getItemOfferType() !== 'Simple') {
+                                $isNew = false;
+                                foreach ($bestSellingProducts as $key => $value) {
+                                    if ((array_key_exists("designation", $value) && !empty($value['designation'])) && (array_key_exists("ref", $value) && !empty($value['ref'])) && (array_key_exists("pu", $value) && !empty($value['pu']))) {
+                                        if (($value['designation'] === $cmsi->getDesignation()) && ($value['ref'] === $cmsi->getReference()) && ($value['pu'] === $cmsi->getPu())) {
+                                            //dump($value);
+                                            //dump($value['designation']);
+                                            $bestSellingProducts[$key]['totalSale'] += $cmsi->getQuantity();
+                                            $tmp = $cmsi->getQuantity() * $cmsi->getPu();
+                                            $remise = ($tmp * $cmsi->getRemise()) / 100.0;
+                                            $tmp = $tmp - $remise;
+                                            $bestSellingProducts[$key]['amount'] += $tmp;
+                                            $isNew = true;
+                                        }
+                                    }
+                                }
+                                if (!$isNew) {
+                                    $tmp = $cmsi->getQuantity() * $cmsi->getPu();
+                                    $remise = ($tmp * $cmsi->getRemise()) / 100.0;
+                                    $tmp = $tmp - $remise;
 
+                                    $bestSellingProducts[$index++] = [
+                                        'designation' => $cmsi->getDesignation(),
+                                        'ref'         => $cmsi->getReference(),
+                                        'pu'          => $cmsi->getPu(),
+                                        'totalSale'   => $cmsi->getQuantity(),
+                                        'amount'      => $tmp
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             $bestSellingProdCategory = [];
             $tmpArray = new ArrayCollection();
             // $categoryRepo = $manager->getRepository('App:Category');
@@ -1005,13 +1059,17 @@ class EnterpriseDashboardController extends ApplicationController
                                 $totalSale = intval($prodArray['totalSale']);
                                 //if (array_key_exists('' . $category->getName(), $tmpArray)) {
                                 if ($tmpArray->contains($category)) {
-                                    $bestSellingProdCategory[$index]['totalSale'] += $totalSale;
-                                    $bestSellingProdCategory[$index]['amount'] += $amount;
+                                    foreach ($tmpArray as $key => $value) {
+                                        if ($value === $category) {
+                                            $bestSellingProdCategory[$key]['totalSale'] += $totalSale;
+                                            $bestSellingProdCategory[$key]['amount'] += $amount;
+                                        }
+                                    }
                                 } else {
                                     //$tmpArray[] = '' . $category->getName();
                                     $tmpArray[] = $category;
-                                    $index++;
-                                    $bestSellingProdCategory[$index] = [
+                                    //$index++;
+                                    $bestSellingProdCategory[$index++] = [
                                         'name'      => $category->getName(),
                                         'totalSale' => $totalSale,
                                         'amount'    => $amount,
@@ -1025,7 +1083,7 @@ class EnterpriseDashboardController extends ApplicationController
             usort($bestSellingProdCategory, function ($item1, $item2) {
                 return $item2['totalSale'] <=> $item1['totalSale'];
             });
-            dump($bestSellingProdCategory);
+            //dump($bestSellingProdCategory);
             /*foreach ($turnOverPer as $d) {
                 $xturnOverPer[] = $d['jour'];
                 $turnOverAmountPer[]   = number_format((float) $d['amount'], 2, '.', '');
@@ -1042,7 +1100,7 @@ class EnterpriseDashboardController extends ApplicationController
                                             JOIN u.enterprise e
                                             WHERE cms.type = 'bill'
                                             AND cmsi.itemOfferType != 'Simple'
-                                            AND cms.deliveryStatus = 1
+                                            AND cms.deliveryStatus = 1 OR cms.completedStatus = 1
                                             AND e.id = :entId
                                                                                                                                                                         
                                         ")
@@ -1059,14 +1117,16 @@ class EnterpriseDashboardController extends ApplicationController
             return $this->json([
                 'code'                    => 200,
                 'turnOverHT'              => $turnOverHT,
-                'expenses'                => $expensesTTC,
+                //'expenses'                => $expensesTTC,
+                //'amountRecettes'          => $amountRecettes,
+                'flux_tresorerie'         => [$amountRecettes, $expensesTTC],
                 'turnOverAmountPer'       => $turnOverAmountPer,
                 'xturnOverPer'            => $xturnOverPer,
-                'amountRecettesPer'       => $amountRecettesPer,
-                'xamountRecettesPer'      => $xamountRecettesPer,
-                'expensesAmountPer'       => $expensesAmountPer,
-                'xexpensesPer'            => $xexpensesPer,
-                'expensesPer'             => $expensesPer,
+                //'amountRecettesPer'       => $amountRecettesPer,
+                //'xamountRecettesPer'      => $xamountRecettesPer,
+                //'expensesAmountPer'       => $expensesAmountPer,
+                //'xexpensesPer'            => $xexpensesPer,
+                //'expensesPer'             => $expensesPer,
                 'billNb'                  => $billNb,
                 'quoteNb'                 => $quoteNb,
                 'purchaseNb'              => $purchaseNb,
@@ -1077,7 +1137,6 @@ class EnterpriseDashboardController extends ApplicationController
                 'nbProductsSold'          => $nbProductsSold,
                 'outstandingDebt'         => $outstandingDebt,
                 'outstandingClaim'        => $outstandingClaim,
-                'amountRecettes'          => $amountRecettes,
             ], 200);
         }
         return $this->json([

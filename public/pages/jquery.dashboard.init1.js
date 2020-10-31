@@ -37,7 +37,7 @@ new ApexCharts(document.querySelector("#dash_spark_1"), dash_spark_1).render();
 var options = {
 
   chart: {
-    height: 80,
+    height: 195,
     animations: {
       enabled: false
     },
@@ -104,7 +104,49 @@ var turnOverColumnChart = new ApexCharts(
 );
 
 turnOverColumnChart.render();
+//payment-widget
 
+
+var options = {
+  chart: {
+    height: 240,
+    type: 'donut',
+  },
+  series: [0, 0],
+  legend: {
+    show: true,
+    position: 'bottom',
+    horizontalAlign: 'center',
+    verticalAlign: 'middle',
+    floating: false,
+    fontSize: '14px',
+    offsetX: 0,
+    offsetY: -14
+  },
+  labels: ["Recettes", "Dépenses Fournisseurs TTC"],
+  colors: ["#00dd9f", "#f65f4d"],
+  responsive: [{
+    breakpoint: 600,
+    options: {
+      chart: {
+        height: 240
+      },
+      legend: {
+        show: false
+      },
+    }
+  }],
+
+}
+
+var fluxTresorerieDonutChart = new ApexCharts(
+  document.querySelector("#flux_tresorerie"),
+  options
+);
+
+fluxTresorerieDonutChart.render();
+
+/*
 //amountRecettes-colunm-Chart
 
 var options = {
@@ -256,10 +298,9 @@ var expensesColumnChart = new ApexCharts(
 
 expensesColumnChart.render();
 
-
 //dash-radialBar
 
-/*var options = {
+var options = {
     chart: {
         height: 180,
         type: "radialBar",
@@ -377,48 +418,6 @@ $('#world-map-markers').vectorMap({
     }]
 },
 });
-
-
-//payment-widget
-
-
-var options = {
-  chart: {
-      height: 250,
-      type: 'donut',
-  },
-  series: [10, 65, 25,],
-  legend: {
-      show: true,
-      position: 'bottom',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      floating: false,
-      fontSize: '14px',
-      offsetX: 0,
-      offsetY: -13
-  },
-  labels: [ "Cash", "Online", "Creadit Card"],
-  colors: ["#00dd9f", "#f8bc60", "#f65f4d"],
-  responsive: [{
-      breakpoint: 600,
-      options: {
-          chart: {
-              height: 240
-          },
-          legend: {
-              show: false
-          },
-      }
-  }],
-
-}
-
-var chart = new ApexCharts(
-  document.querySelector("#d1_payment"),
-  options
-);
-
-chart.render();*/
+*/
 
 

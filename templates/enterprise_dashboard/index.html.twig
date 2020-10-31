@@ -85,48 +85,69 @@
     </div><!--end card-->
 
     
-        
-    <div class="card">    
-        <div class="card-body mb-0">
-            <div class="row">                                            
-                <div class="col-8 align-self-center">
+    <div class="row">
+        <div class="col-8">
+            <div class="card">    
+                <div class="card-body mb-0">
+                    <div class="row">                                            
+                        <div class="col-8 align-self-center">
+                            <div class="">
+                                <h4 class="mt-0 header-title">Chiffre d'affaire HT</h4>
+                                <h2 class="mt-0 font-weight-bold text-dark"><span id="turnOver">0</span> XAF</h2> 
+                                {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                            </div>
+                        </div><!--end col-->
+
+                        <div class="col-4 align-self-center">
+                            <div class="icon-info text-right">
+                                <i class="dripicons-wallet bg-soft-success"></i>
+                            </div>
+                        </div><!--end col-->
+
+                    </div><!--end row-->
+
+                </div><!--end card-body-->
+
+                <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
+                    <div class="d-flex mb-0 h-100 dash-info-box">
+                        <div class="w-100">                                                
+                            <div class="apexchart-wrapper">
+                                <div id="turnOverColumnChart" class="chart-gutters"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end card-body--> 
+
+            </div><!--end card-->
+        </div>
+        <div class="col-lg-4">
+            <div class="card overflow-hidden">
+                <div class="card-body bg-gradient2">
                     <div class="">
-                        <h4 class="mt-0 header-title">Chiffre d'affaire HT</h4>
-                        <h2 class="mt-0 font-weight-bold text-dark"><span id="turnOver">0</span> XAF</h2> 
-                        {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                        <div class="card-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h2 class="font-weight-bold text-white">Flux de Trésorerie</h2>
+                        {# <p class="text-white mb-0 font-16"></p>                                             #}
                     </div>
-                </div><!--end col-->
+                </div><!--end card-body-->
+                <div class="card-body">
+                    <div class="">
+                        <div id="flux_tresorerie" class="apex-charts"></div>
+                    </div> 
+                </div><!--end card-body-->
+            </div><!--end card-->
+        </div><!--end col-->
+    </div>    
 
-                <div class="col-4 align-self-center">
-                    <div class="icon-info text-right">
-                        <i class="dripicons-wallet bg-soft-success"></i>
-                    </div>
-                </div><!--end col-->
-
-            </div><!--end row-->
-
-        </div><!--end card-body-->
-
-        <div class="card-body overflow-hidden pt-5 pb-0 mt-3">
-            <div class="d-flex mb-0 h-100 dash-info-box">
-                <div class="w-100">                                                
-                    <div class="apexchart-wrapper">
-                        <div id="turnOverColumnChart" class="chart-gutters"></div>
-                    </div>
-                </div>
-            </div>
-        </div><!--end card-body--> 
-
-    </div><!--end card-->
-
-    <div class="card">    
+    {# <div class="card">    
         <div class="card-body mb-0">
             <div class="row">                                            
                 <div class="col-8 align-self-center">
                     <div class="">
                         <h4 class="mt-0 header-title">Recettes</h4>
                         <h2 class="mt-0 font-weight-bold text-dark"><span id="amountRecettes">0</span> XAF</h2> 
-                        {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                        <!-- <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> -->
                     </div>
                 </div><!--end col-->
 
@@ -159,7 +180,7 @@
                     <div class="">
                         <h4 class="mt-0 header-title">Dépenses Fournisseurs TTC</h4>
                         <h2 class="mt-0 font-weight-bold text-dark"><span id="expenses">0</span> XAF</h2> 
-                        {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
+                        <!-- <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> -->
                     </div>
                 </div><!--end col-->
                 <div class="col-4 align-self-center">
@@ -178,7 +199,7 @@
                 </div>
             </div>
         </div><!--end card-body-->                                                                    
-    </div><!--end card-->
+    </div><!--end card--> #}
   
     <div class="row">
         <div class="col-lg-6">
@@ -583,9 +604,9 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
     });   
 
     swal.queue([{
-        title: 'The Dashboard Will Be Updated for this date range',
-        confirmButtonText: 'Confirm',
-        text: 'From ' + startDate + ' To ' + endDate,
+        title: 'Le tableau de bord sera mis à jour pour la plage de date suivante :',
+        confirmButtonText: 'Confirmez',
+        text: 'Du ' + startDate + ' Au ' + endDate,
         //showCancelButton: true,
         showLoaderOnConfirm: true,
         confirmButtonClass: 'btn btn-primary',
@@ -608,8 +629,8 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                         //$('.fa-sync').removeClass('fa-spin');                                  
                         console.log(data);
                         $('#turnOver').text(data['turnOverHT']);
-                        $('#amountRecettes').text(data['amountRecettes']);
-                        $('#expenses').text(data['expenses']);
+                        //$('#amountRecettes').text(data['amountRecettes']);
+                        //$('#expenses').text(data['expenses']);
                         $('#nbBill').text(data['billNb']);
                         $('#nbPurchaseOrder').text(data['purchaseNb']);
                         $('#nbQuote').text(data['quoteNb']);
@@ -646,10 +667,14 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                 .row.add( [ String(index + 1), item['name'], String(item['totalSale']),String(item['amount'])] )
                                 .draw();
                         });
-                        
+                        //console.log('flux tresorerie :' + typeof parseFloat(data['flux_tresorerie'][0]));
                         displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
-                        displayNewData1(amountRecettesColumnChart, data['xamountRecettesPer'], data['amountRecettesPer'], /*dateopt, */1, data['per']);
-                        displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']);
+                        {# displayNewData1(fluxTresorerieDonutChart, ["Recettes", "Dépenses Fournisseurs TTC"], [parseFloat(data['flux_tresorerie'][0]),parseFloat(data['flux_tresorerie'][1])], /*dateopt, */1, data['per']); #}
+                        {# displayNewData1(amountRecettesColumnChart, data['xamountRecettesPer'], data['amountRecettesPer'], /*dateopt, */1, data['per']);
+                        displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']); #}
+                        
+                        var dataArray = [parseFloat(data['flux_tresorerie'][0]),parseFloat(data['flux_tresorerie'][1])];
+                        updateDonutChart(fluxTresorerieDonutChart, ["Recettes", "Dépenses Fournisseurs TTC"], dataArray);
 
                         swal({
                             type: 'success',
@@ -718,9 +743,9 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
         //Danger
         
         swal.queue([{
-            title: 'The Dashboard Will Be Updated for this date range',
-            confirmButtonText: 'Confirm',
-            text: 'From ' + startDate + ' To ' + endDate,
+            title: 'Le tableau de bord sera mis à jour pour la plage de date suivante :',
+            confirmButtonText: 'Confirmez',
+            text: 'Du ' + startDate + ' Au ' + endDate,
             showCancelButton: true,
             showLoaderOnConfirm: true,
             confirmButtonClass: 'btn btn-primary',
@@ -743,8 +768,8 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                             //$('.fa-sync').removeClass('fa-spin');                                  
                             console.log(data);
                             $('#turnOver').text(data['turnOverHT']);
-                            $('#amountRecettes').text(data['amountRecettes']);
-                            $('#expenses').text(data['expenses']);
+                            //$('#amountRecettes').text(data['amountRecettes']);
+                            //$('#expenses').text(data['expenses']);
                             $('#nbBill').text(data['billNb']);
                             $('#nbPurchaseOrder').text(data['purchaseNb']);
                             $('#nbQuote').text(data['quoteNb']);
@@ -778,8 +803,11 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                             });
                             
                             displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
-                            displayNewData1(amountRecettesColumnChart, data['xamountRecettesPer'], data['amountRecettesPer'], /*dateopt, */1, data['per']);
-                            displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']);
+                            {# displayNewData1(amountRecettesColumnChart, data['xamountRecettesPer'], data['amountRecettesPer'], /*dateopt, */1, data['per']);
+                            displayNewData1(expensesColumnChart, data['xexpensesPer'], data['expensesAmountPer'], /*dateopt, */1, data['per']); #}
+
+                            var dataArray = [parseFloat(data['flux_tresorerie'][0]),parseFloat(data['flux_tresorerie'][1])];
+                            updateDonutChart(fluxTresorerieDonutChart, ["Recettes", "Dépenses Fournisseurs TTC"], dataArray);
 
                             swal({
                                 type: 'success',
@@ -821,86 +849,103 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
 
     });
     
+    function updateDonutChart(chart, label, data){
+        chart.updateOptions({
+            labels: label
+        });
+        
+        chart.updateSeries(newDataSeries(chart, data));
+
+    }
+
+    function newDataSeries(chart, data) {
+        var i = 0;
+        return chart.w.globals.series.map(function() {
+            return data[i++];
+        });
+    }
+
     function displayNewData1(chart, label, data, /*dateopt, */multiple, xscale){
-            //chart.data.labels = [];
-            chart.updateOptions({
-                xaxis: {
-                    categories: []
-                },
-            });
-            /*chart.updateOptions({
-                xaxis: {
-                    categories: label
-                },
-            });*/
-            //chart.opts.labels = label;
-            chart.updateOptions({
-                labels: label
-                
-            });
-            if(multiple > 1){
-                var i = 0;
-                chart.opts.series.forEach((dataset) => {
-                    if( i < multiple){
-                        dataset.data = [];
-                        dataset.data = data[i++];
-                        console.log(dataset.name);
-                    }
-                });
-            }
-            else if(multiple == 1){
-                chart.updateSeries([{
-                    data: []
-                }]);
+        //chart.data.labels = [];
+        chart.updateOptions({
+            xaxis: {
+                categories: []
+            },
+        });
+        /*chart.updateOptions({
+            xaxis: {
+                categories: label
+            },
+        });*/
+        //chart.opts.labels = label;
+        chart.updateOptions({
+            labels: label
             
-                chart.updateSeries([{
-                    data: data
-                }]);
-            }
-            if(xscale === 'day'){
-                chart.updateOptions({
-                    /*xaxis: {
-                        title: {
-                            text: moment(dateopt).format('DD MMMM').toString(),
-                        }
-                    },*/
-                    tooltip: {
-                        x: {
-                            formatter: function (val) {
-                                return val 
-                            },
-                        },
-                    }
-                });
-            }
-            else if( xscale === 'month'){
-                chart.updateOptions({
-                    /*xaxis: {
-                        title: {
-                            text: moment(dateopt).format('MMMM').toString(),
-                        }
-                    },*/
-                });
-            }
-            else if( xscale === 'hour'){
-                chart.updateOptions({
-                    /*xaxis: {
-                        title: {
-                            text: moment(dateopt).format('MMMM').toString(),
-                        }
-                    },*/
-                    tooltip: {
-                        x: {
-                            formatter: function (val) {
-                                return val + "h"
-                            },
-                        },
-                    }
-                });
-            }
-            //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
-            //preloaderChart(id, false);
-            //chart.render();
+        });
+        if(multiple > 1){
+            var i = 0;
+            chart.opts.series.forEach((dataset) => {
+                if( i < multiple){
+                    dataset.data = [];
+                    dataset.data = data[i++];
+                    //console.log(dataset.name);
+                }
+            });
         }
+        else if(multiple == 1){
+            chart.updateSeries([{
+                data: []
+            }]);
+        
+            chart.updateSeries([{
+                data: data
+            }]);
+        }
+        if(xscale === 'day'){
+            chart.updateOptions({
+                /*xaxis: {
+                    title: {
+                        text: moment(dateopt).format('DD MMMM').toString(),
+                    }
+                },*/
+                tooltip: {
+                    x: {
+                        formatter: function (val) {
+                            return val 
+                        },
+                    },
+                }
+            });
+        }
+        else if( xscale === 'month'){
+            chart.updateOptions({
+                /*xaxis: {
+                    title: {
+                        text: moment(dateopt).format('MMMM').toString(),
+                    }
+                },*/
+            });
+        }
+        else if( xscale === 'hour'){
+            chart.updateOptions({
+                /*xaxis: {
+                    title: {
+                        text: moment(dateopt).format('MMMM').toString(),
+                    }
+                },*/
+                tooltip: {
+                    x: {
+                        formatter: function (val) {
+                            return val + "h"
+                        },
+                    },
+                }
+            });
+        }
+        //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
+        //preloaderChart(id, false);
+        //chart.render();
+    }
+
 </script>
 {% endblock %}
