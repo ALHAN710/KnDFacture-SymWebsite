@@ -1002,7 +1002,7 @@ class EnterpriseDashboardController extends ApplicationController
             $index = 0;
             foreach ($cmss as $cms) {
                 if (($cms->getType() === 'bill') && ($cms->getUser()->getEnterprise() === $this->getUser()->getEnterprise())) {
-                    if ($cms->getDeliveryStatus() == true || $cms->getCompletedStztus() == true) {
+                    if ($cms->getDeliveryStatus() == true || $cms->getCompletedStatus() == true) {
                         foreach ($cms->getCommercialSheetItems() as $cmsi) {
                             if ($cmsi->getItemOfferType() !== 'Simple') {
                                 $isNew = false;
