@@ -1038,6 +1038,9 @@ class EnterpriseDashboardController extends ApplicationController
                     }
                 }
             }
+            usort($bestSellingProducts, function ($item1, $item2) {
+                return $item2['totalSale'] <=> $item1['totalSale'];
+            });
             $bestSellingProdCategory = [];
             $tmpArray = new ArrayCollection();
             // $categoryRepo = $manager->getRepository('App:Category');
