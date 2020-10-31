@@ -37,7 +37,7 @@ new ApexCharts(document.querySelector("#dash_spark_1"), dash_spark_1).render();
 var options = {
 
   chart: {
-    height: 257,
+    height: 357,
     animations: {
       enabled: false
     },
@@ -109,19 +109,20 @@ turnOverColumnChart.render();
 
 var options = {
   chart: {
-    height: 300,
+    height: 400,
     type: 'donut',
+    offsetY: -15
   },
   series: [0, 0],
   legend: {
     show: true,
-    position: 'bottom',
+    position: 'top',
     horizontalAlign: 'center',
     verticalAlign: 'middle',
     floating: false,
     fontSize: '14px',
     offsetX: 0,
-    offsetY: -5
+    offsetY: 0
   },
   labels: ["Recettes", "Dépenses"],
   colors: ["#00dd9f", "#f65f4d"],
@@ -129,14 +130,25 @@ var options = {
     breakpoint: 600,
     options: {
       chart: {
-        height: 300
+        height: 400
       },
       legend: {
-        show: false
+        show: true
       },
     }
   }],
-
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return val + ' XAF'
+      },
+      title: {
+        formatter: function (seriesName) {
+          return String(seriesName).substring(0, String(seriesName).indexOf(' ') + 1)
+        }
+      }
+    }
+  },
 }
 
 var fluxTresorerieDonutChart = new ApexCharts(
