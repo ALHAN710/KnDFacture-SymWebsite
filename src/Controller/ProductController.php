@@ -56,28 +56,31 @@ class ProductController extends AbstractController
         }
         $inventoryRepo = $manager->getRepository('App:Inventory');
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
+
+        //Vérification de l'abonnement pour autoriser l'enregistrement de la référence en stock
+        $valid = true;
+        $iconStock = true;
+        //$iconCombination = true;
+        $productRefNumber = $this->getUser()->getEnterprise()->getSubscription()->getProductRefNumber();
+        //$sheetNumber = $this->getUser()->getEnterprise()->getSubscription()->getSheetNumber();
+        if ($productRefNumber == 0) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
+            $iconStock = false;
+            $valid = false;
+        }
+
         //Permet d'obtenir un constructeur de formulaire
         // Externaliser la création du formulaire avec la cmd php bin/console make:form
-
         //  instancier un form externe
         $form = $this->createForm(ProductType::class, $product, [
             'entId' => $this->getUser()->getEnterprise()->getId(),
             'categories' => $categories,
+            'iconStock'  => $iconStock,
         ]);
         $form->handleRequest($request);
         //dump($site);
-        $valid = true;
         if ($form->isSubmitted() && $form->isValid()) {
             if ($product->getHasStock() == true) {
-                //Vérification de l'abonnement pour autoriser l'enregistrement de la référence en stock
-                $iconStock = true;
-                //$iconCombination = true;
-                $productRefNumber = $this->getUser()->getEnterprise()->getSubscription()->getProductRefNumber();
-                $sheetNumber = $this->getUser()->getEnterprise()->getSubscription()->getSheetNumber();
-                if ($productRefNumber == 0) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
-                    $iconStock = false;
-                    $valid = false;
-                }
+
                 if ($iconStock) {
                     $productRepo = $manager->getRepository('App:Product');
                     $nbProductsInStock = count($productRepo->findBy(['hasStock' => 1]));
@@ -155,6 +158,7 @@ class ProductController extends AbstractController
             [
                 'form' => $form->createView(),
                 'inventories' => $inventories,
+                'iconStock'   => $iconStock,
             ]
         );
     }
@@ -177,16 +181,27 @@ class ProductController extends AbstractController
         foreach ($categories_ as $category) {
             $categories[$category->getName()] = $category->getName();
         }
-        //Permet d'obtenir un constructeur de formulaire
-        // Externaliser la création du formulaire avec la cmd php bin/console make:form
 
+        //Vérification de l'abonnement pour autoriser l'enregistrement de la référence en stock
+        //$valid = true;
+        $iconStock = true;
+        //$iconCombination = true;
+        $productRefNumber = $this->getUser()->getEnterprise()->getSubscription()->getProductRefNumber();
+        //$sheetNumber = $this->getUser()->getEnterprise()->getSubscription()->getSheetNumber();
+        if ($productRefNumber == 0) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
+            $iconStock = false;
+            //$valid = false;
+        }
+        //  instancier un form externe
+        /*$form = $this->createForm(ProductType::class, $product, [
+            'entId'      => $this->getUser()->getEnterprise()->getId(),
+            'categories' => $categories,
+            'iconStock'  => $iconStock,
+        ]);*/
         //  instancier un form externe
         $form = $this->createForm(ProductType::class, $product, [
-            'entId' => $this->getUser()->getEnterprise()->getId(),
-            'categories' => $categories,
-        ]); //  instancier un form externe
-        $form = $this->createForm(ProductType::class, $product, [
-            'entId' => $this->getUser()->getEnterprise()->getId(),
+            'entId'      => $this->getUser()->getEnterprise()->getId(),
+            'iconStock'  => $iconStock,
         ]);
 
         $form->handleRequest($request);
@@ -228,8 +243,8 @@ class ProductController extends AbstractController
         }
 
         return $this->render('product/edit.html.twig', [
-            'form'        => $form->createView(),
-
+            'form'       => $form->createView(),
+            'iconStock'  => $iconStock,
         ]);
     }
 

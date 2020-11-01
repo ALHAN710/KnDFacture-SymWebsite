@@ -58,7 +58,7 @@
                         
                     </div>
                 </div>
-                {{ form_widget(form.categories) }}
+                {# {{ form_widget(form.categories) }} #}
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -68,11 +68,12 @@
                         
                     </div>
                 </div>
+                {% if iconStock == true %}
                 <div class="text-center">
                     {{ form_widget(form.hasStock) }}
                 
                 </div>
-                
+                {% endif %}
                 {# <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">

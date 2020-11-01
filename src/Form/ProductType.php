@@ -53,15 +53,8 @@ class ProductType extends ApplicationType
                         'required' => false,
                     ])
                 )
-                ->add(
-                    'hasStock',
-                    CheckboxType::class,
-                    [
-                        'label'    => 'En Stock ?',
-                        'required' => false,
-                    ]
-                )
-                ->add(
+
+                /*->add(
                     'categories',
                     CollectionType::class,
                     [
@@ -77,7 +70,7 @@ class ProductType extends ApplicationType
                     ]
 
                 )
-                /*->add(
+                ->add(
                     'type',
                     ChoiceType::class,
                     $this->getConfiguration("Type", "", [
@@ -87,8 +80,8 @@ class ProductType extends ApplicationType
                             //'LAIT'    => 'Lait'
                         ],
                     ])
-                )*/
-                /*->add(
+                )
+                ->add(
                     'instant',
                     ChoiceType::class,
                     $this->getConfiguration("Instant", "Select the instant", [
@@ -117,6 +110,16 @@ class ProductType extends ApplicationType
                 )
                             
                 */;
+            if ($options['iconStock']) {
+                $builder->add(
+                    'hasStock',
+                    CheckboxType::class,
+                    [
+                        'label'    => 'En Stock ?',
+                        'required' => false,
+                    ]
+                );
+            }
         } else {
             $builder
                 ->add(
@@ -220,89 +223,7 @@ class ProductType extends ApplicationType
                         // 'multiple' => true,
                         // 'expanded' => true,
                     ]
-                )
-                /*->add(
-                    'productDescription',
-                    EntityType::class,
-                    [
-                        // looks for choices from this entity
-                        'class' => Product::class,
-
-                        // uses the User.username property as the visible option string
-                        'query_builder' => function (EntityRepository $er) use ($entId) {
-                            return $er->createQueryBuilder('p')
-                                //->select('c.name')
-                                ->Join('p.enterprise', 'e')
-                                ->where('e.id = :entId')
-                                ->setParameter('entId', $entId);
-                        },
-                        'choice_label' => 'sku',
-                        // used to render a select box, check boxes or radios
-                        // 'multiple' => true,
-                        // 'expanded' => true,
-                    ]
-                )
-                ->add(
-                    'productHasStock',
-                    EntityType::class,
-                    [
-                        // looks for choices from this entity
-                        'class' => Product::class,
-
-                        // uses the User.username property as the visible option string
-                        'query_builder' => function (EntityRepository $er) use ($entId) {
-                            return $er->createQueryBuilder('p')
-                                //->select('c.name')
-                                ->Join('p.enterprise', 'e')
-                                ->where('e.id = :entId')
-                                ->setParameter('entId', $entId);
-                        },
-                        'choice_label' => 'hasStock',
-                        // used to render a select box, check boxes or radios
-                        // 'multiple' => true,
-                        // 'expanded' => true,
-                    ]
-                )*/
-                /*->add(
-                    'type',
-                    ChoiceType::class,
-                    $this->getConfiguration("Type", "", [
-                        'choices' => [
-                            'PRODUCT'   => 'Product',
-                            'SERVICE'   => 'Service',
-                            //'LAIT'    => 'Lait'
-                        ],
-                    ])
-                )*/
-                /*->add(
-                    'instant',
-                    ChoiceType::class,
-                    $this->getConfiguration("Instant", "Select the instant", [
-                        'choices' => [
-                            'DEJEUNER' => 'Déjeuner',
-                            'DINER'    => 'dîner',
-                            'DESSERT'  => 'Dessert',
-                            '100 ML'   => '100 mL'
-                        ],
-                    ])
-                )
-                ->add(
-                    'age',
-                    ChoiceType::class,
-                    $this->getConfiguration("Age (Months) ", "Select the age...", [
-                        'choices' => [
-                            '6'   => '6',
-                            '8'   => '8',
-                            '12'  => '12',
-                            '15'  => '15',
-                            '18'  => '18',
-                            '24'  => '24',
-                            '36'  => '36',
-                        ],
-                    ])
-                )
-                            
-                */;
+                );
         }
     }
 
@@ -311,6 +232,7 @@ class ProductType extends ApplicationType
         $resolver->setDefaults([
             'data_class'  => Product::class,
             'entId'       => 0,
+            'iconStock'   => false,
             'forCategory' => false,
             'categories'  => array()
         ]);
