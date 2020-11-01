@@ -11,11 +11,12 @@ use App\Form\LotType;
 use App\Entity\StockMovement;
 //use App\Repository\LotRepository;
 //use App\Repository\InventoryRepository;
+use App\Entity\InventoryAvailability;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
-use App\Entity\InventoryAvailability;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 //use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 

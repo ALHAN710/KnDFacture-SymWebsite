@@ -164,7 +164,7 @@ class ProductController extends AbstractController
      *
      * @Route("product/{id<\d+>}/edit", name="product_edit")
      * 
-     * @Security("is_granted('ROLE_STOCK_MANAGER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and product.getEnterprise() === user.getEnterprise() )" )
      * 
      * @return Response
      */
@@ -238,7 +238,7 @@ class ProductController extends AbstractController
      * 
      * @Route("/product/{id}/delete", name="product_delete")
      *
-     * @IsGranted("ROLE_STOCK_MANAGER")
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and product.getEnterprise() === user.getEnterprise() )" )
      * 
      * @param Product $product
      * @param EntityManagerInterface $manager
