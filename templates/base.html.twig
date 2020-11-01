@@ -36,7 +36,7 @@
                     <img src="{{ app.user.enterprise.logo != null  ? '/images/uploads/logo/' ~ app.user.enterprise.logo : '/images/uploads/logo/logo.png' }}" alt="User Avatar" class="rounded-circle img-thumbnail mb-1">
                     {# <span class="online-icon"><i class="mdi mdi-record text-success"></i></span> #}
                     <div class="media-body align-item-center">
-                        <h5 class="text-white">{{app.user.firstName}}</h5>
+                        <h5 class="text-white">{{app.user.enterprise.socialReason}}</h5>
                         <ul class="list-unstyled list-inline mb-0 mt-2">
                             <li class="list-inline-item">
                                 <a href="{{ path('account_profile') }}" class=""><i class="mdi mdi-account text-light"></i></a>
