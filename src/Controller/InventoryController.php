@@ -395,8 +395,8 @@ class InventoryController extends ApplicationController
                 $ET  = 0;
 
                 if ($nb > 0) {
-                    $min = $Stats['' . $product->getId()][0]['qtyTotal'];
-                    $max = $Stats['' . $product->getId()][$nb - 1]['qtyTotal'];
+                    $min =  array_key_exists(0, $Stats) ? $Stats['' . $product->getId()][0]['qtyTotal'] : 0;
+                    $max = array_key_exists($nb - 1, $Stats) ? $Stats['' . $product->getId()][$nb - 1]['qtyTotal'] : 0;
                     foreach ($Stats['' . $product->getId()] as $key => $value) {
                         $sum += $value['qtyTotal'];
                     }
