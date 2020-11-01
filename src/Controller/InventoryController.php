@@ -161,7 +161,7 @@ class InventoryController extends ApplicationController
     /**
      * @Route("/inventory/{id<\d+>}/dashboard", name="inventory_dashboard")
      * 
-     * @IsGranted("ROLE_STOCK_MANAGER")
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and inventory.getEnterprise() === user.getEnterprise() )" )
      * 
      */
     public function inventoryDash(Inventory $inventory, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
@@ -278,6 +278,8 @@ class InventoryController extends ApplicationController
      * 
      * @Route("/stock/movement/table/update/", name="stock_movement_update") 
      *
+     * @IsGranted("ROLE_STOCK_MANAGER")
+     * 
      * @param Request $request
      * @param EntityManagerInterface $manager
      * @return void

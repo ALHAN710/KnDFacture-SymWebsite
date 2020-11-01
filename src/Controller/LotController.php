@@ -149,7 +149,7 @@ class LotController extends ApplicationController
     /**
      * @Route("/lot/{id<\d+>}/edit", name="lot_edit")
      * 
-     * @IsGranted("ROLE_STOCK_MANAGER")
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and lot.getInventory().getEnterprise() === user.getEnterprise() )" )
      * 
      */
     public function edit(Lot $lot, Request $request, EntityManagerInterface $manager)

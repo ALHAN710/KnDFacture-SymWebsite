@@ -98,7 +98,7 @@ class CategoryController extends AbstractController
      *
      * @Route("category/{id<\d+>}/edit", name="category_edit")
      * 
-     * @Security("is_granted('ROLE_STOCK_MANAGER')", message = "Vous n'avez pas le droit d'accéder à cette ressource")
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and category.getEnterprise() === user.getEnterprise() )" )
      * 
      * @return Response
      */
@@ -160,7 +160,7 @@ class CategoryController extends AbstractController
      * 
      * @Route("/category/{id}/delete", name="category_delete")
      *
-     * @IsGranted("ROLE_STOCK_MANAGER")
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and category.getEnterprise() === user.getEnterprise() )" )
      * 
      * @param Category $category
      * @param EntityManagerInterface $manager
