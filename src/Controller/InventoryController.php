@@ -387,7 +387,7 @@ class InventoryController extends ApplicationController
                     ))
                     ->getResult();
 
-                dump($Stats);
+                //dump($Stats);
                 $sum = 0.0;
                 $AVG = 0.0;
                 $min = 0;
