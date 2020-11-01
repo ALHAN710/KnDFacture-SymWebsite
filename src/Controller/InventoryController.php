@@ -310,7 +310,7 @@ class InventoryController extends ApplicationController
                     $endDate = new DateTime($paramJSON['endDate'] . ' ' . $nowTime);
                 } else $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
 
-                $interval = $startDate->diff($this->endDate);
+                $interval = $startDate->diff($endDate);
 
                 $nb = $interval->days; //Nombre de jour total de différence entre les dates 
             }
