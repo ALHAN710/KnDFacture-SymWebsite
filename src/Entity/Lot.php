@@ -93,14 +93,16 @@ class Lot
     {
 
         $nowDate = new DateTime("now");
-        $this->periodofvalidity = new DateTime($this->dlc->format('Y/m/d'));
-        $interval = $nowDate->diff($this->periodofvalidity);
-        //$interval = $this->periodofvalidity->diff($nowDate);
-        if ($interval) {
-            //return gettype($interval->format('d'));
-            //return $interval->format('%R%a days');// '+29 days'
-            //return $interval->days; //Nombre de jour total de différence entre les dates 
-            return !$interval->invert; // 
+        if ($this->dlc) {
+            $this->periodofvalidity = new DateTime($this->dlc->format('Y/m/d'));
+            $interval = $nowDate->diff($this->periodofvalidity);
+            //$interval = $this->periodofvalidity->diff($nowDate);
+            if ($interval) {
+                //return gettype($interval->format('d'));
+                //return $interval->format('%R%a days');// '+29 days'
+                //return $interval->days; //Nombre de jour total de différence entre les dates 
+                return !$interval->invert; // 
+            }
         }
         return null;
     }

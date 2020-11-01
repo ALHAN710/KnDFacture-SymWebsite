@@ -212,8 +212,8 @@ class LotController extends ApplicationController
                 "The modifications of the Lot N° <strong> {$lot->getNumber()} </strong> have been saved !"
             );
             return $this->redirectToRoute('lots_index', [
-                'prod' => $include_product   == true ? $lot->getProduct()->getId() : 0,
-                'inv'  => $include_inventory == true ? $lot->getInventory()->getId() : 0,
+                'prod' => 0, //$include_product   == true ? $lot->getProduct()->getId() : 0,
+                'inv'  => $lot->getInventory()->getId(), //$include_inventory == true ? $lot->getInventory()->getId() : 0,
             ]);
         }
 
