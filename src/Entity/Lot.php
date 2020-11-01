@@ -20,7 +20,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass=LotRepository::class)
  * @ORM\HasLifecycleCallbacks()
  * @UniqueEntity(
- *  fields={"number","quantity","dlc"},
+ *  fields={"number","product","inventory", "dlc"},
  *  message="Another Lot is already saved with this informations, please change it"
  * )
  */
