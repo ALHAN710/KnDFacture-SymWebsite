@@ -289,7 +289,7 @@ class InventoryController extends ApplicationController
         if ((array_key_exists("startDate", $paramJSON) && !empty($paramJSON['startDate'])) && (array_key_exists("endDate", $paramJSON) && !empty($paramJSON['endDate'])) && (array_key_exists("inv", $paramJSON) && !empty($paramJSON['inv']))) {
             $startDate = new DateTime($paramJSON['startDate']);
             $endDate = new DateTime($paramJSON['endDate']);
-
+            $nb = 0;
             $nowTime = new DateTime("now");
             //$nowTime = $nowTime->format('d/m/Y');
             //$nowTime = $nowTime->format('H:m:i');
@@ -301,6 +301,7 @@ class InventoryController extends ApplicationController
                 //$nowTime = new DateTime("now");
                 //dump($nowTime);
                 $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
+                $nb = 1;
                 //dump($endDate->format('Y-m-d H:i:s'));
             } else {
                 if ($endDate->format('Y-m-d') == $nowTime->format('Y-m-d')) {
@@ -308,8 +309,10 @@ class InventoryController extends ApplicationController
                     //dump($nowTime);
                     $endDate = new DateTime($paramJSON['endDate'] . ' ' . $nowTime);
                 } else $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
-                //dump($startDate->format('Y-m-d H:i:s'));
-                //dump($endDate->format('Y-m-d H:i:s'));
+
+                $interval = $startDate->diff($this->endDate);
+
+                $nb = $interval->days; //Nombre de jour total de différence entre les dates 
             }
             // $startDate = new DateTime("yesterday");
             // $endDate = new DateTime("now");
@@ -390,7 +393,7 @@ class InventoryController extends ApplicationController
                 $min = 0;
                 $max = 0;
                 $ET  = 0;
-                $nb = count($Stats['' . $product->getId()]);
+
                 if ($nb > 0) {
                     $min = $Stats['' . $product->getId()][0]['qtyTotal'];
                     $max = $Stats['' . $product->getId()][$nb - 1]['qtyTotal'];
