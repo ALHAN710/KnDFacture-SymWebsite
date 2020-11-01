@@ -309,8 +309,8 @@ class InventoryController extends ApplicationController
                     //dump($nowTime);
                     $endDate = new DateTime($paramJSON['endDate'] . ' ' . $nowTime);
                 } else $endDate = new DateTime($paramJSON['endDate'] . ' 23:59:59');
-
-                $interval = $startDate->diff($endDate);
+                $tmp = $startDate;
+                $interval = $tmp->diff($endDate);
 
                 $nb = $interval->days; //Nombre de jour total de différence entre les dates 
             }
@@ -387,7 +387,7 @@ class InventoryController extends ApplicationController
                     ))
                     ->getResult();
 
-                //dump($Stats);
+                dump($Stats);
                 $sum = 0.0;
                 $AVG = 0.0;
                 $min = 0;
