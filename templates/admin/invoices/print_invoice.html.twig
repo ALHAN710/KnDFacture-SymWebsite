@@ -39,10 +39,8 @@
             <div class="card-body invoice-head">
                 <div class="row">
                     <div class="col-md-4 align-self-center">
-                        <img src="/images/KnD.png" alt="KnD logo-small" class="logo-sm mr-2"
-                            height="100">
-                        {#<img src="/images/KnD.png" alt="KnD logo-large" class="logo-lg"
-                            height="18">#}
+                        <img src="{{ commercialSheet.user.enterprise.logo != null  ? '/images/uploads/logo/' ~ commercialSheet.user.enterprise.logo : '/images/KnD.png' }}" alt="Logo Entreprise" class="logo-sm"
+                            height="80">
                     </div>
                     <div class="col-md-8">
 
@@ -50,7 +48,7 @@
                             <li class="list-inline-item">
                                 <div class="pl-3">
                                     <i class="mdi mdi-email"></i>
-                                    <p class="text-muted mb-0">{{commercialSheet.enterprise.email}}</p>
+                                    <p class="text-muted mb-0">{{commercialSheet.user.enterprise.email}}</p>
                                     {#<p class="text-muted mb-0">www.qrstuvwxyz.com</p>#}
                                 </div>
                             </li>
