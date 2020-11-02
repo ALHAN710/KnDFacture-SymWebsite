@@ -44,6 +44,12 @@ class Subscription
      */
     private $tarifs = [];
 
+    private $subscriptionPrice;
+
+    private $subscriptionName;
+
+    private $subscriptionDuration;
+
     public function __construct()
     {
         $this->enterprises = new ArrayCollection();
@@ -129,6 +135,58 @@ class Subscription
     public function setTarifs(array $tarifs): self
     {
         $this->tarifs = $tarifs;
+
+        return $this;
+    }
+
+    public function getSubscriptionDuration()
+    {
+        return $this->subscriptionDuration;
+    }
+
+    public function setSubscriptionDuration($subscriptionDuration): self
+    {
+        $this->subscriptionDuration = $subscriptionDuration;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of subscriptionPrice
+     */
+    public function getSubscriptionPrice()
+    {
+        return $this->subscriptionPrice;
+    }
+
+    /**
+     * Set the value of subscriptionPrice
+     *
+     * @return  self
+     */
+    public function setSubscriptionPrice($subscriptionPrice)
+    {
+        $this->subscriptionPrice = $subscriptionPrice;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of subscriptionName
+     */
+    public function getSubscriptionName()
+    {
+        return $this->subscriptionName;
+    }
+
+    /**
+     * Set the value of subscriptionName
+     *
+     * @return  self
+     */
+    public function setSubscriptionName($subscriptionName)
+    {
+        $this->subscriptionName = $subscriptionName;
 
         return $this;
     }

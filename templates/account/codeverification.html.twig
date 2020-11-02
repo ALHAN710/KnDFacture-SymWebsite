@@ -2,13 +2,13 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>LBF OSM - Code Verification</title>
+        <title>KnD Factures | Code Verification</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A premium admin dashboard template by mannatthemes" name="description" />
         <meta content="Mannatthemes" name="author" />
 
         <!-- App favicon -->
-        <link rel="icon" type="image/ico" href="/images/">
+        <link rel="icon" type="image/ico" href="/images/KnD.png">
 
         <!-- App css -->
         <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -27,8 +27,10 @@
                     <div class="card-body">
                         
                         <div class="px-3">
-                            <div class="media">
-                                <a href="#" class="logo logo-admin"><img src="/img/logo-CLETech.png" height="200" alt="logo" class="my-0"></a> 
+                            <div class="mb-2">
+                                <a href="#" class="">{# media    logo logo-admin #}
+                                    <img src="/images/KnD.png" height="150" width="200" alt="logo" class="my-0 mx-auto d-block">
+                                </a> 
                             </div> 
                             <div class="text-center">
                                 <h4 class="mt-0 mb-1">Code Verification</h4>
@@ -48,7 +50,7 @@
                                     <label for="userCode">Verification Code</label>
                                     <div class="input-group mb-3">
                                         <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon1">LBF OSM-</i></span>
+                                            <span class="input-group-text" id="basic-addon1">KnD Facts-</i></span>
                                         </div>
                                         <input type="text" class="form-control" id="userCode" placeholder="Code">
                                     </div>                                    
@@ -103,7 +105,7 @@
             var userCode = $("#userCode");
             userCode.on('input', function() { 
                 //console.log($(this).val()); // get the current value of the input field.
-                if( $(this).val().indexOf("LBF OSM") >= 0  ){
+                if( $(this).val().indexOf("KnD Facts-") >= 0  ){
                     userCode.addClass("is-invalid");
                     $('#validBtn').prop('disabled', true);
                                         
@@ -119,7 +121,7 @@
                 $(this).children('i').addClass('d-none');
                 $(this).children('span').removeClass('d-none');
                 var $code = userCode.val();
-                if($code.indexOf("MEC") < 0){
+                if($code.indexOf("KnD Facts-") < 0){
                     console.log("userVerification url : " + _url);
                     var $data = JSON.stringify({
                         "email": "null",

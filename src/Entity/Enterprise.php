@@ -132,6 +132,25 @@ class Enterprise
      */
     private $description;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $town;
+
+    private $subscriptionPrice;
+
+    private $tarifs;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isActivated;
+
+    /**
+     * @ORM\OneToMany(targetEntity=CommercialSheet::class, mappedBy="enterprise")
+     */
+    private $commercialSheets;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -139,6 +158,7 @@ class Enterprise
         $this->businesscontacts = new ArrayCollection();
         $this->products = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->commercialSheets = new ArrayCollection();
     }
 
     /**
@@ -154,6 +174,29 @@ class Enterprise
         if (empty($this->createdAt)) {
             $this->createdAt = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
         }
+    }
+
+    /**
+     * Permet d'initialiser l'activation de l'abonnement du client Entreprise
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * 
+     * @return void
+     */
+    public function initializeIsActivated()
+    {
+        if (empty($this->isActivated)) {
+            $this->isActivated = false;
+        }
+    }
+
+    public function endSubscription()
+    {
+        $periodofvalidity = new DateTime($this->subscribeAt->format('Y/m/d'));
+        $periodofvalidity->add(new DateInterval('P' . $this->subscriptionDuration . 'M'));
+
+        return $periodofvalidity;
     }
 
     public function subscriptionDeadLine()
@@ -559,6 +602,113 @@ class Enterprise
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getTown(): ?string
+    {
+        return $this->town;
+    }
+
+    public function setTown(string $town): self
+    {
+        $this->town = $town;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of subscriptionPrice
+     */
+    public function getSubscriptionPrice()
+    {
+        return $this->subscriptionPrice;
+    }
+
+    /**
+     * Set the value of subscriptionPrice
+     *
+     * @return  self
+     */
+    public function setSubscriptionPrice($subscriptionPrice)
+    {
+        $this->subscriptionPrice = $subscriptionPrice;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of tarifs
+     */
+    public function getTarifs()
+    {
+        return $this->tarifs;
+    }
+
+    /**
+     * Set the value of tarifs
+     *
+     * @return  self
+     */
+    public function setTarifs($tarifs)
+    {
+        $this->tarifs = $tarifs;
+
+        return $this;
+    }
+
+    public function getIsActivated(): ?bool
+    {
+        $nowDate = new DateTime("now");
+        $this->periodofvalidity = new DateTime($this->subscribeAt->format('Y/m/d'));
+        $this->periodofvalidity->add(new DateInterval('P' . $this->subscriptionDuration . 'D'));
+        $interval = $nowDate->diff($this->periodofvalidity);
+        //$interval = $this->periodofvalidity->diff($nowDate);
+        if ($interval) {
+            //return gettype($interval->format('d'));
+            //return $interval->format('%R%a days');// '+29 days'
+            //return $interval->days; //Nombre de jour total de différence entre les dates 
+            $this->setIsActivated(!$interval->invert);
+            //return !$interval->invert; // 
+            return $this->isActivated;
+        }
+    }
+
+    public function setIsActivated(bool $isActivated): self
+    {
+        $this->isActivated = $isActivated;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommercialSheet[]
+     */
+    public function getCommercialSheets(): Collection
+    {
+        return $this->commercialSheets;
+    }
+
+    public function addCommercialSheet(CommercialSheet $commercialSheet): self
+    {
+        if (!$this->commercialSheets->contains($commercialSheet)) {
+            $this->commercialSheets[] = $commercialSheet;
+            $commercialSheet->setEnterprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommercialSheet(CommercialSheet $commercialSheet): self
+    {
+        if ($this->commercialSheets->contains($commercialSheet)) {
+            $this->commercialSheets->removeElement($commercialSheet);
+            // set the owning side to null (unless already changed)
+            if ($commercialSheet->getEnterprise() === $this) {
+                $commercialSheet->setEnterprise(null);
+            }
+        }
 
         return $this;
     }

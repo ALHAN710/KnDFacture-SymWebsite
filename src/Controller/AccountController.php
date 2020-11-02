@@ -10,17 +10,20 @@ use App\Form\AccountType;
 use Cocur\Slugify\Slugify;
 use App\Entity\PasswordUpdate;
 use App\Form\RegistrationType;
+use App\Form\PasswordUpdateType;
+use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\Form\FormError;
 use App\Repository\InventoryRepository;
+//use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
-//use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -67,25 +70,37 @@ class AccountController extends ApplicationController
      *
      * @return Response
      */
-    public function create(EntityManagerInterface $manager, InventoryRepository $inventoryRepo, Request $request, UserPasswordEncoderInterface $encoder)
+    public function create(EntityManagerInterface $manager, RoleRepository $roleRepo, Request $request, UserPasswordEncoderInterface $encoder)
     {
+        $isSupAdmin = false;
         $user = new User();
-        $user->setEnterprise($this->getUser()->getEnterprise());
+        if ($this->getUser()->getRoles()[0] === 'ROLE_ADMIN') $user->setEnterprise($this->getUser()->getEnterprise());
+        else $isSupAdmin = true;
         $slugify = new Slugify();
-        $form = $this->createForm(RegistrationType::class, $user);
-        $inventories = $inventoryRepo->findAll();
+        $form = $this->createForm(RegistrationType::class, $user, ['isSupAdmin' => $isSupAdmin]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $hash = $encoder->encodePassword($user, $user->getHash());
+            $userRole = null;
+            //$userRole_ = $manager->getRepository('App:Role')->findOneBy(['title' => $user->getRole()]);
+            $userRole_ = $roleRepo->findOneBy(['title' => $user->getRole()]);
+            if ($userRole_) {
+                $userRole = $userRole_;
+                $userRole->addUser($user);
 
-            $userRole = new Role();
-            $userRole->setTitle($user->getRole());
+                //dump($userRole);
+            } else {
+                //dump("Role don't exists");
+                $userRole = new Role();
+                $userRole->setTitle($user->getRole())
+                    ->addUser($user);
+            }
+            $manager->persist($userRole);
+            //die();
             $date = new DateTime(date('Y-m-d H:i:s'));
             $user->setCreatedAt($date);
 
-
-            $manager->persist($userRole);
 
             $user->setHash($hash)
                 ->addUserRole($userRole);
@@ -94,7 +109,7 @@ class AccountController extends ApplicationController
             $avatarFile = $form->get('avatar')->getData();
 
             // this condition is needed because the 'avatar' field is not required
-            // so the PDF file must be processed only when a file is uploaded
+            // so the IMG file must be processed only when a file is uploaded
             if ($avatarFile) {
                 $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
                 // this is needed to safely include the file name as part of the URL
@@ -120,13 +135,13 @@ class AccountController extends ApplicationController
                 'success',
                 "Le Compte utilisateur <strong> {$user->getFirstName()}</strong> a été crée avec succès. !"
             );
-
-            return $this->redirectToRoute('users_entreprise_index');
+            if ($this->getUser()->getRoles()[0] === 'ROLE_ADMIN') return $this->redirectToRoute('users_entreprise_index');
+            else return $this->redirectToRoute('admin_sellers_index');
         }
 
         return $this->render('account/new.html.twig', [
             'form' => $form->createView(),
-            'inventories' => $inventories,
+
         ]);
     }
 
@@ -139,12 +154,11 @@ class AccountController extends ApplicationController
      * 
      * @return Response
      */
-    public function profile(Request $request, InventoryRepository $inventoryRepo, EntityManagerInterface $manager)
+    public function profile(Request $request, EntityManagerInterface $manager)
     {
         $user = $this->getUser();
         $lastAvatar = $user->getAvatar();
         //$lastLogo = $user->getEnterpriseLogo();
-        $inventories = $inventoryRepo->findAll();
         $filesystem = new Filesystem();
 
         $slugify = new Slugify();
@@ -202,31 +216,47 @@ class AccountController extends ApplicationController
      *
      * @Route("/user/{id<\d+>}/edit", name = "user_edit")
      * 
-     * @IsGranted("ROLE_ADMIN")
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_ADMIN') and user_.getEnterprise() === user.getEnterprise() )" )
      * 
      * @return Response
      */
-    public function edit(User $user, EntityManagerInterface $manager, Request $request, UserPasswordEncoderInterface $encoder)
+    public function edit(User $user_, RoleRepository $roleRepo, EntityManagerInterface $manager, Request $request, UserPasswordEncoderInterface $encoder)
     {
         // $user = new User();
         $slugify = new Slugify();
-        $form = $this->createForm(RegistrationType::class, $user);
+        $isSupAdmin = false;
+        if ($this->getUser()->getRoles()[0] === 'ROLE_SUPER_ADMIN') $isSupAdmin = true;
+        $user_->setRole($user_->getRoles()[0]);
+        $form = $this->createForm(RegistrationType::class, $user_, [
+            'isSupAdmin' => $isSupAdmin,
+            'isEdit'     => true,
+        ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $hash = $encoder->encodePassword($user, $user->getHash());
+            //$hash = $encoder->encodePassword($user_, $user_->getHash());
 
-            $userRole = new Role();
-            $userRole->setTitle($user->getRole());
-            $date = new DateTime(date('Y-m-d H:i:s'));
-            $user->setCreatedAt($date);
+            $userRole = null;
+            //$userRole_ = $manager->getRepository('App:Role')->findOneBy(['title' => $user->getRole()]);
+            $userRole_ = $roleRepo->findOneBy(['title' => $user_->getRole()]);
+            if ($userRole_) {
+                $userRole = $userRole_;
+                $userRole->addUser($user_);
 
-
+                //dump($userRole);
+            } else {
+                //dump("Role don't exists");
+                $userRole = new Role();
+                $userRole->setTitle($user_->getRole())
+                    ->addUser($user_);
+            }
             $manager->persist($userRole);
 
-            $user->setHash($hash)
-                ->addUserRole($userRole);
+            // $date = new DateTime(date('Y-m-d H:i:s'));
+            // $user->setCreatedAt($date);
+
+            $user_->addUserRole($userRole);
 
             /** @var UploadedFile $avatarFile */
             $avatarFile = $form->get('avatar')->getData();
@@ -248,21 +278,23 @@ class AccountController extends ApplicationController
                 } catch (FileException $e) {
                     // ... handle exception if something happens during file upload
                 }
-                $user->setAvatar($newFilename);
+                $user_->setAvatar($newFilename);
             }
 
-            $manager->persist($user);
+            $manager->persist($user_);
             $manager->flush();
 
             $this->addFlash(
                 'success',
-                "La modification de l'utilisateur <strong> {$user->getFullName()}</strong> a été effectuée avec succès. !"
+                "La modification de l'utilisateur <strong> {$user_->getFullName()}</strong> a été effectuée avec succès. !"
             );
-
-            return $this->redirectToRoute('users_entreprise_index');
+            if ($this->getUser()->getRoles()[0] === 'ROLE_SUPER_ADMIN') return $this->redirectToRoute('admin_users_index');
+            else return $this->redirectToRoute('users_entreprise_index');
         }
-
-        return $this->render('user_entreprise/edit.html.twig', [
+        if ($this->getUser()->getRoles()[0] === 'ROLE_SUPER_ADMIN') return $this->render('admin/users/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
+        else return $this->render('user_entreprise/edit.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -272,17 +304,17 @@ class AccountController extends ApplicationController
      * 
      * @Route("/user/{id<\d+>}/delete", name="user_delete")
      * 
-     * @IsGranted("ROLE_ADMIN")
-     *
-     * @param User $user
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_ADMIN') and user_.getEnterprise() === user.getEnterprise() )" )
+     * 
+     * @param User $user_
      * @param EntityManagerInterface $manager
      * @return void
      */
-    public function delete(User $user, EntityManagerInterface $manager)
+    public function delete(User $user_, EntityManagerInterface $manager)
     {
-        $_user = $user->getFullName();
+        $_user = $user_->getFullName();
 
-        $manager->remove($user);
+        $manager->remove($user_);
         $manager->flush();
 
         $this->addFlash(
@@ -296,26 +328,44 @@ class AccountController extends ApplicationController
     /**
      * Permet de modifier le mot de passe
      * 
-     * @Route("/account/password-update", name="account_password")
-     * @IsGranted("ROLE_USER")
-     *
+     * @Route("/account/{id<\d+>}/password-update", name="account_password")
+     * 
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_ADMIN') and user_.getEnterprise() === user.getEnterprise() ) or ( is_granted('ROLE_USER') and user_ === user )" )
+     * 
      * @return Response
      */
-    public function updatePassword(Request $request, InventoryRepository $inventoryRepo, UserPasswordEncoderInterface $encoder, EntityManagerInterface $manager)
+    public function updatePassword(User $user_, Request $request, UserPasswordEncoderInterface $encoder, EntityManagerInterface $manager)
     {
         $passwordUpdate = new PasswordUpdate();
-        $inventories = $inventoryRepo->findAll();
-        $user = $this->getUser();
-
-        $form = $this->createForm(PasswordUpdateType::class, $passwordUpdate);
+        $user = $user_;
+        $isUser = true;
+        if ($this->getUser() !== $user) $isUser = false;
+        $form = $this->createForm(PasswordUpdateType::class, $passwordUpdate, ['isUser' => $isUser]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //1. Vérifier que le oldpassword soit le même que celui de l'user
-            if (!password_verify($passwordUpdate->getOldPassword(), $user->getHash())) {
-                //Gérer l'erreur
-                $form->get('oldPassword')->addError(new FormError("Le mot de passe saisi n'est pas votre mot de passe actuel"));
+            if ($isUser) { // Si c'set l'utilisateur connecté
+                //1. Vérifier que le oldpassword soit le même que celui de l'utilisateur
+                if (!password_verify($passwordUpdate->getOldPassword(), $user->getHash())) {
+                    //Gérer l'erreur
+                    $form->get('oldPassword')->addError(new FormError("Le mot de passe saisi n'est pas votre mot de passe actuel"));
+                } else {
+                    $newPassword = $passwordUpdate->getNewPassword();
+                    $hash = $encoder->encodePassword($user, $newPassword);
+
+                    $user->setHash($hash);
+
+                    $manager->persist($user);
+                    $manager->flush();
+
+                    $this->addFlash(
+                        'success',
+                        "Votre mot de passe a bien été modifié"
+                    );
+
+                    return $this->redirectToRoute('homepage');
+                }
             } else {
                 $newPassword = $passwordUpdate->getNewPassword();
                 $hash = $encoder->encodePassword($user, $newPassword);
@@ -327,10 +377,11 @@ class AccountController extends ApplicationController
 
                 $this->addFlash(
                     'success',
-                    "Votre mot de passe a bien été modifié"
+                    "Le mot de passe de l'utilisateur {$user->getFullName()} a bien été modifié"
                 );
 
-                return $this->redirectToRoute('homepage');
+                if ($this->getUser()->getRoles()[0] === 'ROLE_SUPER_ADMIN') return $this->redirectToRoute('admin_users_index');
+                else return $this->redirectToRoute('users_entreprise_index');
             }
         }
 
@@ -348,9 +399,8 @@ class AccountController extends ApplicationController
      *
      * @return Response
      */
-    public function recoverPassword(InventoryRepository $inventoryRepo)
+    public function recoverPassword()
     {
-        $inventories = $inventoryRepo->findAll();
         return $this->render('account/recoverpw.html.twig', [
             //'inventories' => $inventories,
         ]);
@@ -363,7 +413,7 @@ class AccountController extends ApplicationController
      *
      * @return void
      */
-    public function codeVerification(InventoryRepository $inventoryRepo)
+    public function codeVerification()
     {
         //$inventories = $inventoryRepo->findAll();
         return $this->render('account/codeverification.html.twig', [
@@ -383,10 +433,9 @@ class AccountController extends ApplicationController
      * @return JsonResponse
      * 
      */
-    public function userVerification(Request $request, InventoryRepository $inventoryRepo, MailerInterface $mailer, UserRepository $userRepo, EntityManagerInterface $manager): JsonResponse
+    public function userVerification(Request $request, MailerInterface $mailer, UserRepository $userRepo, EntityManagerInterface $manager): JsonResponse
     {
         $paramJSON = $this->getJSONRequest($request->getContent());
-        $inventories = $inventoryRepo->findAll();
         $email = $paramJSON['email'];
         //dump($email);
         $user = $userRepo->findOneBy(['email' => $email]);
@@ -399,7 +448,7 @@ class AccountController extends ApplicationController
                 ->setVerified(false);
             $manager->persist($user);
             $manager->flush();
-            $code = 'LBF OSM-' . $codeVerification . $user->getId();
+            $code = 'KnD Facts-' . $codeVerification . $user->getId();
             //dump($code);
             $object = "PASSWORD RESET";
             $message = 'Your verification code is ' . $code;
@@ -408,7 +457,7 @@ class AccountController extends ApplicationController
 But don’t worry! You can use the following code to reset your password: " . $code . "
 
 Thanks,
-The LBF Team";
+The KnD Factures Team";
             $this->sendEmail($mailer, $email, $object, $message);
         } else if ($paramJSON['codeVerif'] != null) {
             $Verificationcode = $paramJSON['codeVerif'];
@@ -454,10 +503,9 @@ The LBF Team";
      * @return Response
      * 
      */
-    public function passwordReset(Request $request, InventoryRepository $inventoryRepo, UserRepository $userRepo, UserPasswordEncoderInterface $encoder, EntityManagerInterface $manager)
+    public function passwordReset(Request $request, UserRepository $userRepo, UserPasswordEncoderInterface $encoder, EntityManagerInterface $manager)
     {
         $passwordUpdate = new PasswordUpdate();
-        $inventories = $inventoryRepo->findAll();
         $user = $this->getUser();
         $id = $request->query->get('d');
         //dump($id);

@@ -101,7 +101,7 @@ class CommercialSheet
 
     /**
      * @ORM\ManyToOne(targetEntity=BusinessContact::class, inversedBy="commercialSheets")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $businessContact;
 
@@ -153,6 +153,11 @@ class CommercialSheet
     private $totalAmountNetHT = 0.0;
 
     private $itemsRemise = 0.0;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Enterprise::class, inversedBy="commercialSheets")
+     */
+    private $enterprise;
 
     public function getTotalAmountBrutHT(): float
     {
@@ -487,6 +492,10 @@ class CommercialSheet
         return null;
     }
 
+    /**
+     * Fonction de détermination de la validité d'un devis ou d'un abonnement 
+     * Renvoi false si valide ou en
+     */
     public function getAlert()
     {
 
@@ -655,6 +664,18 @@ class CommercialSheet
     public function setAdvancePayment(float $advancePayment): self
     {
         $this->advancePayment = $advancePayment;
+
+        return $this;
+    }
+
+    public function getEnterprise(): ?Enterprise
+    {
+        return $this->enterprise;
+    }
+
+    public function setEnterprise(?Enterprise $enterprise): self
+    {
+        $this->enterprise = $enterprise;
 
         return $this;
     }
