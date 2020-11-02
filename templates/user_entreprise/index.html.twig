@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Users Dashboard  {% endblock %}
+{% block title %} Accueil Utilisateurs{% endblock %}
 
 {% block stylesheets %}
 <!-- DataTables -->
@@ -18,8 +18,8 @@
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Accueil</li>
             <li class="breadcrumb-item active">Utilisateurs</li>
-            <li class="breadcrumb-item active">Dashboard</li>
         </ol>
     </div>
 {% endblock %}
@@ -48,11 +48,11 @@
                                 {% for user in users %}
                                 <tr class="text-center">
                                     {# <td>{{user.id}}</td> #}
-                                    <td class="text-left">{{user.fullName}}</td>
+                                    <td class="text-left"><a href="{{ path('account_password',{'id':user.id}) }}">{{user.fullName}}</a></td>
                                     <td>{{user.roles[0]}}</td>
                                     <td>
                                         <a href="{{path('user_edit', {'id':user.id})}}"  class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifiez l'utilisateur ?"><i class="far fa-edit"></i> </a></a>
-                                        <a href="{{path('user_delete', {'id':user.id})}}" class="btn btn-soft-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimez l'utilisateur ?"><i class="fas fa-trash"></i> </a>   
+                                        {# <a href="{{path('user_delete', {'id':user.id})}}" class="btn btn-soft-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimez l'utilisateur ?"><i class="fas fa-trash"></i> </a>    #}
                                     </td>    
                                 </tr>
                                 {% endfor %}
