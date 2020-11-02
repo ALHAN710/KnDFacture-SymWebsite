@@ -73,14 +73,13 @@
                 </div>
             </li>#}
             <li class="dropdown">
-                <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button"
-                    aria-haspopup="false" aria-expanded="false">
+                <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     <img src="{{ app.user.avatar != null  ? '/images/uploads/avatar/' ~ app.user.avatar : '/images/uploads/avatar/user.png' }}" alt="profile-user" class="rounded-circle" /> 
-                    <span class="ml-1 nav-user-name hidden-sm"> <i class="mdi mdi-chevron-down"></i> </span>
+                    <span class="ml-1 nav-user-name hidden-sm"><span class="text-white">{{app.user.firstName}}</span> <i class="mdi mdi-chevron-down"></i> </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <a class="dropdown-item" href="{{ path('account_profile') }}"><i class="dripicons-user text-muted mr-2"></i> Profile</a>
-                    <a class="dropdown-item" href="{{ path('account_password') }}"><i class="dripicons-document-edit text-muted mr-2"></i> Edit Password</a>
+                    <a class="dropdown-item" href="{{ path('account_password',{'id':app.user.id})}}"><i class="dripicons-document-edit text-muted mr-2"></i> Edit Password</a>
                     {#<a class="dropdown-item" href="#"><i class="dripicons-gear text-muted mr-2"></i> Settings</a>
                     <a class="dropdown-item" href="#"><i class="dripicons-lock text-muted mr-2"></i> Lock screen</a>#}
                     <div class="dropdown-divider"></div>
