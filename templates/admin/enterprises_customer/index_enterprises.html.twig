@@ -217,8 +217,11 @@
     });
 
     $('#orderBtn').click(function(){
+        var Str = String($(subscriptionId).val());
+        //console.log('Product Price value = ' + $(productPriceId).val());
+        var Name = $(productPriceId + ' option[value=\"' + Str + '\"]').text();
         var $data = JSON.stringify({
-            "subscriptionName": $(subscriptionId).val(),//tabGridId,
+            "subscriptionName": Name,//tabGridId,
             "duration"        : $(subscriptionDurationId).val(),//tabFuelId,
             'price'           : $(subscriptionPriceId).val(),
             "ent"             : ent
