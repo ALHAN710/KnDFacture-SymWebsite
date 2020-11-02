@@ -219,7 +219,7 @@
     $('#orderBtn').click(function(){
         var Str = String($(subscriptionId).val());
         //console.log('Product Price value = ' + $(productPriceId).val());
-        var Name = $(productPriceId + ' option[value=\"' + Str + '\"]').text();
+        var Name = $(subscriptionId + ' option[value=\"' + Str + '\"]').text();
         var $data = JSON.stringify({
             "subscriptionName": Name,//tabGridId,
             "duration"        : $(subscriptionDurationId).val(),//tabFuelId,
