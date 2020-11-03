@@ -175,12 +175,12 @@ class ProductController extends AbstractController
     public function edit(Product $product, Request $request, EntityManagerInterface $manager)
     { //
 
-        $categoryRepo = $manager->getRepository('App:Category');
+        /*$categoryRepo = $manager->getRepository('App:Category');
         $categories_ = $categoryRepo->findBy(['entreprise' => $this->getUser()->getEnterprise()]);
         $categories = [];
         foreach ($categories_ as $category) {
             $categories[$category->getName()] = $category->getName();
-        }
+        }*/
 
         //Vérification de l'abonnement pour autoriser l'enregistrement de la référence en stock
         //$valid = true;
@@ -207,7 +207,7 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $categoryRepo = $manager->getRepository('App:Category');
+            /*$categoryRepo = $manager->getRepository('App:Category');
             foreach ($product->getCategories() as $category) {
                 //dump($category);
                 $category->setName($category->getCategory()->getName())
@@ -229,7 +229,7 @@ class ProductController extends AbstractController
                     $product->removeCategory($category);
                     $product->addCategory($category_);
                 }
-            }
+            }*/
             //$manager = $this->getDoctrine()->getManager();
             $manager->persist($product);
             $manager->flush();
