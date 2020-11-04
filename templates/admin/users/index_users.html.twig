@@ -79,10 +79,10 @@
                                                 <td>{{user.email}}</td>
                                                 <td>{{user.enterprise.socialReason}}</td>
                                                 <td>
-                                                    <a href="{{path('user_edit', {'id':user.id})}}"  class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifier Utilisateur ?"><i class="far fa-edit"></i> </a>
+                                                    <a href="{{path('user_edit', {'id':user.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier Utilisateur ?"><i class="far fa-edit"></i> </a>
                                                     {#<a href="{{ path('user_delete', {'id':user.id}) }}" data-user={{user.id}} class="btn btn-soft-danger btn-xs rounded sa-warning waves-effect waves-light" data-toggle="tooltip" data-placement="top" title="Supprimer Utilisateur ?"><i class="fas fa-trash"></i> </a>#}                                                
                                                     {% if user.roles[0] == 'ROLE_ADMIN' %}
-                                                    <a href="#" data-user={{user.id}} class="btn btn-soft-primary btn-xs rounded sa-warning waves-effect waves-light" data-toggle="tooltip" data-placement="top" title="Envoyer un mailà l'utilisateur ?"><i class="mdi mdi-email"></i> </a>                                               
+                                                    <a href="#" data-user={{user.id}} class="btn btn-soft-primary btn-xs rounded sa-warning waves-effect waves-light" data-toggle="tooltip" data-placement="top" title="Envoyer un mail à l'utilisateur ?"><i class="mdi mdi-email"></i> </a>                                               
                                                     {% endif %}
                                                 </td>
                                                 

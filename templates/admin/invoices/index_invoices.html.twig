@@ -124,9 +124,9 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                {# <a href="{{path('commercial_sheet_edit', {'id':invoice.id})}}"  class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifier la Commande"><i class="far fa-edit"></i> </a> #}
-                                                <a href="{{path('admin_invoice_print', {'id':invoice.id})}}" class="btn btn-soft-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir Facture ?"><i class="mdi mdi-file-table-outline "></i> </a>
-                                                <a href="{{path('commercial_sheet_delete', {'id':invoice.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer Facture"><i class="fas fa-trash"></i> </a>
+                                                {# <a href="{{path('commercial_sheet_edit', {'id':invoice.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier la Commande"><i class="far fa-edit"></i> </a> #}
+                                                <a href="{{path('admin_invoice_print', {'id':invoice.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir Facture ?"><i class="mdi mdi-file-table-outline "></i> </a>
+                                                <a href="{{path('commercial_sheet_delete', {'id':invoice.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer Facture"><i class="fas fa-trash"></i> </a>
                                                 
                                             </td>
                                             
@@ -177,8 +177,8 @@
                                                 </td>
                                                 <td>
                                                     {# <a href="{{path('commercial_sheet_edit', {'id':invoice.id})}}"  class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifier la Commande"><i class="far fa-edit"></i> </a> #}
-                                                    <a href="{{path('admin_invoice_print', {'id':invoice.id})}}" class="btn btn-soft-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir Facture ?"><i class="mdi mdi-file-table-outline"></i> </a>
-                                                    <a href="{{path('commercial_sheet_delete', {'id':invoice.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer Facture"><i class="fas fa-trash"></i> </a>
+                                                    <a href="{{path('admin_invoice_print', {'id':invoice.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir Facture ?"><i class="mdi mdi-file-table-outline"></i> </a>
+                                                    <a href="{{path('commercial_sheet_delete', {'id':invoice.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer Facture"><i class="fas fa-trash"></i> </a>
                                                 </td>
                                                 
                                             </tr>
@@ -218,7 +218,7 @@
                                                 <td>{{invoice.user.fullName}}</td>
                                                 <td>{{invoice.amountNetToPaid}}</td>
                                                 <td>
-                                                    <a href="{{path('admin_invoice_print', {'id':invoice.id})}}" class="btn btn-soft-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir Facture ?"><i class="mdi mdi-file-table-outline"></i> </a>    
+                                                    <a href="{{path('admin_invoice_print', {'id':invoice.id})}}" class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir Facture ?"><i class="mdi mdi-file-table-outline"></i> </a>    
                                                 </td>
                                                 
                                             </tr>
@@ -273,8 +273,8 @@
                                         </div>
                                     </td>#}
                                     <td>
-                                        <a href="#" class="btn btn-soft-primary btn-xs rounded renew" data-ent={{enterprise.id}} data-sub="{{enterprise.subscription.name}}" data-duration={{enterprise.subscriptionDuration}} data-price={{enterprise.subscription.tarifs[enterprise.subscriptionDuration]}} data-toggle="tooltip" data-placement="top" title="Renouveler l'Abonnement"><i class="ti-reload"></i> </a>
-                                        <a href="#" data-ent={{enterprise.id}} class="btn btn-soft-warning btn-xs rounded text-right orderRef" data-toggle="modal" data-target=".bd-example-modal-xl_orderForm" data-placement="top" title="Changer d'abonnement"><i class="fas fa-exchange-alt"></i></a>
+                                        <a href="#" class="btn btn-soft-primary btn-xs rounded waves-effect renew" data-ent={{enterprise.id}} data-sub="{{enterprise.subscription.name}}" data-duration={{enterprise.subscriptionDuration}} data-price={{enterprise.subscription.tarifs[enterprise.subscriptionDuration]}} data-toggle="tooltip" data-placement="top" title="Renouveler l'Abonnement"><i class="ti-reload"></i> </a>
+                                        <a href="#" data-ent={{enterprise.id}} class="btn btn-soft-warning btn-xs rounded waves-effect text-right orderRef" data-toggle="modal" data-target=".bd-example-modal-xl_orderForm" data-placement="top" title="Changer d'abonnement"><i class="fas fa-exchange-alt"></i></a>
                                         {# <a href="{{path('admin_enterprise_print', {'id':enterprise.id})}}" class="btn btn-soft-primary btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir Facture ?"><i class="mdi mdi-file-table-outline"></i> </a>
                                         <a href="{{path('commercial_sheet_delete', {'id':enterprise.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimer Facture"><i class="fas fa-trash"></i> </a> #}
                                     </td>

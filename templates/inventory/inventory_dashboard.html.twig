@@ -45,8 +45,8 @@
                     
                     <div class="row my-3 align-items-center">
                         <div class="col-lg-3 my-3">
-                            <a href="{{path('lot_create', {'prod':0, 'inv':inventory.id})}}"  class="btn btn-soft-primary btn-lg rounded mr-2 mb-2" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot dans l'inventaire de {{inventory.name|capitalize}}"><i class="fa fa-plus-circle "></i></a>
-                            <a href="{{path('lots_index', {'prod':0, 'inv':inventory.id})}}" class="btn btn-soft-pink  btn-lg rounded mb-2" data-toggle="tooltip" data-placement="top" title="Voir les Lots de l'inventaire de {{inventory.name|capitalize}}"><i class="far fa-eye"></i></a>
+                            <a href="{{path('lot_create', {'prod':0, 'inv':inventory.id})}}"  class="btn btn-soft-primary btn-lg rounded mr-2 mb-2 waves-effect" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot dans l'inventaire de {{inventory.name|capitalize}}"><i class="fa fa-plus-circle "></i></a>
+                            <a href="{{path('lots_index', {'prod':0, 'inv':inventory.id})}}" class="btn btn-soft-pink  btn-lg rounded mb-2 waves-effect" data-toggle="tooltip" data-placement="top" title="Voir les Lots de l'inventaire de {{inventory.name|capitalize}}"><i class="far fa-eye"></i></a>
                                                             
                         </div>
                         <div class="col-lg-9">
@@ -232,8 +232,8 @@
                                             <td><span id="demand_{{product.id}}"></span></td>
                                             <td>
                                                 {# {{ productStats[product.id][0]["qtyAVG"] * inventory.orderingFreq }} <a href="#custom-modal{{'0'}}" class="btn btn-primary btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Add New Lot"><i class="fa fa-plus-circle"></i></a> #}
-                                                <a href="{{path('lot_create', {'prod':product.id, 'inv':inventory.id})}}"  class="btn btn-soft-info btn-xs rounded " data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot pour le produit {{product.name}}"><i class="fa fa-plus-circle"></i></a>
-                                                <a href="{{path('lots_index', {'prod':product.id, 'inv':inventory.id})}}" class="btn btn-soft-purple btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Voir les Lots du produit {{product.name}}"><i class="far fa-eye"></i></a>
+                                                <a href="{{path('lot_create', {'prod':product.id, 'inv':inventory.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot pour le produit {{product.name}}"><i class="fa fa-plus-circle"></i></a>
+                                                <a href="{{path('lots_index', {'prod':product.id, 'inv':inventory.id})}}" class="btn btn-soft-purple btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir les Lots du produit {{product.name}}"><i class="far fa-eye"></i></a>
                                                 {# <a href="#custom-modal{{'1'}}" class="btn btn-danger btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-plas"top" title="Remove Lot"><i class="fas fa-trash"></i></a> #}
                                             </td> 
                                             
