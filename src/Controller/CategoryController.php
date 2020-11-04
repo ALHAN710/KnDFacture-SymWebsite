@@ -98,7 +98,7 @@ class CategoryController extends AbstractController
      *
      * @Route("category/{id<\d+>}/edit", name="category_edit")
      * 
-     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and category.getEnterprise() === user.getEnterprise() )" )
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and category.getEntreprise() === user.getEnterprise() )" )
      * 
      * @return Response
      */
@@ -160,7 +160,7 @@ class CategoryController extends AbstractController
      * 
      * @Route("/category/{id}/delete", name="category_delete")
      *
-     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and category.getEnterprise() === user.getEnterprise() )" )
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and category.getEntreprise() === user.getEnterprise() )" )
      * 
      * @param Category $category
      * @param EntityManagerInterface $manager
