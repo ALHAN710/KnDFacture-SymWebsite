@@ -23,7 +23,7 @@ class EnterpriseType extends ApplicationType
             ->add(
                 'socialReason',
                 TextType::class,
-                $this->getConfiguration("(*)", "Entrer la raison sociale ou nom(Obligatoire))")
+                $this->getConfiguration("(*)", "Entrer la raison sociale ou nom(Obligatoire)")
             )
             ->add(
                 'niu',
@@ -48,7 +48,7 @@ class EnterpriseType extends ApplicationType
             ->add(
                 'email',
                 EmailType::class,
-                $this->getConfiguration("Email", "Email...", ['required' => false])
+                $this->getConfiguration("Email (*)", "Email...")
             )
             ->add(
                 'logo',
