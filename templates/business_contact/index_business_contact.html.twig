@@ -91,7 +91,7 @@
                 <div class="card-body table-responsive">
                     <h5 class="header-title">Liste des {% if type == 'customer' %}Clients{% elseif type == 'supplier' %}Fournisseurs{% endif %}</h5>
                     <div class="mt-2 mb-2 mr-5 text-right">
-                        <a href="{{path('business_contact_create',{'type':type})}}"  class="btn btn-info btn-lg rounded " data-toggle="tooltip" data-placement="top" title="Add New {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
+                        <a href="{{path('business_contact_create',{'type':type})}}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Add New {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
                     </div>
                     <div class="table-responsive">
                         <table id="datatable2" class="table table-striped table-fixed nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -164,7 +164,7 @@
                                     </td>
                                     <td class="d-none d-sm-table-cell">{{ rest }}</td> #}
                                     <td>
-                                        <a href="{{path('business_contact_edit', {'id':businessContact.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modifiez le {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}"><i class="far fa-edit"></i> </a>
+                                        <a href="{{path('business_contact_edit', {'id':businessContact.id})}}"  class="btn btn-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifiez le {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}"><i class="far fa-edit"></i> </a>
                                         {% if type == 'customer' %}
                                         <a href="#custom-modal{{businessContact.id}}" class="btn btn-primary btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Editer un document ?"><i class="mdi mdi-file-table-outline"></i></a>
                                         {% if inventories|length > 0 %}
