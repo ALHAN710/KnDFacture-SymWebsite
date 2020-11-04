@@ -3921,7 +3921,7 @@ label {
 
 .select2-container--default .select2-selection--single {
   border: 1px solid #d8d8d8;
-  height: 38px;
+  height: 37px !important;
 }
 
 .select2-container--default .select2-selection--single:focus {
@@ -3930,16 +3930,16 @@ label {
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
   color: #444;
-  line-height: 38px;
+  line-height: 37px;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
-  height: 38px;
+  height: 37px !important;
   right: 8px;
 }
 
 .select2-container .select2-selection--multiple {
-  min-height: 38px;
+  min-height: 37px !important;
   border: 1px solid #d8d8d8;
 }
 

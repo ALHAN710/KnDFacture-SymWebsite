@@ -33,6 +33,7 @@ $('#add-commercialSheetItems').click(function () {
     }
     //J'ajoute à la suite de la div contenant le sous-formulaire ce code
     $('#commercial_sheet_commercialSheetItems').append(tmpl).ready(() => {
+        // Select2
         var refId = '#commercial_sheet_commercialSheetItems_' + index + '_reference';
         var designationId = '#commercial_sheet_commercialSheetItems_' + index + '_designation';
         var productSKUId = '#commercial_sheet_commercialSheetItems_' + index + '_productSku';
@@ -47,6 +48,12 @@ $('#add-commercialSheetItems').click(function () {
         var amountNetHTId = '#commercial_sheet_commercialSheetItems_' + index + '_amountNetHT';
         var available = '#commercial_sheet_commercialSheetItems_' + index + '_available';
         var itemOfferTypeId = '#commercial_sheet_commercialSheetItems_' + index + '_itemOfferType';//
+
+        $(productId).select2({
+            width: '100%',
+            //height: '300%',
+            //dropdownCssClass: "custom-select"
+        });
 
         if (isEdit) {
             var isChangedId = '#commercial_sheet_commercialSheetItems_' + index + '_isChanged';
@@ -217,6 +224,7 @@ $('#add-commercialSheetItems').click(function () {
             tabproductSKUIds[index] = $(productSKUId).val();
             tabProductIds[index] = $(productId).val();
             $(productId).attr('readonly', true);
+            $(productId).prop("disabled", true);
             //$(productId).attr('disabled', true);
             $(productId).off('change') // désactivation de l'évènement change sur cette entrée
             $(productSKUId).attr('readonly', true);
@@ -328,6 +336,7 @@ $('#add-commercialSheetItems').click(function () {
             tabproductSKUIds[index] = $(productSKUId).val();
             tabProductIds[index] = $(productId).val();
             $(productId).attr('readonly', true);
+            $(productId).prop("disabled", true);
             //$(productId).attr('disabled', true);
             $(productId).off('change') // désactivation de l'évènement change sur cette entrée
 
@@ -857,6 +866,7 @@ function handleDeleteButton() {
 
             }
             $('#add-commercialSheetItems').attr('disabled', false);
+            $('#add-servItems').attr('disabled', false);
             tabHideProduct[index] = '';
             tabHideSKU[index] = '';
 
