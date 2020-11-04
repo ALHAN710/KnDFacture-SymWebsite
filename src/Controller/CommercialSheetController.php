@@ -168,7 +168,7 @@ class CommercialSheetController extends ApplicationController
                                 'quantity' => $commercialSheetItem->getQuantity(),
                                 'remise'   => $commercialSheetItem->getRemise()
                             ]);
-                            //dd($commercialSheetItem->getAvailable());
+                            //dump($commercialSheetItem->getAvailable());
                             if (empty($commercialSheetItem_)) {
                                 $commercialSheetItem->addCommercialSheet($commercialSheet);
                                 //$manager->persist($commercialSheetItem);
@@ -389,7 +389,7 @@ class CommercialSheetController extends ApplicationController
                 if ($totalSheet < $sheetNumber) { //Si la limite mensuel de document n'est pas encore atteinte
 
                     if (!$commercialSheetItemErrorFlag) { //Si la commande est valide 
-                        dump('$commercialSheetItemErrorFlag = ' . $commercialSheetItemErrorFlag);
+                        //dump('$commercialSheetItemErrorFlag = ' . $commercialSheetItemErrorFlag);
                         //$commercialSheetItem->addCommercialSheet($commercialSheet);
                         //$manager->persist($commercialSheetItem);
                         $manager->persist($commercialSheet);

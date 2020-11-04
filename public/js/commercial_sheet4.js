@@ -224,7 +224,8 @@ $('#add-commercialSheetItems').click(function () {
             tabproductSKUIds[index] = $(productSKUId).val();
             tabProductIds[index] = $(productId).val();
             $(productId).attr('readonly', true);
-            $(productId).prop("disabled", true);
+            //$(productId).prop("disabled", true);
+            $(productId).select2({ disabled: readonly });
             //$(productId).attr('disabled', true);
             $(productId).off('change') // désactivation de l'évènement change sur cette entrée
             $(productSKUId).attr('readonly', true);
@@ -336,7 +337,7 @@ $('#add-commercialSheetItems').click(function () {
             tabproductSKUIds[index] = $(productSKUId).val();
             tabProductIds[index] = $(productId).val();
             $(productId).attr('readonly', true);
-            $(productId).prop("disabled", true);
+            //$(productId).prop("readonly", true);
             //$(productId).attr('disabled', true);
             $(productId).off('change') // désactivation de l'évènement change sur cette entrée
 
