@@ -94,7 +94,7 @@
                         <a href="{{path('business_contact_create',{'type':type})}}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Add New {% if type == 'customer' %}Customer{% elseif type == 'supplier' %}Supplier{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
                     </div>
                     <div class="table-responsive">
-                        <table id="datatable" class="table table-striped table-fixed nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="datatable2" class="table table-striped table-fixed nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr class="text-center">
                                     {# <th>#</th> #}
@@ -259,7 +259,7 @@
 <script src="/js/jquery.redirect.js"></script> 
 
 <script>
-    var table = $('#datatable').DataTable( {
+    {# var table = $('#datatable').DataTable( {
         orderCellsTop: true,
         fixedHeader: true
     } );
@@ -277,7 +277,7 @@
                     .draw();
             }
         } );
-    } );
+    } ); #}
  
     $("input:radio").change(function(){
         console.log('input radio change');
