@@ -262,7 +262,7 @@
                     {% else %}
                     {# {{dump(commercialSheets)}} #}
                     <div class="table-responsive">
-                        <table id="datatable2" class="table table-striped table-fixed nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="datatable" class="table table-striped table-fixed nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr class="text-center">
                                     {# <th style="width:0.5em"></th> #}
@@ -345,6 +345,86 @@
 <script src="/js/jquery.redirect.js"></script> 
 
 <script>
+    var datatable = $('#datatable').DataTable( {
+        orderCellsTop: true,
+        fixedHeader: true
+    } );
+    // Setup - add a text input to each footer cell
+    $('#datatable thead tr').clone(true).appendTo( '#datatable thead' );
+    $('#datatable thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+ title + '" />' );
+ 
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( datatable.column(i).search() !== this.value ) {
+                datatable
+                    .column(i)
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+ 
+    var datatableDelivery = $('#datatableDelivery').DataTable( {
+        orderCellsTop: true,
+        fixedHeader: true
+    } );
+    // Setup - add a text input to each footer cell
+    $('#datatableDelivery thead tr').clone(true).appendTo( '#datatableDelivery thead' );
+    $('#datatableDelivery thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+ title + '" />' );
+ 
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( datatableDelivery.column(i).search() !== this.value ) {
+                datatableDelivery
+                    .column(i)
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+ 
+    // Setup - add a text input to each footer cell
+    var datatablePayment = $('#datatablePayment').DataTable( {
+        orderCellsTop: true,
+        fixedHeader: true
+    } );
+    $('#datatablePayment thead tr').clone(true).appendTo( '#datatablePayment thead' );
+    $('#datatablePayment thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+ title + '" />' );
+ 
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( datatablePayment.column(i).search() !== this.value ) {
+                datatablePayment
+                    .column(i)
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+ 
+    // Setup - add a text input to each footer cell
+    var datatableCompleted = $('#datatableCompleted').DataTable( {
+        orderCellsTop: true,
+        fixedHeader: true
+    } );
+    $('#datatableCompleted thead tr').clone(true).appendTo( '#datatableCompleted thead' );
+    $('#datatableCompleted thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+ title + '" />' );
+ 
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( datatableCompleted.column(i).search() !== this.value ) {
+                datatableCompleted
+                    .column(i)
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+ 
     $('#saveBtn').click(function(){
         var tabDelivered = [];
         var tabPaid      = [];
