@@ -199,12 +199,14 @@ class EnterpriseDashboardController extends ApplicationController
             $expensesTTC = 0.0;
             $outstandingClaim = 0.0;
             $outstandingDebt = 0.0;
+            $nbProductsSold_ = null;
             $turnOverPer = null;
             $expensesPer = null;
             $billNb = 0;
             $quoteNb = 0;
             $purchaseNb = 0;
             $converted = 0;
+            $nbProductsSold = 0;
             $per        = '';
             $xturnOverPer = new ArrayCollection();
             $turnOverAmountPer = new ArrayCollection();
@@ -336,15 +338,11 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp             = $commercialSheet->getAdvancePayment();
                     $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
                     $amountRecettes += $tmp;
-                    /*if (!$xamountRecettesPer->contains($date)) {
-                        $xamountRecettesPer[]        = $date;
-                        $amountRecettesPer[$index2]  = $tmp;
-                        $precIndex2                  = $index2;
-                        $index2++;
-                    } else {
-                        //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
-                        $amountRecettesPer[$precIndex2]  += $tmp;
-                    }*/
+                    foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
+                        if ($commercialSheetItem->getItemOfferType() != 'Simple') {
+                            $nbProductsSold += $commercialSheetItem->getQuantity();
+                        }
+                    }
                 }
                 $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
                 $amountRecettes = number_format((float) $amountRecettes, 2, '.', '');
@@ -653,15 +651,11 @@ class EnterpriseDashboardController extends ApplicationController
                     $tmp             = $commercialSheet->getAdvancePayment();
                     $tmp             = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
                     $amountRecettes += $tmp;
-                    /*if (!$xamountRecettesPer->contains($date)) {
-                        $xamountRecettesPer[]       = $date;
-                        $amountRecettesPer[$index2]  = $tmp;
-                        $precIndex2 = $index2;
-                        $index2++;
-                    } else {
-                        //$tmp                         = $tmp == null ? '0' : number_format((float) floatval($tmp), 2, '.', '');
-                        $amountRecettesPer[$precIndex2]  += $tmp;
-                    }*/
+                    foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
+                        if ($commercialSheetItem->getItemOfferType() != 'Simple') {
+                            $nbProductsSold += $commercialSheetItem->getQuantity();
+                        }
+                    }
                 }
                 $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
                 $amountRecettes = number_format((float) $amountRecettes, 2, '.', '');
@@ -921,8 +915,27 @@ class EnterpriseDashboardController extends ApplicationController
 
                     ))
                     ->getResult();
-            }
 
+                /*$nbProductsSold_ = $manager->createQuery("SELECT SUM(cmsi.quantity) AS Qty
+                                            FROM App\Entity\CommercialSheetItem cmsi
+                                            INNER JOIN cmsi.commercialSheet cms
+                                            INNER JOIN cms.user u
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = 'bill'
+                                            AND cmsi.itemOfferType != 'Simple'
+                                            AND cms.deliveryStatus = 1 OR cms.completedStatus = 1
+                                            AND e.id = :entId
+                                            AND cms.createdAt >= :startDate                                                                                  
+                                            AND cms.createdAt <= :endDate                                                                                                                            
+                                        ")
+                    ->setParameters(array(
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
+                        'startDate' => $startDate,
+                        'endDate'   => $endDate,
+                    ))
+                    ->getResult();*/
+            }
+            dump($nbProductsSold);
             $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
@@ -1096,22 +1109,8 @@ class EnterpriseDashboardController extends ApplicationController
                 $xexpensesPer[] = $d['jour'];
                 $expensesAmountPer[]   = number_format((float) $d['amount'], 2, '.', '');
             }*/
-            $nbProductsSold_ = $manager->createQuery("SELECT COUNT(cmsi.designation) AS Designation
-                                            FROM App\Entity\CommercialSheetItem cmsi
-                                            JOIN cmsi.commercialSheet cms
-                                            JOIN cms.user u
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = 'bill'
-                                            AND cmsi.itemOfferType != 'Simple'
-                                            AND cms.deliveryStatus = 1 OR cms.completedStatus = 1
-                                            AND e.id = :entId
-                                                                                                                                                                        
-                                        ")
-                ->setParameters(array(
-                    'entId'   => $this->getUser()->getEnterprise()->getId(),
-                ))
-                ->getResult();
-            $nbProductsSold = $nbProductsSold_[0]['Designation'];
+
+            // $nbProductsSold = $nbProductsSold_[0]['Qty'];
             $billNb     = $sheetNb['bill'][0]['sheetNb'];
             $quoteNb    = $sheetNb['quote'][0]['sheetNb'];
             $purchaseNb = $sheetNb['purchaseorder'][0]['sheetNb'];
