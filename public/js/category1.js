@@ -29,6 +29,12 @@ $('#add-products').click(function () {
         // var productDescriptionId = '#category_products_' + index + '_productDescription';
         // var productHasStockId = '#category_products_' + index + '_productHasStock';
 
+        $(productNameId).select2({
+            width: '100%',
+            //height: '300%',
+            //dropdownCssClass: "custom-select"
+        });
+
         //Ajout de l'option fictive de gestion des options à retire des autres select list
         // var Opt = new Option("Select a Product", "-1");
         // $(productsId).append(Opt);

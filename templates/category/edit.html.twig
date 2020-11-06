@@ -3,6 +3,7 @@
 {% block title %} Modification d'une Catégorie {% endblock %}
 
 {% block stylesheets %}
+<link href="/plugins/select2/select2.min.css" rel="stylesheet" type="text/css" />
 
 {% endblock %}
 
@@ -54,6 +55,9 @@
 {% endblock %}
 
 {% block javascripts %}
+<!-- Plugins js -->
+<script src="/plugins/select2/select2.min.js"></script>
+
 <script>
     $('#saveBtn').click(function(){
         //block of code that runs when the click event triggers
@@ -79,6 +83,6 @@
     }
     
 </script>
-<script src="/js/category.js"></script>
+<script src="/js/category1.js"></script>
 
 {% endblock %}

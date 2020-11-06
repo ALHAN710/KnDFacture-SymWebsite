@@ -11,7 +11,7 @@
         
         <div class="form-group mt-4 text-right">
             <button type="button" id="add-products" class="btn btn-primary mr-2 waves-effect" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau produit à la catégorie">
-                <i class="fas fa-plus-circle mr-2"></i>Produits
+                <i class="fas fa-plus-circle mr-2"></i>Produit
             </button>
             
         </div>
@@ -35,7 +35,7 @@
                             {# <div class="input-group-prepend">
                                 {{ form_label(form.reference, null, {'label_attr': {'class': 'input-group-text'}}) }}
                             </div> #}
-                            {{ form_widget(form.productName, {'attr': {'class': "form-control text-center"}}) }}
+                            {{ form_widget(form.productName, {'attr': {'class': "form-control text-center select2 custom-select"}}) }}
                             
                         </div>
                     </div>

@@ -117,22 +117,29 @@ class CategoryController extends AbstractController
             //dump($category->getProducts());
             foreach ($category->getProducts() as $product) {
 
-                //dump($product);
+                //dump($product->getProductName());
                 // $category->addProduct($product);
                 //$product->addCategory($category);
-                //Je vérifie si l'item est déjà existant en BDD pour éviter les doublons 
-                $product_ = $product->getProductName();
+                //Je vérifie si le produit est déjà existant en BDD pour éviter les doublons 
+                $product_ = $manager->getRepository('App:Product')->findOneBy(['name' => $product->getProductName()->getName(), 'enterprise' => $category->getEntreprise()]);
+                // $product->addCategory($category);
+                // $manager->persist($product);
 
                 if (empty($product_)) {
-                    $product->addCategory($category);
-                    $manager->persist($product);
+                    //$product->addCategory($category);
+                    //$manager->persist($product);
+                    $category->removeProduct($product);
                     //dump('product dont exists ');
                 } else {
                     //dump('product exists with id = ' . $product_->getId());
-                    //$product = $product_;
-                    $product_->addCategory($category);
-                    $category->addProduct($product_);
-                    $category->removeProduct($product);
+                    if (!$product_->getCategories()->contains($category)) {
+                        //dump("product don't have a category " . $category->getName());
+                        $category->removeProduct($product);
+                        $product = $product_;
+                        $product->addCategory($category);
+                        $category->addProduct($product);
+                        $manager->persist($product);
+                    }
                 }
                 // $manager->persist($category);
                 //$manager->persist($product);
