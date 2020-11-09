@@ -233,7 +233,8 @@ class AccountController extends ApplicationController
         ]);
 
         $form->handleRequest($request);
-
+        $lastRole = $user_->getRoles()[0];
+        dump($lastRole);
         if ($form->isSubmitted() && $form->isValid()) {
             //$hash = $encoder->encodePassword($user_, $user_->getHash());
 
@@ -242,19 +243,17 @@ class AccountController extends ApplicationController
             $userRole_ = $roleRepo->findOneBy(['title' => $user_->getRole()]);
             if ($userRole_) {
                 $userRole = $userRole_;
-                $userRole->addUser($user_);
 
                 //dump($userRole);
             } else {
                 //dump("Role don't exists");
                 $userRole = new Role();
-                $userRole->setTitle($user_->getRole())
-                    ->addUser($user_);
+                $userRole->setTitle($user_->getRole());
             }
+            $lastRole_ = $roleRepo->findOneBy(['title' => $lastRole]);
+            $lastRole_->removeUser($user_);
+            $userRole->addUser($user_);
             $manager->persist($userRole);
-
-            // $date = new DateTime(date('Y-m-d H:i:s'));
-            // $user->setCreatedAt($date);
 
             $user_->addUserRole($userRole);
 

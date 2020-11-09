@@ -7,6 +7,7 @@ use App\Entity\Role;
 use App\Entity\User;
 use Cocur\Slugify\Slugify;
 use App\Form\RegistrationType;
+use App\Repository\RoleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,7 +42,7 @@ class UserEntrepriseController extends AbstractController
      * 
      * @return Response
      */
-    public function edit($user, EntityManagerInterface $manager, Request $request, UserPasswordEncoderInterface $encoder)
+    public function edit($user, EntityManagerInterface $manager, Request $request, RoleRepository $roleRepo, UserPasswordEncoderInterface $encoder)
     { //@Route("/user/{id<\d+>}/new", name = "user_edit")
         // $user = new User();
         $slugify = new Slugify();
@@ -49,15 +50,26 @@ class UserEntrepriseController extends AbstractController
 
         $form->handleRequest($request);
 
+        $lastRole = $user->getRoles()[0];
+        //dump($lastRole);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $hash = $encoder->encodePassword($user, $user->getHash());
 
-            $userRole = new Role();
-            $userRole->setTitle($user->getRole());
-            $date = new DateTime(date('Y-m-d H:i:s'));
-            $user->setCreatedAt($date);
+            $userRole = null;
+            //$userRole_ = $manager->getRepository('App:Role')->findOneBy(['title' => $user->getRole()]);
+            $userRole_ = $roleRepo->findOneBy(['title' => $user->getRole()]);
+            if ($userRole_) {
+                $userRole = $userRole_;
 
-
+                //dump($userRole);
+            } else {
+                //dump("Role don't exists");
+                $userRole = new Role();
+                $userRole->setTitle($user->getRole());
+            }
+            $lastRole->removeUser($user);
+            $userRole->addUser($user);
             $manager->persist($userRole);
 
             $user->setHash($hash)

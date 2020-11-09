@@ -46,7 +46,7 @@
 
                             <tbody>
                                 {% for user in users %}
-                                {% if user.roles[0] != 'ROLE_SUPER_ADMIN' %}
+                                {% if user.roles[0] not in ['ROLE_HIDE_ADMIN','ROLE_SUPER_ADMIN'] %}
                                 <tr class="text-center">
                                     {# <td>{{user.id}}</td> #}
                                     <td class="text-left"><a href="{{ path('account_password',{'id':user.id}) }}">{{user.fullName}}</a></td>
