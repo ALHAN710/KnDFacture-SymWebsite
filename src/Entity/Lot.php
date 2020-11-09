@@ -197,6 +197,10 @@ class Lot
 
     public function getDlc(): ?\DateTimeInterface
     {
+        if (!empty($this->duration)) {
+            $this->dlc = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
+            $this->dlc->add(new DateInterval('P' . $this->duration . 'D'));
+        }
         return $this->dlc;
     }
 
