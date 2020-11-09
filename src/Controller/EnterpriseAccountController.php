@@ -20,7 +20,8 @@ class EnterpriseAccountController extends AbstractController
     /**
      * @Route("/enterprise/{id<\d+>}/account/profile", name="enterprise_account_profile")
      * 
-     *  @Security( "is_granted('ROLE_ADMIN') and enterprise === user.getEnterprise() " )
+     *  @Security( "(is_granted('ROLE_HIDE_ADMIN') or is_granted('ROLE_ADMIN')) and enterprise === user.getEnterprise() " )
+     * 
      */
     public function profile(Enterprise $enterprise, EntityManagerInterface $manager, Request $request)
     {

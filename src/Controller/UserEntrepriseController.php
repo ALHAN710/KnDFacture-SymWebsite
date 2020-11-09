@@ -21,7 +21,7 @@ class UserEntrepriseController extends AbstractController
     /**
      * @Route("/user/enterprise", name="users_entreprise_index")
      * 
-     * @IsGranted("ROLE_ADMIN")
+     *@Security( "is_granted('ROLE_HIDE_ADMIN') or is_granted('ROLE_ADMIN')" )
      * 
      */
     public function index(EntityManagerInterface $manager)

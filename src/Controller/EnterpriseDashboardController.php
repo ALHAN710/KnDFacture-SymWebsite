@@ -16,7 +16,7 @@ class EnterpriseDashboardController extends ApplicationController
     /**
      * @Route("/enterprise/{id<\d+>}/dashbord", name="enterprise_dashbord")
      * 
-     * @IsGranted("ROLE_ADMIN")
+     * @Security( "is_granted('ROLE_HIDE_ADMIN') or is_granted('ROLE_ADMIN')" )
      * 
      */
     public function index($id, EntityManagerInterface $manager)
@@ -169,7 +169,7 @@ class EnterpriseDashboardController extends ApplicationController
      * 
      * @Route("/enterprise/dashboard/update/", name="enterprise_dash_update")
      * 
-     * @IsGranted("ROLE_ADMIN") 
+     * @Security( "is_granted('ROLE_HIDE_ADMIN') or is_granted('ROLE_ADMIN')" )
      *
      * @param Request $request
      * @param EntityManagerInterface $manager
