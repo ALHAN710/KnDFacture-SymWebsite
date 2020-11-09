@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class LotType extends ApplicationType
 {
@@ -41,15 +42,6 @@ class LotType extends ApplicationType
                 'number',
                 TextType::class,
                 $this->getConfiguration("N° Lot", "Please enter the number of Lot...", [
-                    'attr' => [
-                        'min'   => '0',
-                    ]
-                ])
-            )
-            ->add(
-                'duration',
-                IntegerType::class,
-                $this->getConfiguration("Duration (days)", "Please enter the duration in days of Lot...", [
                     'attr' => [
                         'min'   => '0',
                     ]
@@ -103,6 +95,13 @@ class LotType extends ApplicationType
                     // 'multiple' => true,
                     // 'expanded' => true,
                 ]
+            )
+            ->add(
+                'dlc',
+                DateTimeType::class,
+                $this->getConfiguration("DLC", "Please enter the quantity of Lot...", [
+                    'widget' => "single_text"
+                ])
             );
         // if ($options['include_product']) {
         //     $builder
@@ -112,8 +111,18 @@ class LotType extends ApplicationType
         //     $builder
         //         ;
         // }
-        //->add('dlc')
         //->add('createdAt')
+        /*
+        ->add(
+                'duration',
+                IntegerType::class,
+                $this->getConfiguration("Duration (days)", "Please enter the duration in days of Lot...", [
+                    'attr' => [
+                        'min'   => '0',
+                    ]
+                ])
+            )
+        */
     }
 
     public function configureOptions(OptionsResolver $resolver)
