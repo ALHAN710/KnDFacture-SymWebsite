@@ -216,7 +216,7 @@ class AccountController extends ApplicationController
      *
      * @Route("/user/{id<\d+>}/edit", name = "user_edit")
      * 
-     * @Security( "is_granted('ROLE_HIDE_ADMIN') or ( is_granted('ROLE_ADMIN') and user_.getEnterprise() === user.getEnterprise() )" )
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_HIDE_ADMIN') or ( is_granted('ROLE_ADMIN') and user_.getEnterprise() === user.getEnterprise() )" )
      * 
      * @return Response
      */
