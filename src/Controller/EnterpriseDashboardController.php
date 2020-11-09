@@ -986,7 +986,7 @@ class EnterpriseDashboardController extends ApplicationController
                         'endDate'   => $endDate,
                     ))
                     ->getResult();
-                dump($nbNewCustomer[0]['nbNewCustomer']);
+                //dump($nbNewCustomer[0]['nbNewCustomer']);
             }
             //dump($nbProductsSold);
             $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
@@ -1166,7 +1166,7 @@ class EnterpriseDashboardController extends ApplicationController
             foreach ($customers as $customer) {
                 if ($customer->getType() === 'customer') $nbCustomer++;
             }
-            dump($nbCustomer);
+            //dump($nbCustomer);
             //dump($bestSellingProdCategory);
             /*foreach ($turnOverPer as $d) {
                 $xturnOverPer[] = $d['jour'];
