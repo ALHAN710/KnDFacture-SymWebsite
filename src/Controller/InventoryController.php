@@ -393,13 +393,13 @@ class InventoryController extends ApplicationController
                 //dump($Stats);
                 $sum = 0.0;
                 $AVG = 0.0;
-                $min = 0;
-                $max = 0;
+                // $min = 0;
+                // $max = 0;
                 $ET  = 0;
 
                 if ($nb > 0) {
-                    $min =  array_key_exists(0, $Stats) ? $Stats['' . $product->getId()][0]['qtyTotal'] : 0;
-                    $max = array_key_exists($nb - 1, $Stats) ? $Stats['' . $product->getId()][$nb - 1]['qtyTotal'] : 0;
+                    // $min =  array_key_exists(0, $Stats) ? $Stats['' . $product->getId()][0]['qtyTotal'] : 0;
+                    // $max = array_key_exists($nb - 1, $Stats) ? $Stats['' . $product->getId()][$nb - 1]['qtyTotal'] : 0;
                     foreach ($Stats['' . $product->getId()] as $key => $value) {
                         $sum += $value['qtyTotal'];
                     }
@@ -424,8 +424,8 @@ class InventoryController extends ApplicationController
                     'Name' => $product->getName(),
                     'AVG'  => $AVG,
                     'ET'   => $ET,
-                    'MAX'  => $max,
-                    'MIN'  => $min,
+                    // 'MAX'  => $max,
+                    // 'MIN'  => $min,
                 ];
 
                 $inventoryAvailability[] = [
