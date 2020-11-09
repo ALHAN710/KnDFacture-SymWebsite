@@ -216,7 +216,7 @@ class AccountController extends ApplicationController
      *
      * @Route("/user/{id<\d+>}/edit", name = "user_edit")
      * 
-     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_ADMIN') and user_.getEnterprise() === user.getEnterprise() )" )
+     * @Security( "is_granted('ROLE_HIDE_ADMIN') or ( is_granted('ROLE_ADMIN') and user_.getEnterprise() === user.getEnterprise() )" )
      * 
      * @return Response
      */
@@ -234,7 +234,7 @@ class AccountController extends ApplicationController
 
         $form->handleRequest($request);
         $lastRole = $user_->getRoles()[0];
-        dump($lastRole);
+        //dump($lastRole);
         if ($form->isSubmitted() && $form->isValid()) {
             //$hash = $encoder->encodePassword($user_, $user_->getHash());
 
