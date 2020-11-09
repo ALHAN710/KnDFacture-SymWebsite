@@ -40,17 +40,18 @@ security:
         - { path: ^/admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/admin, roles: ROLE_SUPER_ADMIN, requires_channel: https }
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
-        #- { path: ^/data/mod, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/account/recover/password, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
-        # - { path: ^/account/code-verification, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
-        # - { path: ^/profile, roles: ROLE_USER } 
+        - { path: ^/account/code-verification, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         # catch all other URLs
         - { path: ^/, roles: ROLE_USER, requires_channel: https }
+        # - { path: ^/profile, roles: ROLE_USER } 
         
 
     # La partie role_hierarchy contient la hiérarchie des rôles
     # Un éditeur sera également utilisateur
     # Un administrateur sera également éditeur et donc utilisateur
     role_hierarchy:
+        ROLE_SELLER: ROLE_USER
         ROLE_STOCK_MANAGER: ROLE_USER
         ROLE_ADMIN: ROLE_STOCK_MANAGER
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
