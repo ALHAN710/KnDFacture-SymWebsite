@@ -279,7 +279,7 @@ class CommercialSheetController extends ApplicationController
 
                                             if ($qtyToRemove > 0) { //Si la quantité du produit est > 0 alors la commande n'est pas valide
                                                 $commercialSheetItemErrorFlag = true;
-                                                $message = $message . "<li>the quantity ({$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()} cannot be deducted from a consumable lot</li>";
+                                                $message = $message . "<li>the quantity ({$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()}) cannot be deducted from a consumable lot</li>";
                                                 //dump('commercialSheetItemErrorFlag = ' . $commercialSheetItemErrorFlag);
                                             } else { //Sinon mettre à jour la disponibilité en stock de ce produit
                                                 //dump($inventoryAvailability);
@@ -291,7 +291,7 @@ class CommercialSheetController extends ApplicationController
                                         $manager->persist($commercialSheetItem);
                                     } else {
                                         $commercialSheetItemErrorFlag = true;
-                                        $message = $message . "<li>the quantity ({$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()} is greater than the availability ({$inventoryAvailability->getAvailable()})</li>";
+                                        $message = $message . "<li>the quantity ({$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()}) is greater than the availability ({$inventoryAvailability->getAvailable()})</li>";
                                     }
 
                                     /*foreach ($inventoryAvailabilities as $inventoryAvailability) {
@@ -408,13 +408,13 @@ class CommercialSheetController extends ApplicationController
                         $message = $message . "</ul>";
                         //dd($message);
                         $this->addFlash(
-                            'success',
+                            'danger',
                             "The backup of the {$commercialSheet->getType()} failed because <p>" . $message . "</p>"
                         );
                     }
                 } else { //Sinon redirection vers la page des partenaires d'affaire
                     $this->addFlash(
-                        'success',
+                        'danger',
                         "The backup of the {$commercialSheet->getType()} failed because you have already reached the monthly document limit to generate"
                     );
 
@@ -423,7 +423,7 @@ class CommercialSheetController extends ApplicationController
             } else { //Sinon redirection vers la page de réabonnement
                 $message = $message . "</ul>";
                 $this->addFlash(
-                    'success',
+                    'danger',
                     "The backup of the {$commercialSheet->getType()} failed because <p>" . $message . "</p>"
                 );
 
