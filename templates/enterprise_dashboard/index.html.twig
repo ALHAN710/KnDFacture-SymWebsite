@@ -255,7 +255,7 @@
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title mt-0" id="myModalLabel">Classement des produits par Total de Vente</h5>
+                                    <h5 class="modal-title mt-0" id="myModalLabel">Classement Général des produits par Total de Vente</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                 </div>
                                 <div class="modal-body table-responsive">
@@ -383,7 +383,7 @@
     
     <div class="row">
         <div class="col-lg-6">
-            <div class="card carousel-bg-img">
+            <div class="card carousel-bg-img" style="height:260px;">
                 <div class="card-body dash-info-carousel mb-0">
                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
@@ -391,8 +391,8 @@
                                 <div class="row">                                            
                                     <div class="col-12 align-self-center">
                                         <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">Nombre de factures éditées</h4>
-                                            <div class="icon-info my-3">
+                                            <h6 class="mt-0 header-title text-left">Total facture de vente éditée</h6>
+                                            <div class="icon-info my-5">
                                                 <i class="mdi mdi-file-table-outline bg-soft-pink"></i>
                                             </div>
                                             <h2 class="mt-0 font-weight-bold text-dark"><span id="nbBill">0</span></h2> 
@@ -405,8 +405,8 @@
                                 <div class="row">                                            
                                     <div class="col-12 align-self-center">
                                         <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">Nombre de bons de commandes édités</h4>
-                                            <div class="icon-info my-3">
+                                            <h6 class="mt-0 header-title text-left">Total facture d'achat édité</h6>
+                                            <div class="icon-info my-5">
                                                 <i class="mdi mdi-file-table-outline bg-soft-info"></i>
                                             </div>
                                             <h2 class="mt-0 font-weight-bold text-dark"><span id="nbPurchaseOrder">0</span></h2> 
@@ -420,8 +420,8 @@
                                 <div class="row">                                            
                                     <div class="col-12 align-self-center">
                                         <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">Nombre de dévis édités</h4>
-                                            <div class="icon-info my-3">
+                                            <h6 class="mt-0 header-title text-left">Total dévis édités</h6>
+                                            <div class="icon-info my-5">
                                                 <i class="mdi mdi-file-table-outline bg-soft-primary"></i>
                                             </div>
                                             <h2 class="mt-0 font-weight-bold text-dark"><span id="nbQuote">0</span></h2> 
@@ -434,8 +434,8 @@
                                 <div class="row">                                            
                                     <div class="col-12 align-self-center">
                                         <div class="text-center">
-                                            <h4 class="mt-0 header-title text-left">Nombre de dévis convertis</h4>
-                                            <div class="icon-info my-3">
+                                            <h6 class="mt-0 header-title text-left">Total dévis convertis</h6>
+                                            <div class="icon-info my-5">
                                                 <i class="mdi mdi-file-table-outline bg-soft-warning"></i>
                                             </div>
                                             <h2 class="mt-0 font-weight-bold text-dark"><span id="nbConvertedQuote">0</span></h2> 
@@ -459,23 +459,55 @@
             </div><!--end card-->
         </div><!--end col--> 
 
-        <div class="col-lg-6">                
-            <div class="card overflow-hidden">
-                <div class="card-body bg-gradient2">
-                    <div class="">
-                        <div class="card-icon">
-                            <i class="mdi mdi-google-pages"></i>
-                        </div>
-                        <h2 class="font-weight-bold text-white"><span id="nbProductsSold">0</span></h2>
-                        <p class="text-white mb-0 font-16">Nombre de Produits vendus</p>                                            
-                    </div>
-                </div><!--end card-body-->
-                {# <div class="card-body">
-                    <div class="">
-                        <div id="d1_payment" class="apex-charts"></div>
-                    </div> 
-                </div><!--end card-body--> #}
-            </div><!--end card-->
+        <div class="col-lg-6">  
+            <div class="row">
+                <div class="col">
+                    <div class="card overflow-hidden">
+                        <div class="card-body bg-gradient2">
+                            <div class="">
+                                <div class="card-icon">
+                                    <i class="mdi mdi-google-pages"></i>
+                                </div>
+                                <h2 class="font-weight-bold text-white"><span id="nbProductsSold">0</span></h2>
+                                <p class="text-white mb-0 font-16">Nombre de Produits vendus</p>                                            
+                            </div>
+                        </div><!--end card-body-->
+                        {# <div class="card-body">
+                            <div class="">
+                                <div id="d1_payment" class="apex-charts"></div>
+                            </div> 
+                        </div><!--end card-body--> #}
+                    </div><!--end card-->
+                </div>
+            </div>              
+            <div class="row">
+                <div class="col">
+                    <div class="card overflow-hidden">
+                        <div class="card-body bg-gradient1">
+                            <div class="">
+                                <div class="card-icon">
+                                    <i class="mdi mdi-account-multiple"></i>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <h2 class="font-weight-bold text-white"><span id="nbNewCustomer">0</span></h2>
+                                        <p class="text-white mb-0 font-16">Nouveaux Clients Enregistrés</p>    
+                                    </div>
+                                    <div class="col text-right">
+                                        <h2 class="font-weight-bold text-white"><span id="nbCustomer">0</span></h2>
+                                        <p class="text-white mb-0 font-16">Total Clients Enregistrés</p>  
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!--end card-body-->
+                        {# <div class="card-body">
+                            <div class="">
+                                <div id="d1_payment" class="apex-charts"></div>
+                            </div> 
+                        </div><!--end card-body--> #}
+                    </div><!--end card-->
+                </div>
+            </div>              
         </div>
 
     </div><!--end row-->
@@ -629,7 +661,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                     timeout: 120000,//64241
                     success: function (data) {
                         //$('.fa-sync').removeClass('fa-spin');                                  
-                        console.log(data);
+                        //console.log(data);
                         $('#turnOver').text(data['turnOverHT']);
                         //$('#amountRecettes').text(data['amountRecettes']);
                         //$('#expenses').text(data['expenses']);
@@ -640,7 +672,12 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                         $('#DFHT').text(data['outstandingDebt']);
                         $('#outstandingClaim').text(data['outstandingClaim']);
                         $('#nbProductsSold').text(data['nbProductsSold']);
+                        $('#nbNewCustomer').text(data['nbNewCustomer']);
+                        $('#nbCustomer').text(data['nbCustomer']);
 
+                        tableProduct.clear().draw();
+                        var n = -1;
+                        
                         //console.log('Type of best : ' + typeof data['bestSellingProducts'] );
                         data['bestSellingProducts'].forEach(function(item, index){
                             if(index < 10){
@@ -656,8 +693,33 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                 .row.add( [ String(index + 1), item['ref'], String(item['designation']), 
                                 String(item['pu']), String(item['totalSale']),String(item['amount'])] )
                                 .draw();
+
+                            n = index;
                         });
 
+                        if( n != -1 && n < 9){
+                            for(let i = n+1; i < 9; i++){
+                                $('#ref_' + i).text('####');
+                                $('#designation_' + i).text("");
+                                $('#pu_' + i).text('0');
+                                $('#totalSale_' + i).text('0');
+                                $('#amount_' + i).text('0');
+
+                            }
+                        }
+                        else{
+                            for(let i = 0; i < 9; i++){
+                                $('#ref_' + i).text('####');
+                                $('#designation_' + i).text("");
+                                $('#pu_' + i).text('0');
+                                $('#totalSale_' + i).text('0');
+                                $('#amount_' + i).text('0');
+
+                            }
+                        }
+
+                        tableCategory.clear().draw();
+                        n = -1;
                         data['bestSellingProdCategory'].forEach(function(item, index){
                             if(index < 10){
                                 $('#nameCat_' + index).text(item['name']);
@@ -668,7 +730,25 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                             tableCategory
                                 .row.add( [ String(index + 1), item['name'], String(item['totalSale']),String(item['amount'])] )
                                 .draw();
+
+                            n = index;
                         });
+
+                        if( n != -1 && n < 9){
+                            for(let i = n+1; i < 9; i++){
+                                $('#nameCat_' + i).text('####');
+                                $('#totalSaleCat_' + i).text("0");
+                                $('#amountCat_' + i).text("0");
+                            }
+                        }
+                        else{
+                            for(let i = 0; i < 9; i++){
+                                $('#nameCat_' + i).text('####');
+                                $('#totalSaleCat_' + i).text("0");
+                                $('#amountCat_' + i).text("0");
+
+                            }
+                        }
                         //console.log('flux tresorerie :' + typeof parseFloat(data['flux_tresorerie'][0]));
                         displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
                         {# displayNewData1(fluxTresorerieDonutChart, ["Recettes", "Dépenses Fournisseurs TTC"], [parseFloat(data['flux_tresorerie'][0]),parseFloat(data['flux_tresorerie'][1])], /*dateopt, */1, data['per']); #}
@@ -768,7 +848,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                         timeout: 120000,//64241
                         success: function (data) {
                             //$('.fa-sync').removeClass('fa-spin');                                  
-                            console.log(data);
+                            //console.log(data);
                             $('#turnOver').text(data['turnOverHT']);
                             //$('#amountRecettes').text(data['amountRecettes']);
                             //$('#expenses').text(data['expenses']);
@@ -779,8 +859,12 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                             $('#DFHT').text(data['outstandingDebt']);
                             $('#outstandingClaim').text(data['outstandingClaim']);
                             $('#nbProductsSold').text(data['nbProductsSold']);
+                            $('#nbNewCustomer').text(data['nbNewCustomer']);
+                            $('#nbCustomer').text(data['nbCustomer']);
 
                             //console.log('Type of best : ' + typeof data['bestSellingProducts'] );
+                            tableProduct.clear().draw();
+                            var n = -1;
                             data['bestSellingProducts'].forEach(function(item, index){
                                 $('#ref_' + index).text(item['ref']);
                                 $('#designation_' + index).text(item['designation']);
@@ -792,8 +876,32 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                     .row.add( [ String(index + 1), item['ref'], String(item['designation']), 
                                     String(item['pu']), String(item['totalSale']),String(item['amount'])] )
                                     .draw();
+                                n = index;
                             });
 
+                            if( n != -1 && n < 9){
+                                for(let i = n+1; i < 9; i++){
+                                    $('#ref_' + i).text('####');
+                                    $('#designation_' + i).text("");
+                                    $('#pu_' + i).text('0');
+                                    $('#totalSale_' + i).text('0');
+                                    $('#amount_' + i).text('0');
+
+                                }
+                            }
+                            else{
+                                for(let i = 0; i < 9; i++){
+                                    $('#ref_' + i).text('####');
+                                    $('#designation_' + i).text("");
+                                    $('#pu_' + i).text('0');
+                                    $('#totalSale_' + i).text('0');
+                                    $('#amount_' + i).text('0');
+
+                                }
+                            }
+                            
+                            tableCategory.clear().draw();
+                            n = -1;
                             data['bestSellingProdCategory'].forEach(function(item, index){
                                 $('#nameCat_' + index).text(item['name']);
                                 $('#totalSaleCat_' + index).text(item['totalSale']);
@@ -802,7 +910,25 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                 tableCategory
                                     .row.add( [ String(index + 1), item['name'], String(item['totalSale']),String(item['amount'])] )
                                     .draw();
+                                
+                                n = index;
                             });
+
+                            if( n != -1 && n < 9){
+                                for(let i = n+1; i < 9; i++){
+                                    $('#nameCat_' + i).text('####');
+                                    $('#totalSaleCat_' + i).text("0");
+                                    $('#amountCat_' + i).text("0");
+                                }
+                            }
+                            else{
+                                for(let i = 0; i < 9; i++){
+                                    $('#nameCat_' + i).text('####');
+                                    $('#totalSaleCat_' + i).text("0");
+                                    $('#amountCat_' + i).text("0");
+
+                                }
+                            }
                             
                             displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
                             {# displayNewData1(amountRecettesColumnChart, data['xamountRecettesPer'], data['amountRecettesPer'], /*dateopt, */1, data['per']);

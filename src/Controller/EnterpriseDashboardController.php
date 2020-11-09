@@ -194,14 +194,16 @@ class EnterpriseDashboardController extends ApplicationController
             $types   = ['bill', 'quote', 'purchaseorder'];
             $sheetNb = [];
             $convertedQuoteNb = null;
+            $cmss = null;
+            $nbNewCustomer = null;
             $turnOverHT = 0.0;
             $amountRecettes = 0.0;
             $expensesTTC = 0.0;
             $outstandingClaim = 0.0;
             $outstandingDebt = 0.0;
-            $nbProductsSold_ = null;
-            $turnOverPer = null;
-            $expensesPer = null;
+            // $nbProductsSold_ = null;
+            // $turnOverPer = null;
+            // $expensesPer = null;
             $billNb = 0;
             $quoteNb = 0;
             $purchaseNb = 0;
@@ -210,10 +212,10 @@ class EnterpriseDashboardController extends ApplicationController
             $per        = '';
             $xturnOverPer = new ArrayCollection();
             $turnOverAmountPer = new ArrayCollection();
-            $xamountRecettesPer = new ArrayCollection();
-            $amountRecettesPer = new ArrayCollection();
-            $xexpensesPer = new ArrayCollection();
-            $expensesAmountPer = new ArrayCollection();
+            // $xamountRecettesPer = new ArrayCollection();
+            // $amountRecettesPer = new ArrayCollection();
+            // $xexpensesPer = new ArrayCollection();
+            // $expensesAmountPer = new ArrayCollection();
 
             $startDate = new DateTime($paramJSON['startDate']);
             $endDate = new DateTime($paramJSON['endDate']);
@@ -509,6 +511,23 @@ class EnterpriseDashboardController extends ApplicationController
                     }*/
                 }
                 $expensesTTC = number_format((float) $expensesTTC, 2, '.', '');
+
+                $cmss = $manager->createQuery("SELECT cms 
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u 
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = 'bill'
+                                            AND e.id = :entId
+                                            AND cms.deliveryStatus = 1 OR cms.completedStatus = 1
+                                            AND e.id = :entId
+                                            AND cms.deliverAt LIKE :dat                                                                                  
+                                        ")
+                    ->setParameters(array(
+                        'entId'   => $this->getUser()->getEnterprise()->getId(),
+                        'dat'     => $endDate_,
+                    ))
+                    ->getResult();
+                //dump($cmss);
 
                 /*foreach ($purchaseOrders as $purchaseOrder_) {
                     $tmp          = $purchaseOrder_['EXTTC'] == null ? 0 : number_format((float) floatval($purchaseOrder_['EXTTC']), 2, '.', '');
@@ -934,8 +953,42 @@ class EnterpriseDashboardController extends ApplicationController
                         'endDate'   => $endDate,
                     ))
                     ->getResult();*/
+
+
+
+                $cmss = $manager->createQuery("SELECT cms 
+                                            FROM App\Entity\CommercialSheet cms
+                                            JOIN cms.user u 
+                                            JOIN u.enterprise e
+                                            WHERE cms.type = 'bill'
+                                            AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
+                                            AND cms.deliverAt >= :startDate                                                                                  
+                                            AND cms.deliverAt <= :endDate                                                                                  
+                                            AND e.id = :entId
+                                        ")
+                    ->setParameters(array(
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
+                        'startDate' => $startDate,
+                        'endDate'   => $endDate,
+                    ))
+                    ->getResult();
+                //dump($cmss);
+                $nbNewCustomer = $manager->createQuery("SELECT COUNT(b.socialReason) AS nbNewCustomer
+                                            FROM App\Entity\BusinessContact b, App\Entity\Enterprise e
+                                            WHERE b.type = 'customer'
+                                            AND b.createdAt >= :startDate                                                                                  
+                                            AND b.createdAt <= :endDate                                                                                  
+                                            AND e.id = :entId
+                                        ")
+                    ->setParameters(array(
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
+                        'startDate' => $startDate,
+                        'endDate'   => $endDate,
+                    ))
+                    ->getResult();
+                dump($nbNewCustomer[0]['nbNewCustomer']);
             }
-            dump($nbProductsSold);
+            //dump($nbProductsSold);
             $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
                                             FROM App\Entity\CommercialSheet cms
                                             JOIN cms.user u 
@@ -963,7 +1016,7 @@ class EnterpriseDashboardController extends ApplicationController
                     'type_'   => 'purchaseorder',
                 ))
                 ->getResult();
-            //dump($billPaymentOnpending);
+
             $outstandingClaim = 0.0;
             foreach ($billPaymentOnpending as $commercialSheet) {
                 //dump($commercialSheet['paymentOnPending']->getAmountRestToPaid());
@@ -1011,7 +1064,7 @@ class EnterpriseDashboardController extends ApplicationController
                 //->setMaxResults(10)
                 ->getResult();
             dump($bestSellingProducts);*/
-            $cmss = $manager->getRepository('App:CommercialSheet')->findAll();
+            //$cmss = $manager->getRepository('App:CommercialSheet')->findAll();
             $index = 0;
             foreach ($cmss as $cms) {
                 if (($cms->getType() === 'bill') && ($cms->getUser()->getEnterprise() === $this->getUser()->getEnterprise())) {
@@ -1051,9 +1104,13 @@ class EnterpriseDashboardController extends ApplicationController
                     }
                 }
             }
-            usort($bestSellingProducts, function ($item1, $item2) {
-                return $item2['totalSale'] <=> $item1['totalSale'];
-            });
+
+            if (!empty($bestSellingProducts)) {
+                //Rangement par ordre décroissant de total de vente
+                usort($bestSellingProducts, function ($item1, $item2) {
+                    return $item2['totalSale'] <=> $item1['totalSale'];
+                });
+            }
             $bestSellingProdCategory = [];
             $tmpArray = new ArrayCollection();
             // $categoryRepo = $manager->getRepository('App:Category');
@@ -1096,9 +1153,20 @@ class EnterpriseDashboardController extends ApplicationController
                     }
                 }
             }
-            usort($bestSellingProdCategory, function ($item1, $item2) {
-                return $item2['totalSale'] <=> $item1['totalSale'];
-            });
+            if (!empty($bestSellingProdCategory)) {
+                //Rangement par ordre décroissant de total de vente
+                usort($bestSellingProdCategory, function ($item1, $item2) {
+                    return $item2['totalSale'] <=> $item1['totalSale'];
+                });
+            }
+
+            $nbCustomer = 0;
+
+            $customers = $this->getUser()->getEnterprise()->getBusinessContacts();
+            foreach ($customers as $customer) {
+                if ($customer->getType() === 'customer') $nbCustomer++;
+            }
+            dump($nbCustomer);
             //dump($bestSellingProdCategory);
             /*foreach ($turnOverPer as $d) {
                 $xturnOverPer[] = $d['jour'];
@@ -1139,6 +1207,8 @@ class EnterpriseDashboardController extends ApplicationController
                 'nbProductsSold'          => $nbProductsSold,
                 'outstandingDebt'         => $outstandingDebt,
                 'outstandingClaim'        => $outstandingClaim,
+                'nbCustomer'              => $nbCustomer,
+                'nbNewCustomer'          => $nbNewCustomer[0]['nbNewCustomer'],
             ], 200);
         }
         return $this->json([
