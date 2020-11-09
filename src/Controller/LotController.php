@@ -155,7 +155,7 @@ class LotController extends ApplicationController
      */
     public function edit(Lot $lot, Request $request, EntityManagerInterface $manager)
     {
-        $include_product = true;
+        $include_product = false;
         $include_inventory = false;
 
         $inventories = $manager->getRepository('App:Inventory')->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
