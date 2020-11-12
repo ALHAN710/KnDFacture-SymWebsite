@@ -1209,7 +1209,7 @@ class EnterpriseDashboardController extends ApplicationController
                 'outstandingDebt'         => $outstandingDebt,
                 'outstandingClaim'        => $outstandingClaim,
                 'nbCustomer'              => $nbCustomer,
-                'nbNewCustomer'          => $nbNewCustomer[0]['nbNewCustomer'],
+                'nbNewCustomer'          => $nbNewCustomer[0]['nbNewCustomer'] ?? 0,
             ], 200);
         }
         return $this->json([

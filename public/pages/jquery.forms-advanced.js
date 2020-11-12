@@ -216,7 +216,7 @@
             alert("You are " + years + " years old!");
         });
 */
-        var start = moment().subtract(29, 'days');
+        var start = moment().subtract(0, 'days');
         var end = moment();
 
         function cb(start, end) {
