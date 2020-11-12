@@ -186,6 +186,7 @@ class LotController extends ApplicationController
                 //MAJ de la disponibilité
                 if ($diff > 0) {
                     $add = $inventoryAvailability->getAvailable() - $diff;
+                    $add = $add >= 0 ? $add : 0;
                     $inventoryAvailability->setAvailable($add);
                     $stockMovement->setType('Manual Exit');
                 } else {

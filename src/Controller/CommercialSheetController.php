@@ -204,13 +204,14 @@ class CommercialSheetController extends ApplicationController
                                             foreach ($lots as $lot) {
                                                 if ($lot->getQuantity() > 0) {
                                                     //On vérifie si la lot n'est pas arrivé à date d'expiration
-                                                    $nowDate = new DateTime("now");
-                                                    $this->periodofvalidity = new DateTime($lot->getDlc()->format('Y/m/d'));
+                                                    //$nowDate = new DateTime("now");
+                                                    //$this->periodofvalidity = new DateTime($lot->getDlc()->format('Y/m/d'));
                                                     //$this->periodofvalidity->add(new DateInterval('P' . $this->duration . 'D'));
-                                                    $interval = $nowDate->diff($this->periodofvalidity);
+                                                    //$interval = $nowDate->diff($this->periodofvalidity);
                                                     //$valid = !$interval->invert;
 
-                                                    if (!$interval->invert) { // Si le lot est encore consommable
+                                                    //if (!$interval->invert) { // Si le lot est encore consommable
+                                                    if ($lot->getAlert()) { // Si le lot est encore consommable
                                                         $diff = $lot->getQuantity() - $qtyToRemove;
                                                         //dump($lot);
                                                         //dump('diff = ' . $diff);
@@ -281,7 +282,7 @@ class CommercialSheetController extends ApplicationController
                                                 $commercialSheetItemErrorFlag = true;
                                                 $message = $message . "<li>the quantity ({$commercialSheetItem->getQuantity()}) requested for the product({$commercialSheetItem->getProduct()->getName()}) cannot be deducted from a consumable lot</li>";
                                                 //dump('commercialSheetItemErrorFlag = ' . $commercialSheetItemErrorFlag);
-                                            } else { //Sinon mettre à jour la disponibilité en stock de ce produit
+                                            } else if ($qtyToRemove === 0) { //Sinon mettre à jour la disponibilité en stock de ce produit
                                                 //dump($inventoryAvailability);
                                                 $inventoryAvailability->setAvailable($commercialSheetItem->getAvailable());
                                                 //dump($inventoryAvailability);
