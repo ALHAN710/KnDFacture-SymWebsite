@@ -225,7 +225,7 @@ class EnterpriseDashboardController extends ApplicationController
 
             if ($interval->days == 0) {
                 $endDate_ = $endDate->format('Y-m-d');
-                $endDate_ = '%' . $endDate_ . '%';
+                $endDate_ = $endDate_ . '%';
                 $per = 'hour';
 
                 //Détermination du nombre de Document réalisé par type
@@ -301,11 +301,9 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $bills = $manager->createQuery("SELECT cms
                                                 FROM App\Entity\CommercialSheet cms
-                                                JOIN cms.user u 
-                                                JOIN u.enterprise e
-                                                WHERE cms.type = :type_
+                                                WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                                AND cms.type = :type_
                                                 AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                                AND e.id = :entId
                                                 AND cms.deliverAt LIKE :dat  
                                                 ORDER BY cms.deliverAt ASC                                                                               
                                         ")
@@ -316,7 +314,7 @@ class EnterpriseDashboardController extends ApplicationController
                     ))
                     ->getResult();
 
-                //dd($bills);
+                //dump($bills);
                 $index = 0;
                 $index2 = 0;
                 $precIndex = 0;
@@ -478,11 +476,9 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $purchaseOrders = $manager->createQuery("SELECT cms
                                             FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = :type_
+                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            AND cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                            AND e.id = :entId
                                             AND cms.deliverAt LIKE :dat                                                                                  
                                             ORDER BY cms.deliverAt ASC
                                         ")
@@ -515,12 +511,9 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $cmss = $manager->createQuery("SELECT cms 
                                             FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = 'bill'
-                                            AND e.id = :entId
-                                            AND cms.deliveryStatus = 1 OR cms.completedStatus = 1
-                                            AND e.id = :entId
+                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            AND cms.type = 'bill'
+                                            AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
                                             AND cms.deliverAt LIKE :dat                                                                                  
                                         ")
                     ->setParameters(array(
@@ -529,6 +522,20 @@ class EnterpriseDashboardController extends ApplicationController
                     ))
                     ->getResult();
                 //dump($cmss);
+
+                $nbNewCustomer = $manager->createQuery("SELECT COUNT(b) AS nbNewCustomer
+                                            FROM App\Entity\BusinessContact b
+                                            INNER JOIN b.enterprises e
+                                            WHERE b.type = 'customer'
+                                            AND e.id = :entId
+                                            AND b.createdAt LIKE :dat  
+                                        ")
+                    ->setParameters(array(
+                        'entId'     => $this->getUser()->getEnterprise()->getId(),
+                        'dat'     => $endDate_,
+                    ))
+                    ->getResult();
+                dump($nbNewCustomer);
 
                 /*foreach ($purchaseOrders as $purchaseOrder_) {
                     $tmp          = $purchaseOrder_['EXTTC'] == null ? 0 : number_format((float) floatval($purchaseOrder_['EXTTC']), 2, '.', '');
@@ -629,11 +636,9 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $bills = $manager->createQuery("SELECT cms
                                             FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = :type_
+                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            AND cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                            AND e.id = :entId
                                             AND cms.deliverAt >= :startDate                                                                                  
                                             AND cms.deliverAt <= :endDate  
                                             ORDER BY cms.deliverAt ASC                                                                               
@@ -812,11 +817,9 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $purchaseOrders = $manager->createQuery("SELECT cms
                                             FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = :type_
+                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            AND cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                            AND e.id = :entId
                                             AND cms.deliverAt >= :startDate                                                                                  
                                             AND cms.deliverAt <= :endDate                                                                                   
                                             ORDER BY cms.deliverAt ASC
@@ -959,13 +962,12 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $cmss = $manager->createQuery("SELECT cms 
                                             FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = 'bill'
+                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            AND cms.type = 'bill'
                                             AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
                                             AND cms.deliverAt >= :startDate                                                                                  
                                             AND cms.deliverAt <= :endDate                                                                                  
-                                            AND e.id = :entId
+                                            
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
@@ -974,12 +976,13 @@ class EnterpriseDashboardController extends ApplicationController
                     ))
                     ->getResult();
                 //dump($cmss);
-                $nbNewCustomer = $manager->createQuery("SELECT COUNT(b.socialReason) AS nbNewCustomer
-                                            FROM App\Entity\BusinessContact b, App\Entity\Enterprise e
+                $nbNewCustomer = $manager->createQuery("SELECT COUNT(b) AS nbNewCustomer
+                                            FROM App\Entity\BusinessContact b
+                                            INNER JOIN b.enterprises e
                                             WHERE b.type = 'customer'
-                                            AND b.createdAt >= :startDate                                                                                  
-                                            AND b.createdAt <= :endDate                                                                                  
                                             AND e.id = :entId
+                                            AND b.createdAt >= :startDate                                                                                  
+                                            AND b.createdAt <= :endDate
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
@@ -987,16 +990,14 @@ class EnterpriseDashboardController extends ApplicationController
                         'endDate'   => $endDate,
                     ))
                     ->getResult();
-                //dump($nbNewCustomer[0]['nbNewCustomer']);
+                //dump($nbNewCustomer);
             }
             //dump($nbProductsSold);
             $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
                                             FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = :type_
-                                            AND e.id = :entId
-                                                                                                                             
+                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            AND cms.type = :type_
+                                                                                                                            
                                         ")
                 ->setParameters(array(
                     'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -1006,11 +1007,9 @@ class EnterpriseDashboardController extends ApplicationController
 
             $purchaseOrderPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.type = :type_
-                                            AND e.id = :entId
-                                                                                                                              
+                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            AND cms.type = :type_
+                                                                                                                            
                                         ")
                 ->setParameters(array(
                     'entId'   => $this->getUser()->getEnterprise()->getId(),
@@ -1209,7 +1208,7 @@ class EnterpriseDashboardController extends ApplicationController
                 'outstandingDebt'         => $outstandingDebt,
                 'outstandingClaim'        => $outstandingClaim,
                 'nbCustomer'              => $nbCustomer,
-                'nbNewCustomer'          => $nbNewCustomer[0]['nbNewCustomer'] ?? 0,
+                'nbNewCustomer'           => $nbNewCustomer[0]['nbNewCustomer'] ?? 0,
             ], 200);
         }
         return $this->json([
