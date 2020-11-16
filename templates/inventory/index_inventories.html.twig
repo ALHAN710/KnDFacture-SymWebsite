@@ -14,10 +14,7 @@
 {% block pageTitle %}
 <h4 class="page-title mb-2"><i class="mdi mdi-buffer mr-2"></i>Inventaires</h4>  
 {% endblock %}
-{# {% set iconStock = true %}
-{% if app.user.enterprise.subscription.productRefNumber == 0 %}
-{% set iconStock = false %}
-{% endif %} #}
+
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
@@ -28,7 +25,7 @@
 {% endblock %}
 
 {% block body %}
-    {{ dump(iconStock) }}
+    
     <div class="row">
         <div class="col-lg-12 col-sm-12">
             <div class="card">
@@ -36,7 +33,7 @@
                     <h5 class="header-title">Liste des Inventaires</h5>
                     
                     <div class="mt-2 mb-2 mr-5 text-right">
-                        <a href="{{path('inventory_create')}}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="{% if iconStock == true %}Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% else %}Créer un nouvel inventaire{% endif %}" {% if iconStock == true %}disabled{% endif %}><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-buffer"></i></a>
+                        <a href="{{path('inventory_create')}}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="{% if iconStock == false %}Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% else %}Créer un nouvel inventaire{% endif %}" {% if iconStock == false %}disabled{% endif %}><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-buffer"></i></a>
                     </div>
                     
                     <div class="table-responsive">
@@ -48,9 +45,8 @@
                                     <th>Délai d'approv.(jrs)</th>
                                     <th>Fréquence réapprov.(jrs)</th>
                                     <th>Coef Sécurité</th>
-                                    {% if iconStock == true %}
                                     <th>Actions</th>
-                                    {% endif %}
+                                    
                                 </tr>
                             </thead>
 
@@ -64,7 +60,7 @@
                                     <td>{{inventory.txOfService}}</td>
                                     <td>
                                         <a href="{{path('inventory_edit', {'id':inventory.id})}}" class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier l'inventaire"><i class="far fa-edit"></i></a>
-                                        <a href="{{path('lot_create', {'prod':0, 'inv':inventory.id})}}"  class="btn btn-soft-purple btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="{% if iconStock == true %}Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% else %}Ajouter un nouveau lot{% endif %}" {% if iconStock == true %}disabled{% endif %}><i class="fa fa-plus-circle"></i></a>
+                                        <a href="{{path('lot_create', {'prod':0, 'inv':inventory.id})}}"  class="btn btn-soft-purple btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="{% if iconStock == false %}Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% else %}Ajouter un nouveau lot{% endif %}" {% if iconStock == false %}disabled{% endif %}><i class="fa fa-plus-circle"></i></a>
                                                 
                                         <a href="{{path('inventory_delete', {'id':inventory.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer l'inventaire"><i class="fas fa-trash"></i> </a>
                                     </td>

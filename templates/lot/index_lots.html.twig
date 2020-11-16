@@ -10,10 +10,7 @@
 <link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />  
 
 {% endblock %}
-{% set iconStock = true %}
-{% if app.user.enterprise.subscription.productRefNumber == 0 %}
-{% set iconStock = false %}
-{% endif %}
+
 {% block pageTitle %}
 <h4 class="page-title mb-2"><i class="dripicons-shopping-bag mr-2"></i>Lots</h4>  
 {% endblock %}
@@ -41,9 +38,9 @@
                     <h5 class="header-title">Liste des lots</h5>
                     <div class="mt-2 mb-2 mr-5 text-right">
                         {% if isProd %}
-                        <a href="{{path('lot_create', {'prod':isProd, 'inv':0})}}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="{% if iconStock == true %}Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% else %}Créer un nouveau Lot pour ce Produit{% endif %}" {% if iconStock == true %}disabled{% endif %}><i class="fa fa-plus-circle"></i></a>
+                        <a href="{{path('lot_create', {'prod':isProd, 'inv':0})}}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="{% if iconStock == false %}Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% else %}Créer un nouveau Lot pour ce Produit{% endif %}" {% if iconStock == false %}disabled{% endif %}><i class="fa fa-plus-circle"></i></a>
                         {% else %}
-                        <a href="{{path('lot_create', {'prod':0, 'inv':inv})}}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="{% if iconStock == true %}Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% else %}Créer un nouveau Lot dans l'inventaire{% endif %}" {% if iconStock == true %}disabled{% endif %}><i class="fa fa-plus-circle"></i></a>
+                        <a href="{{path('lot_create', {'prod':0, 'inv':inv})}}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="{% if iconStock == false %}Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% else %}Créer un nouveau Lot dans l'inventaire{% endif %}" {% if iconStock == false %}disabled{% endif %}><i class="fa fa-plus-circle"></i></a>
                         {% endif %}
                     </div>
                     <div class="table-responsive">
