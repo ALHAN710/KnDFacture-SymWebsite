@@ -136,7 +136,7 @@ class AccountController extends ApplicationController
                 "Le Compte utilisateur <strong> {$user->getFirstName()}</strong> a été crée avec succès. !"
             );
             if ($this->getUser()->getRoles()[0] === 'ROLE_ADMIN') return $this->redirectToRoute('users_entreprise_index');
-            else return $this->redirectToRoute('admin_sellers_index');
+            else return $this->redirectToRoute('admin_users_index');
         }
 
         return $this->render('account/new.html.twig', [
