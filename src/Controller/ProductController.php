@@ -65,7 +65,7 @@ class ProductController extends AbstractController
         //$sheetNumber = $this->getUser()->getEnterprise()->getSubscription()->getSheetNumber();
         if ($productRefNumber == 0) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
             $iconStock = false;
-            $valid = false;
+            //$valid = false;
         }
 
         //Permet d'obtenir un constructeur de formulaire
@@ -83,10 +83,10 @@ class ProductController extends AbstractController
 
                 if ($iconStock) {
                     $productRepo = $manager->getRepository('App:Product');
-                    $nbProductsInStock = count($productRepo->findBy(['hasStock' => 1]));
+                    $nbProductsInStock = count($productRepo->findBy(['hasStock' => 1, 'enterprise' => $this->getUser()->getEnterprise()]));
 
                     //Si le nombre de produit déjà crée en stock est inférieur au nbre de ref autorisé par l'abonnement
-                    if (($nbProductsInStock < $productRefNumber) || ($productRefNumber == 19022020)) {
+                    if (($nbProductsInStock < $productRefNumber) || ($productRefNumber == 7102020)) {
                         //Création de la disponibilité de stock pour le nouveau produit dans tous les inventaires(ou stock) existants
                         //$inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
                         foreach ($inventories as $inventory) {
@@ -103,13 +103,22 @@ class ProductController extends AbstractController
                     } else {
                         $valid = false;
                     }
-                }
-            }
+                } else {
+                    $product->setHasStock(false); //Forçage à faux
 
+                }
+            } else {
+                $product->setHasStock(false); //Forçage à faux
+
+            }
+            $mess = "!";
+            if ($product->getHasStock() == true) {
+                $mess = "En Stock !";
+            }
             //$manager = $this->getDoctrine()->getManager();
             if ($valid == true) {
 
-                $categoryRepo = $manager->getRepository('App:Category');
+                /*$categoryRepo = $manager->getRepository('App:Category');
                 foreach ($product->getCategories() as $category) {
                     //dump($category);
                     $category->setName($category->getCategory()->getName())
@@ -131,12 +140,12 @@ class ProductController extends AbstractController
                         $product->removeCategory($category);
                         $product->addCategory($category_);
                     }
-                }
+                }*/
                 $manager->persist($product);
                 $manager->flush();
                 $this->addFlash(
                     'success',
-                    "The product <strong> {$product->getName()} </strong> has been registered successfully !"
+                    "Le Produit <strong> {$product->getName()} </strong> a été enregistré avec succès " . $mess
                 );
             } else {
                 $this->addFlash(
