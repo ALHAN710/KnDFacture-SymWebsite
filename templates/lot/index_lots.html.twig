@@ -10,7 +10,10 @@
 <link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />  
 
 {% endblock %}
-
+{% set iconStock = true %}
+{% if app.user.enterprise.subscription.productRefNumber == 0 %}
+{% set iconStock = false %}
+{% endif %}
 {% block pageTitle %}
 <h4 class="page-title mb-2"><i class="dripicons-shopping-bag mr-2"></i>Lots</h4>  
 {% endblock %}
