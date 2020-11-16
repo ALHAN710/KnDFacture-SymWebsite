@@ -20,9 +20,14 @@ class BusinessContactController extends AbstractController
      * @IsGranted("ROLE_USER")
      * 
      */
-    public function index($type, BusinessContactRepository $businessContactRepo, InventoryRepository $inventoryRepo)
+    public function index($type, InventoryRepository $inventoryRepo)
     {
-        $businessContacts = $businessContactRepo->findBy(['type' => $type]);
+        $businessContacts  = [];
+        $businessContacts_ = $this->getUser()->getEnterprise()->getBusinessContacts();
+        foreach ($businessContacts_ as $businessContact) {
+            if ($businessContact->getType() === $type) $businessContacts[] = $businessContact;
+        }
+        //$businessContacts = $businessContactRepo->findBy(['type' => $type]);
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         //dump($businesContacts[0]->getDeliveryAddresses());
         return $this->render('business_contact/index_business_contact.html.twig', [
