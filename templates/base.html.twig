@@ -21,8 +21,9 @@
 
         
     </head>
+    {% set subIsActivated = app.user.enterprise.isActivated %}
     {% set iconStock = true %}
-    {% if app.user.enterprise.subscription.productRefNumber == 0 or app.user.enterprise.isActivated == false %}
+    {% if app.user.enterprise.subscription.productRefNumber == 0 or subIsActivated == false %}
     {% set iconStock = false %}
     {% endif %}
     <body>

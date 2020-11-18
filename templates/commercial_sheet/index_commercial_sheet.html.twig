@@ -56,7 +56,7 @@
                             </div> #}
                                                         
                             <div class="mt-2 mb-2 savebtn">
-                                <button type="button" class="btn btn-primary waves-effect" id="saveBtn" data-toggle="tooltip" data-placement="top" title="Sauvegarder les changements de status des commandes ?">
+                                <button type="button" class="btn btn-primary waves-effect" {% if subIsActivated == false %}disabled{% endif %} id="saveBtn" data-toggle="tooltip" data-placement="top" title="Sauvegarder les changements de status des commandes ?">
                                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
                                     Save
                                 </button>
@@ -84,7 +84,12 @@
                         <div class="tab-content">
                             <div class="tab-pane active p-3" id="delivery" role="tabpanel">    
                                 {% if type == 'bill' %}
-                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2 waves-effect" data-toggle="tooltip" data-placement="top" title="Imprimer les Commandes cochées dans le journal des livraisons du jour ?"><i class="fa fa-print"></i></button>
+                                {% if subIsActivated == true %}
+                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2 waves-effect"  data-toggle="tooltip" data-placement="top" title="Imprimer les Commandes cochées dans le journal des livraisons du jour ?"><i class="fa fa-print"></i></button>
+                                {% else %}
+                                <a href="#" class="btn btn-info btn-xs rounded mr-1 mb-2 waves-effect"  data-toggle="tooltip" data-placement="top" title="Imprimer les Commandes cochées dans le journal des livraisons du jour ? Veuillez vous réabonner pour utiliser cette fonctionnalité"><i class="fa fa-print"></i></a>
+
+                                {% endif %}
                                 {# <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button>  #}
                                 {% endif %} 
                                 <div class="table-responsive">
@@ -136,7 +141,7 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier la Commande"><i class="far fa-edit"></i> </a>
+                                                    <a href="{% if subIsActivated == true %}{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}{% else %}#{% endif %}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier la Commande ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="far fa-edit"></i> </a>
                                                     <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline "></i> </a>
                                                     <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer {{docType}}"><i class="fas fa-trash"></i> </a>
                                                     
@@ -190,7 +195,7 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier la Commande"><i class="far fa-edit"></i> </a>
+                                                    <a href="{% if subIsActivated == true %}{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}{% else %}#{% endif %}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier la Commande ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="far fa-edit"></i> </a>
                                                     <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline"></i> </a>
                                                     <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer {{docType}}"><i class="fas fa-trash"></i> </a>
                                                 </td>
@@ -306,7 +311,7 @@
                                     </td> #}
                                     <td>
                                         {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Quote"><i class="far fa-edit"></i> </a> #}
-                                        <a href="{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}" class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Convertir le Devis en Facture de vente ?"><i class="fas fa-exchange-alt"></i> </a>
+                                        <a href="{% if subIsActivated == true %}{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}{% else %}#{% endif %}" class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Convertir le Devis en Facture de vente ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="fas fa-exchange-alt"></i> </a>
                                         <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir la Facture de la commande ?"><i class="mdi mdi-file-table-outline"></i> </a>    
                                         <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer le Devis ?"><i class="fas fa-trash"></i> </a>
                                                 
