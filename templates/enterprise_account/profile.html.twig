@@ -31,7 +31,7 @@
 {% set sheetNumber = app.user.enterprise.subscription.sheetNumber %}
 {% set hasStockModule = false %}
 {% set productRefNumber = 0 %}
-{% if app.user.enterprise.subscription.productRefNumber > 0 %}
+{% if app.user.enterprise.subscription.productRefNumber > 0 and app.user.enterprise.isActivated == true %}
 {% set hasStockModule = true %}
 {% set productRefNumber = app.user.enterprise.subscription.productRefNumber %}
 {% endif %}
@@ -76,7 +76,7 @@
                                             <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Ref produits en stock max : {{ productRefNumber }}</li>
                                             {% endif %}
                                         </ul>
-                                        <h5 class="seling-data-detail text-warning">Fin d'abonnenemnt dans : {{app.user.enterprise.subscriptionDeadLine}}</h5>
+                                        <h5 class="seling-data-detail {% if app.user.enterprise.isActivated == true %}text-warning{% else %}text-danger{% endif %}">{% if app.user.enterprise.isActivated == true %}Fin d'abonnenemnt dans : {{app.user.enterprise.subscriptionDeadLine}}{% else %}Abonnement Expiré{% endif %}</h5>
                                     </div>                                                            
                                 </div>
                                 {# <div class="col-5 align-item-center">

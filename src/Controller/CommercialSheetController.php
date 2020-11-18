@@ -825,7 +825,8 @@ class CommercialSheetController extends ApplicationController
         }
 
         if ($convertFlag == true) {
-            $commercialSheet->setType('bill');
+            $commercialSheet->setType('bill')
+                ->setConvertFlag(true);
 
             $manager->persist($commercialSheet);
             $manager->flush();

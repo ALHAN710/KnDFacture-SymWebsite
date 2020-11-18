@@ -662,7 +662,7 @@ class Enterprise
     {
         $nowDate = new DateTime("now");
         $this->periodofvalidity = new DateTime($this->subscribeAt->format('Y/m/d'));
-        $this->periodofvalidity->add(new DateInterval('P' . $this->subscriptionDuration . 'D'));
+        $this->periodofvalidity->add(new DateInterval('P' . $this->subscriptionDuration . 'M'));
         $interval = $nowDate->diff($this->periodofvalidity);
         //$interval = $this->periodofvalidity->diff($nowDate);
         if ($interval) {
@@ -670,8 +670,8 @@ class Enterprise
             //return $interval->format('%R%a days');// '+29 days'
             //return $interval->days; //Nombre de jour total de différence entre les dates 
             $this->setIsActivated(!$interval->invert);
-            //return !$interval->invert; // 
-            return $this->isActivated;
+            return !$interval->invert; // 
+            //return $this->isActivated;
         }
     }
 

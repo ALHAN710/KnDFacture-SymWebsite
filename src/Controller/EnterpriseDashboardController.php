@@ -36,7 +36,7 @@ class EnterpriseDashboardController extends ApplicationController
 
             /*$turnOverPer = $manager->createQuery("SELECT SUBSTRING(cms.createdAt, 1, 13) AS jour, SUM(cms.advancePayment) AS amount
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
                                             WHERE cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.paymentStatus = 1)
@@ -233,7 +233,7 @@ class EnterpriseDashboardController extends ApplicationController
                     //dump($type);
                     $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
                                                 FROM App\Entity\CommercialSheet cms
-                                                LEFT JOIN cms.user u 
+                                                JOIN cms.user u 
                                                 JOIN u.enterprise e
                                                 WHERE cms.type = :type_
                                                 AND e.id = :entId
@@ -249,7 +249,7 @@ class EnterpriseDashboardController extends ApplicationController
                 //Détermination du nombre de Dévis convertis en Facture
                 $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
                                             WHERE cms.convertFlag = 1
                                             AND e.id = :entId
@@ -301,7 +301,7 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $bills = $manager->createQuery("SELECT cms
                                                 FROM App\Entity\CommercialSheet cms
-                                                WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                                WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
                                                 AND cms.type = :type_
                                                 AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                                 AND cms.deliverAt LIKE :dat  
@@ -476,7 +476,7 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $purchaseOrders = $manager->createQuery("SELECT cms
                                             FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
                                             AND cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND cms.deliverAt LIKE :dat                                                                                  
@@ -511,7 +511,7 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $cmss = $manager->createQuery("SELECT cms 
                                             FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
                                             AND cms.type = 'bill'
                                             AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
                                             AND cms.deliverAt LIKE :dat                                                                                  
@@ -535,7 +535,7 @@ class EnterpriseDashboardController extends ApplicationController
                         'dat'     => $endDate_,
                     ))
                     ->getResult();
-                dump($nbNewCustomer);
+                //dump($nbNewCustomer);
 
                 /*foreach ($purchaseOrders as $purchaseOrder_) {
                     $tmp          = $purchaseOrder_['EXTTC'] == null ? 0 : number_format((float) floatval($purchaseOrder_['EXTTC']), 2, '.', '');
@@ -636,7 +636,7 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $bills = $manager->createQuery("SELECT cms
                                             FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
                                             AND cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND cms.deliverAt >= :startDate                                                                                  
@@ -817,7 +817,7 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $purchaseOrders = $manager->createQuery("SELECT cms
                                             FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
                                             AND cms.type = :type_
                                             AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
                                             AND cms.deliverAt >= :startDate                                                                                  
@@ -906,7 +906,7 @@ class EnterpriseDashboardController extends ApplicationController
                     //dump($type);
                     $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
                                                 FROM App\Entity\CommercialSheet cms
-                                                LEFT JOIN cms.user u 
+                                                JOIN cms.user u 
                                                 JOIN u.enterprise e
                                                 WHERE cms.type = :type_
                                                 AND e.id = :entId
@@ -924,7 +924,7 @@ class EnterpriseDashboardController extends ApplicationController
                 }
                 $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
                                             FROM App\Entity\CommercialSheet cms
-                                            LEFT JOIN cms.user u 
+                                            JOIN cms.user u 
                                             JOIN u.enterprise e
                                             WHERE cms.convertFlag = 1
                                             AND e.id = :entId
@@ -962,7 +962,7 @@ class EnterpriseDashboardController extends ApplicationController
 
                 $cmss = $manager->createQuery("SELECT cms 
                                             FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
                                             AND cms.type = 'bill'
                                             AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
                                             AND cms.deliverAt >= :startDate                                                                                  
