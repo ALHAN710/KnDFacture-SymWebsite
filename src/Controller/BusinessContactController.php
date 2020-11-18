@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\BusinessContactRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -42,7 +43,7 @@ class BusinessContactController extends AbstractController
      *
      * @Route("/business/contact/{type<[a-z]+>}/new", name = "business_contact_create")
      * 
-     * @IsGranted("ROLE_USER")
+     * @Security( "( is_granted('ROLE_USER') and user.getEnterprise().getIsActivated() == true ) " )
      * 
      * @return Response
      */
@@ -95,7 +96,7 @@ class BusinessContactController extends AbstractController
      *
      * @Route("/business/contact/{id<\d+>}/edit", name="business_contact_edit")
      * 
-     * @IsGranted("ROLE_USER")
+     * @Security( "( is_granted('ROLE_USER') and businessContact.getEnterprises().contains(user.getEnterprise()) == true ) " )
      * 
      * @return Response
      */
@@ -141,7 +142,7 @@ class BusinessContactController extends AbstractController
      * 
      * @Route("/business/contact/{id}/delete", name="business_contact_delete")
      *
-     * @IsGranted("ROLE_USER")
+     * @Security( "( is_granted('ROLE_USER') and businessContact.getEnterprises().contains(user.getEnterprise()) == true ) " )
      * 
      * @param BusinessContact $businessContact
      * @param EntityManagerInterface $manager
@@ -163,7 +164,7 @@ class BusinessContactController extends AbstractController
     /**
      * @Route("/business/contact/{id<\d+>}", name="business_contact_details")
      * 
-     * @IsGranted("ROLE_USER")
+     * @Security( "( is_granted('ROLE_USER') and businessContact.getEnterprises().contains(user.getEnterprise()) == true ) " )
      * 
      */
     public function details(BusinessContact $businessContact)

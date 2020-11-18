@@ -39,7 +39,7 @@ class InventoryController extends ApplicationController
      *
      * @Route("/inventory/new", name = "inventory_create")
      * 
-     * @IsGranted("ROLE_STOCK_MANAGER")
+     * @Security( "( is_granted('ROLE_STOCK_MANAGER') and user.getEnterprise().getIsActivated() == true ) " )
      * 
      * @return Response
      */

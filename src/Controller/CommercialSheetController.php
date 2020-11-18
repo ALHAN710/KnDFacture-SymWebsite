@@ -452,7 +452,7 @@ class CommercialSheetController extends ApplicationController
      *
      * @Route("/commercial/sheet/{id<\d+>}/edit", name="commercial_sheet_edit")
      * 
-     * @Security( "is_granted('ROLE_USER') and commercialSheet.getUser().getEnterprise() === user.getEnterprise() " )
+     * @Security( "is_granted('ROLE_USER') and commercialSheet.getUser().getEnterprise() === user.getEnterprise() and user.getEnterprise().getIsActivated() == true " )
      * 
      * @return Response
      */
@@ -759,7 +759,7 @@ class CommercialSheetController extends ApplicationController
      * 
      * @Route("/commercial/sheet/{id<\d+>}/convert", name="commercial_sheet_convert")
      *
-     * @Security( "is_granted('ROLE_USER') and commercialSheet.getUser().getEnterprise() === user.getEnterprise() " )
+     * @Security( "is_granted('ROLE_USER') and commercialSheet.getUser().getEnterprise() === user.getEnterprise() and user.getEnterprise().getIsActivated() == true " )
      * 
      * @param CommercialSheet $commercialSheet
      * @param EntityManagerInterface $manager

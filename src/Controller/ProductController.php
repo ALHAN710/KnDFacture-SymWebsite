@@ -39,7 +39,7 @@ class ProductController extends AbstractController
      *
      * @Route("/product/new", name = "product_create")
      * 
-     * @IsGranted("ROLE_STOCK_MANAGER")
+     * @Security( "( is_granted('ROLE_STOCK_MANAGER') and user.getEnterprise().getIsActivated() == true ) " )
      * 
      * @return Response
      */
@@ -177,7 +177,7 @@ class ProductController extends AbstractController
      *
      * @Route("product/{id<\d+>}/edit", name="product_edit")
      * 
-     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and product.getEnterprise() === user.getEnterprise() )" )
+     * @Security( "( is_granted('ROLE_STOCK_MANAGER') and product.getEnterprise() === user.getEnterprise() )" )
      * 
      * @return Response
      */

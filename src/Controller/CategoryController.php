@@ -30,8 +30,8 @@ class CategoryController extends AbstractController
      *
      * @Route("/category/new", name = "category_create")
      * 
-     * @IsGranted("ROLE_STOCK_MANAGER")
-     * 
+     * @Security( "( is_granted('ROLE_STOCK_MANAGER') and user.getEnterprise().getIsActivated() == true ) " )
+     *
      * @return Response
      */
     public function create(Request $request, EntityManagerInterface $manager)
@@ -98,7 +98,7 @@ class CategoryController extends AbstractController
      *
      * @Route("category/{id<\d+>}/edit", name="category_edit")
      * 
-     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and category.getEntreprise() === user.getEnterprise() )" )
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and category.getEntreprise() === user.getEnterprise() ) " )
      * 
      * @return Response
      */
