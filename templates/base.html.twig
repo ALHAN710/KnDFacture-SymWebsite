@@ -22,7 +22,7 @@
         
     </head>
     {% set iconStock = true %}
-    {% if app.user.enterprise.subscription.productRefNumber == 0 %}
+    {% if app.user.enterprise.subscription.productRefNumber == 0 or app.user.enterprise.isActivated == false %}
     {% set iconStock = false %}
     {% endif %}
     <body>

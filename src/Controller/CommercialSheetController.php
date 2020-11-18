@@ -72,7 +72,7 @@ class CommercialSheetController extends ApplicationController
      *
      * @Route("/commercial/sheet/new/{id<\d+>}/{type<[a-z]+>}/{stock<\d+>?0}", name = "commercial_sheet_create")
      * 
-     * @IsGranted("ROLE_USER")
+     * @Security( "is_granted('ROLE_USER') and user.getEnterprise().getIsActivated() == true " )
      * 
      * @return Response
      */
@@ -85,11 +85,12 @@ class CommercialSheetController extends ApplicationController
         //$iconBillOnly  = true;
         $iconStock = true;
         //$iconCombination = true;
+        $isActivated = $this->getUser()->getEnterprise()->getIsActivated();
         $productRefNumber = $this->getUser()->getEnterprise()->getSubscription()->getProductRefNumber();
         $sheetNumber = $this->getUser()->getEnterprise()->getSubscription()->getSheetNumber();
         //dump('Sheet Number = ' . $sheetNumber);
         //dump('Product Ref Number = ' . $productRefNumber);
-        if ($productRefNumber == 0) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
+        if (($productRefNumber == 0) || ($isActivated == false)) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
             $iconStock = false;
         }
 
@@ -161,7 +162,7 @@ class CommercialSheetController extends ApplicationController
 
                     if ($commercialSheetItem->getItemOfferType() == 'hasStock') { //Gestion des items avec des Products en stock 
                         //dump($type);
-                        if ($type == 'bill') {
+                        if ($type === 'bill') {
                             $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
                                 'designation' => $commercialSheetItem->getDesignation(),
                                 'pu' => $commercialSheetItem->getPU(),
@@ -305,6 +306,8 @@ class CommercialSheetController extends ApplicationController
                                     }*/
                                 }
                             }
+                        } else if ($type === 'quote') {
+                            $commercialSheetItem->addCommercialSheet($commercialSheet);
                         }
                         //$manager->persist($commercialSheetItem);
                     } else {
@@ -364,7 +367,7 @@ class CommercialSheetController extends ApplicationController
 
             //die();
             //dump(date('Y-m'));
-            if ($sheetNumber) { //Si l'un des abonnements KnB Bill est activé pour le client Entreprise actuel
+            if ($sheetNumber && ($isActivated == true)) { //Si l'un des abonnements KnB Bill est activé pour le client Entreprise actuel
                 //Récupération de tous les documents de l'entreprise générés pendant le mois en cours
                 /*JOIN cms.businessContact bc   
                 JOIN bc.enterprise ent
@@ -765,19 +768,21 @@ class CommercialSheetController extends ApplicationController
     public function convert(CommercialSheet $commercialSheet, EntityManagerInterface $manager, InventoryAvailabilityRepository $inventoryAvailabilityRepo)
     {
         $iconStock = true;
+        $isActivated = $this->getUser()->getEnterprise()->getIsActivated();
         $productRefNumber = $this->getUser()->getEnterprise()->getSubscription()->getProductRefNumber();
         $sheetNumber = $this->getUser()->getEnterprise()->getSubscription()->getSheetNumber();
         //dump('Sheet Number = ' . $sheetNumber);
         //dump('Product Ref Number = ' . $productRefNumber);
-        if (!$productRefNumber) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
+        if (!$productRefNumber || ($isActivated == false)) { //Si le nombre de référence est 0 alors subscription au module stock désactiver
             $iconStock = false;
         }
         $convertFlag = true;
         $message = "<ul>";
+
         if ($iconStock == true) {
             //Vérification des disponibilités en stock des produits contenus dans le doc
             foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
-                if ($commercialSheetItem->getOfferType() == 'Product') {
+                /*if ($commercialSheetItem->getOfferType() == 'Product') {
                     $inventoryAvailability = $inventoryAvailabilityRepo->findOneBy(['inventory' => $commercialSheet->getInventory(), 'product' => $commercialSheetItem->getProduct()]);
                     if ($inventoryAvailability->getAvailable() >= $commercialSheetItem->getQuantity()) {
                         $qty = $inventoryAvailability->getAvailable() - $commercialSheetItem->getQuantity();
@@ -791,6 +796,30 @@ class CommercialSheetController extends ApplicationController
                         $convertFlag = false;
                         $message = $message . "<li>The demand quantity({$commercialSheetItem->getQuantity()}) of product {$commercialSheetItem->getProduct()->getName()} is greater than the availability ({$inventoryAvailability->getAvailable()})</li>";
                     }
+                }*/
+
+                if ($commercialSheetItem->getItemOfferType() == 'hasStock') { //Gestion des items avec des Products en stock 
+                    //dump($type);
+                    //dd($iconStock);
+                    if ($iconStock == true) { //Si le client Entreprise à souscrit à un module KnD Stock
+                        //dump($commercialSheetItem->getProduct());
+                        //Recherche de la disponibilité du produit contenu dans l'item dans l'inventaire passé en paramètre
+                        $inventoryAvailability = $inventoryAvailabilityRepo->findOneBy(['inventory' => $commercialSheet->getInventory(), 'product' => $commercialSheetItem->getProduct()]);
+                        //dump($inventoryAvailability);
+                        if ($inventoryAvailability) { //Si cette disponibilité existe la mettre à jour ainsi que la quantité des lots relatifs à ce produit
+                            if ($commercialSheetItem->getQuantity() <= $inventoryAvailability->getAvailable()) {
+                                $inventoryAvailability->setAvailable($commercialSheetItem->getAvailable());
+                                //dump($inventoryAvailability);
+                                $manager->persist($inventoryAvailability);
+                                $manager->persist($commercialSheetItem);
+                            } else {
+                                $convertFlag = false;
+                                $message = $message . "<li>The demand quantity({$commercialSheetItem->getQuantity()}) of product {$commercialSheetItem->getProduct()->getName()} is greater than the availability ({$inventoryAvailability->getAvailable()})</li>";
+                            }
+                        }
+                    }
+
+                    //$manager->persist($commercialSheetItem);
                 }
             }
         }
@@ -803,17 +832,17 @@ class CommercialSheetController extends ApplicationController
 
             $this->addFlash(
                 'success',
-                "The removal of the {$commercialSheet->getType()} ID #<strong>{$commercialSheet->getNumber()} </strong> into a Bill has been done successfully !"
+                "The conversion of the {$commercialSheet->getType()} ID #<strong>{$commercialSheet->getNumber()} </strong> into a Bill has been successfully completed !"
             );
         } else {
             $message = $message . "</ul>";
             $this->addFlash(
                 'success',
-                "The removal of the {$commercialSheet->getType()} ID #<strong>{$commercialSheet->getNumber()} </strong> into a Bill failed because <p>" . $message . "</p>"
+                "The conversion of the {$commercialSheet->getType()} ID #<strong>{$commercialSheet->getNumber()} </strong> into a Bill failed because <p>" . $message . "</p>"
             );
         }
 
-        return $this->redirectToRoute("order_indexcommercial_sheet_index", ['type' => $commercialSheet->getType()]);
+        return $this->redirectToRoute("commercial_sheet_index", ['type' => $commercialSheet->getType()]);
     }
 
     /**
