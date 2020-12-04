@@ -221,6 +221,7 @@ class EnterpriseDashboardController extends ApplicationController
             // $xexpensesPer = new ArrayCollection();
             // $expensesAmountPer = new ArrayCollection();
             $dashType = intval($paramJSON['type']);
+            //dump($type);
             //Vérification de l'existance et de l'appartenance de l'inventaire à l'entreprise de l'utilisateur connecté
             if ($dashType !== 0) {
                 $inventory = $manager->getRepository('App:Inventory')->findOneBy(['id' => $dashType]);
@@ -1059,7 +1060,7 @@ class EnterpriseDashboardController extends ApplicationController
 
 
                 foreach ($types as $type) {
-                    //dump($type);
+
                     if ($dashType === 0) {
                         $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
                                                     FROM App\Entity\CommercialSheet cms
