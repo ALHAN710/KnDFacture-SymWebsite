@@ -179,7 +179,8 @@ class EnterpriseDashboardController extends ApplicationController
     public function updateEnterpriseDashboard(Request $request, EntityManagerInterface $manager)
     {
         $paramJSON = $this->getJSONRequest($request->getContent());
-        if ((array_key_exists("startDate", $paramJSON) && !empty($paramJSON['startDate'])) && (array_key_exists("endDate", $paramJSON) && !empty($paramJSON['endDate'])) && (array_key_exists("ent", $paramJSON) && !empty($paramJSON['ent']))) {
+        //dump($paramJSON['type']);
+        if ((array_key_exists("startDate", $paramJSON) && !empty($paramJSON['startDate'])) && (array_key_exists("endDate", $paramJSON) && !empty($paramJSON['endDate'])) && (array_key_exists("ent", $paramJSON) && !empty($paramJSON['ent'])) && (array_key_exists("type", $paramJSON))) {
             //$interval = $endDate->diff($startDate);
             /*if ($interval) {
                 // dump($interval->invert);
@@ -196,6 +197,8 @@ class EnterpriseDashboardController extends ApplicationController
             $sheetNb = [];
             $convertedQuoteNb = null;
             $cmss = null;
+            $bills = null;
+            $purchaseOrders = null;
             $nbNewCustomer = null;
             $turnOverHT = 0.0;
             $amountRecettes = 0.0;
@@ -217,13 +220,33 @@ class EnterpriseDashboardController extends ApplicationController
             // $amountRecettesPer = new ArrayCollection();
             // $xexpensesPer = new ArrayCollection();
             // $expensesAmountPer = new ArrayCollection();
+            $dashType = intval($paramJSON['type']);
+            //Vérification de l'existance et de l'appartenance de l'inventaire à l'entreprise de l'utilisateur connecté
+            if ($dashType !== 0) {
+                $inventory = $manager->getRepository('App:Inventory')->findOneBy(['id' => $dashType]);
+
+                if ($inventory) {
+                    if ($inventory->getEnterprise() !== $this->getUser()->getEnterprise()) {
+                        return $this->json([
+                            'code' => 403,
+                            'message' => 'Access Denied !',
+                        ], 403);
+                    }
+                } else {
+                    return $this->json([
+                        'code' => 403,
+                        'message' => "Inventory don't exists !",
+                    ], 403);
+                }
+            }
+
 
             $startDate = new DateTime($paramJSON['startDate']);
             $endDate = new DateTime($paramJSON['endDate']);
 
             $interval = $startDate->diff($endDate);
 
-            if ($interval->days == 0) {
+            if ($interval->days === 0) {
                 $endDate_ = $endDate->format('Y-m-d');
                 $endDate_ = $endDate_ . '%';
                 $per = 'hour';
@@ -231,35 +254,72 @@ class EnterpriseDashboardController extends ApplicationController
                 //Détermination du nombre de Document réalisé par type
                 foreach ($types as $type) {
                     //dump($type);
-                    $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
+                    if ($dashType === 0) {
+                        $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    JOIN cms.user u 
+                                                    JOIN u.enterprise e
+                                                    WHERE cms.type = :type_
+                                                    AND e.id = :entId
+                                                    AND cms.createdAt LIKE :dat                                                                                                                                  
+                                                ")
+                            ->setParameters(array(
+                                'entId'   => $this->getUser()->getEnterprise()->getId(),
+                                'type_'   => $type,
+                                'dat'     => $endDate_,
+                            ))
+                            ->getResult();
+                    } else {
+                        $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
+                                                        FROM App\Entity\CommercialSheet cms
+                                                        JOIN cms.user u 
+                                                        JOIN u.enterprise e
+                                                        WHERE cms.type = :type_
+                                                        AND e.id = :entId
+                                                        AND cms.createdAt LIKE :dat   
+                                                        AND cms.inventory = :invId                                                                                                                               
+                                                    ")
+                            ->setParameters(array(
+                                'entId'   => $this->getUser()->getEnterprise()->getId(),
+                                'invId'   => $dashType,
+                                'type_'   => $type,
+                                'dat'     => $endDate_,
+                            ))
+                            ->getResult();
+                    }
+                }
+                //Détermination du nombre de Dévis convertis en Facture
+                if ($dashType === 0) {
+                    $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
                                                 FROM App\Entity\CommercialSheet cms
                                                 JOIN cms.user u 
                                                 JOIN u.enterprise e
-                                                WHERE cms.type = :type_
+                                                WHERE cms.convertFlag = 1
                                                 AND e.id = :entId
-                                                AND cms.createdAt LIKE :dat                                                                                                                                  
+                                                AND cms.createdAt LIKE :dat                                                                                  
                                             ")
                         ->setParameters(array(
                             'entId'   => $this->getUser()->getEnterprise()->getId(),
-                            'type_'   => $type,
+                            'dat'     => $endDate_,
+                        ))
+                        ->getResult();
+                } else {
+                    $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
+                                                FROM App\Entity\CommercialSheet cms
+                                                JOIN cms.user u 
+                                                JOIN u.enterprise e
+                                                WHERE cms.convertFlag = 1
+                                                AND cms.inventory = :invId
+                                                AND e.id = :entId
+                                                AND cms.createdAt LIKE :dat                                                                                  
+                                            ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'invId'   => $dashType,
                             'dat'     => $endDate_,
                         ))
                         ->getResult();
                 }
-                //Détermination du nombre de Dévis convertis en Facture
-                $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
-                                            FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.convertFlag = 1
-                                            AND e.id = :entId
-                                            AND cms.createdAt LIKE :dat                                                                                  
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'dat'     => $endDate_,
-                    ))
-                    ->getResult();
 
                 //Détermination du chiffre d'affaire HT SUBSTRING(cms.deliverAt, 1, 13)
                 /*$bills = $manager->createQuery("SELECT cms.deliverAt AS jour,
@@ -298,21 +358,40 @@ class EnterpriseDashboardController extends ApplicationController
                     $index++;
                 }
                 $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');*/
-
-                $bills = $manager->createQuery("SELECT cms
-                                                FROM App\Entity\CommercialSheet cms
-                                                WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
-                                                AND cms.type = :type_
-                                                AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                                AND cms.deliverAt LIKE :dat  
-                                                ORDER BY cms.deliverAt ASC                                                                               
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'dat'     => $endDate_,
-                        'type_'   => 'bill',
-                    ))
-                    ->getResult();
+                if ($dashType === 0) {
+                    //dump($dashType);
+                    $bills = $manager->createQuery("SELECT cms
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = :type_
+                                                    AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                    AND cms.deliverAt LIKE :dat  
+                                                    ORDER BY cms.deliverAt ASC                                                                               
+                                            ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'dat'     => $endDate_,
+                            'type_'   => 'bill',
+                        ))
+                        ->getResult();
+                } else {
+                    $bills = $manager->createQuery("SELECT cms
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = :type_
+                                                    AND cms.inventory = :invId
+                                                    AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                    AND cms.deliverAt LIKE :dat  
+                                                    ORDER BY cms.deliverAt ASC                                                                               
+                                            ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'invId'   => $dashType,
+                            'dat'     => $endDate_,
+                            'type_'   => 'bill',
+                        ))
+                        ->getResult();
+                }
 
                 //dump($bills);
                 $index = 0;
@@ -473,21 +552,39 @@ class EnterpriseDashboardController extends ApplicationController
                 // dump($xexpensesPer);
                 // dump($expensesAmountPer);
                 */
-
-                $purchaseOrders = $manager->createQuery("SELECT cms
-                                            FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
-                                            AND cms.type = :type_
-                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                            AND cms.deliverAt LIKE :dat                                                                                  
-                                            ORDER BY cms.deliverAt ASC
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'dat'     => $endDate_,
-                        'type_'   => 'purchaseorder',
-                    ))
-                    ->getResult();
+                if ($dashType === 0) {
+                    $purchaseOrders = $manager->createQuery("SELECT cms
+                                                FROM App\Entity\CommercialSheet cms
+                                                WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                AND cms.type = :type_
+                                                AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                AND cms.deliverAt LIKE :dat                                                                                  
+                                                ORDER BY cms.deliverAt ASC
+                                            ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'dat'     => $endDate_,
+                            'type_'   => 'purchaseorder',
+                        ))
+                        ->getResult();
+                } else {
+                    $purchaseOrders = $manager->createQuery("SELECT cms
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = :type_
+                                                    AND cms.inventory = :invId
+                                                    AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                    AND cms.deliverAt LIKE :dat                                                                                  
+                                                    ORDER BY cms.deliverAt ASC
+                                                ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'invId'   => $dashType,
+                            'dat'     => $endDate_,
+                            'type_'   => 'purchaseorder',
+                        ))
+                        ->getResult();
+                }
 
                 $index = 0;
                 $precIndex = 0;
@@ -509,20 +606,36 @@ class EnterpriseDashboardController extends ApplicationController
                 }
                 $expensesTTC = number_format((float) $expensesTTC, 2, '.', '');
 
-                $cmss = $manager->createQuery("SELECT cms 
-                                            FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
-                                            AND cms.type = 'bill'
-                                            AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
-                                            AND cms.deliverAt LIKE :dat                                                                                  
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'dat'     => $endDate_,
-                    ))
-                    ->getResult();
+                if ($dashType === 0) {
+                    $cmss = $manager->createQuery("SELECT cms 
+                                                FROM App\Entity\CommercialSheet cms
+                                                WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                AND cms.type = 'bill'
+                                                AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
+                                                AND cms.deliverAt LIKE :dat                                                                                  
+                                            ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'dat'     => $endDate_,
+                        ))
+                        ->getResult();
+                } else {
+                    $cmss = $manager->createQuery("SELECT cms 
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = 'bill'
+                                                    AND cms.inventory = :invId
+                                                    AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
+                                                    AND cms.deliverAt LIKE :dat                                                                                  
+                                                ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'invId'   => $dashType,
+                            'dat'     => $endDate_,
+                        ))
+                        ->getResult();
+                }
                 //dump($cmss);
-
                 $nbNewCustomer = $manager->createQuery("SELECT COUNT(b) AS nbNewCustomer
                                             FROM App\Entity\BusinessContact b
                                             INNER JOIN b.enterprises e
@@ -634,24 +747,46 @@ class EnterpriseDashboardController extends ApplicationController
                 }
                 */
 
-                $bills = $manager->createQuery("SELECT cms
-                                            FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
-                                            AND cms.type = :type_
-                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                            AND cms.deliverAt >= :startDate                                                                                  
-                                            AND cms.deliverAt <= :endDate  
-                                            ORDER BY cms.deliverAt ASC                                                                               
-                                        ")
-                    ->setParameters(array(
-                        'entId'     => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
-                        'type_'     => 'bill',
-                    ))
-                    ->getResult();
+                if ($dashType === 0) {
 
+                    $bills = $manager->createQuery("SELECT cms
+                                                FROM App\Entity\CommercialSheet cms
+                                                WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                AND cms.type = :type_
+                                                AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                AND cms.deliverAt >= :startDate                                                                                  
+                                                AND cms.deliverAt <= :endDate  
+                                                ORDER BY cms.deliverAt ASC                                                                               
+                                            ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'startDate' => $startDate->format('Y-m-d H:m:i'),
+                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'type_'     => 'bill',
+                        ))
+                        ->getResult();
+                } else {
+                    $bills = $manager->createQuery("SELECT cms
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = :type_
+                                                    AND cms.inventory = :invId
+                                                    AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                    AND cms.deliverAt >= :startDate                                                                                  
+                                                    AND cms.deliverAt <= :endDate  
+                                                    ORDER BY cms.deliverAt ASC                                                                               
+                                                ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'invId'     => $dashType,
+                            'startDate' => $startDate->format('Y-m-d H:m:i'),
+                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'type_'     => 'bill',
+                        ))
+                        ->getResult();
+                }
 
+                //dump($bills);
                 $index = 0;
                 $precIndex = 0;
                 $index2 = 0;
@@ -815,22 +950,43 @@ class EnterpriseDashboardController extends ApplicationController
                 }
                 */
 
-                $purchaseOrders = $manager->createQuery("SELECT cms
-                                            FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
-                                            AND cms.type = :type_
-                                            AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
-                                            AND cms.deliverAt >= :startDate                                                                                  
-                                            AND cms.deliverAt <= :endDate                                                                                   
-                                            ORDER BY cms.deliverAt ASC
-                                        ")
-                    ->setParameters(array(
-                        'entId'     => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
-                        'type_'     => 'purchaseorder',
-                    ))
-                    ->getResult();
+                if ($dashType === 0) {
+                    $purchaseOrders = $manager->createQuery("SELECT cms
+                                                FROM App\Entity\CommercialSheet cms
+                                                WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                AND cms.type = :type_
+                                                AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                AND cms.deliverAt >= :startDate                                                                                  
+                                                AND cms.deliverAt <= :endDate                                                                                   
+                                                ORDER BY cms.deliverAt ASC
+                                            ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'startDate' => $startDate->format('Y-m-d H:m:i'),
+                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'type_'     => 'purchaseorder',
+                        ))
+                        ->getResult();
+                } else {
+                    $purchaseOrders = $manager->createQuery("SELECT cms
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = :type_
+                                                    AND cms.inventory = :invId
+                                                    AND (cms.completedStatus = 1 OR cms.deliveryStatus = 1)
+                                                    AND cms.deliverAt >= :startDate                                                                                  
+                                                    AND cms.deliverAt <= :endDate                                                                                   
+                                                    ORDER BY cms.deliverAt ASC
+                                                ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'invId'     => $dashType,
+                            'startDate' => $startDate->format('Y-m-d H:m:i'),
+                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'type_'     => 'purchaseorder',
+                        ))
+                        ->getResult();
+                }
 
 
                 $index = 0;
@@ -904,40 +1060,84 @@ class EnterpriseDashboardController extends ApplicationController
 
                 foreach ($types as $type) {
                     //dump($type);
-                    $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
+                    if ($dashType === 0) {
+                        $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    JOIN cms.user u 
+                                                    JOIN u.enterprise e
+                                                    WHERE cms.type = :type_
+                                                    AND e.id = :entId
+                                                    AND cms.createdAt >= :startDate                                                                                  
+                                                    AND cms.createdAt <= :endDate                                                                                                                                  
+                                                ")
+                            ->setParameters(array(
+                                'entId'   => $this->getUser()->getEnterprise()->getId(),
+                                'type_'   => $type,
+                                'startDate' => $startDate->format('Y-m-d H:m:i'),
+                                'endDate' => $endDate->format('Y-m-d H:m:i'),
+
+                            ))
+                            ->getResult();
+                    } else {
+                        $sheetNb['' . $type] = $manager->createQuery("SELECT COUNT(cms) AS sheetNb 
+                                                        FROM App\Entity\CommercialSheet cms
+                                                        JOIN cms.user u 
+                                                        JOIN u.enterprise e
+                                                        WHERE cms.type = :type_
+                                                        AND e.id = :entId
+                                                        AND cms.inventory = :invId
+                                                        AND cms.createdAt >= :startDate                                                                                  
+                                                        AND cms.createdAt <= :endDate                                                                                                                                  
+                                                    ")
+                            ->setParameters(array(
+                                'entId'   => $this->getUser()->getEnterprise()->getId(),
+                                'invId'   => $dashType,
+                                'type_'   => $type,
+                                'startDate' => $startDate->format('Y-m-d H:m:i'),
+                                'endDate' => $endDate->format('Y-m-d H:m:i'),
+
+                            ))
+                            ->getResult();
+                    }
+                }
+
+                if ($dashType === 0) {
+                    $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
                                                 FROM App\Entity\CommercialSheet cms
                                                 JOIN cms.user u 
                                                 JOIN u.enterprise e
-                                                WHERE cms.type = :type_
+                                                WHERE cms.convertFlag = 1
                                                 AND e.id = :entId
                                                 AND cms.createdAt >= :startDate                                                                                  
-                                                AND cms.createdAt <= :endDate                                                                                                                                  
+                                                AND cms.createdAt <= :endDate                                                                                  
                                             ")
                         ->setParameters(array(
                             'entId'   => $this->getUser()->getEnterprise()->getId(),
-                            'type_'   => $type,
-                            'startDate' => $startDate->format('Y-m-d H:m:i'),
-                            'endDate' => $endDate->format('Y-m-d H:m:i'),
+                            'startDate' => $startDate,
+                            'endDate' => $endDate,
+
+                        ))
+                        ->getResult();
+                } else {
+                    $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    JOIN cms.user u 
+                                                    JOIN u.enterprise e
+                                                    WHERE cms.convertFlag = 1
+                                                    AND e.id = :entId
+                                                    AND cms.inventory = :invId
+                                                    AND cms.createdAt >= :startDate                                                                                  
+                                                    AND cms.createdAt <= :endDate                                                                                  
+                                                ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'invId'     => $dashType,
+                            'startDate' => $startDate,
+                            'endDate'   => $endDate,
 
                         ))
                         ->getResult();
                 }
-                $convertedQuoteNb = $manager->createQuery("SELECT COUNT(cms) AS convertQuoteNb 
-                                            FROM App\Entity\CommercialSheet cms
-                                            JOIN cms.user u 
-                                            JOIN u.enterprise e
-                                            WHERE cms.convertFlag = 1
-                                            AND e.id = :entId
-                                            AND cms.createdAt >= :startDate                                                                                  
-                                            AND cms.createdAt <= :endDate                                                                                  
-                                        ")
-                    ->setParameters(array(
-                        'entId'   => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate,
-                        'endDate' => $endDate,
-
-                    ))
-                    ->getResult();
 
                 /*$nbProductsSold_ = $manager->createQuery("SELECT SUM(cmsi.quantity) AS Qty
                                             FROM App\Entity\CommercialSheetItem cmsi
@@ -958,23 +1158,43 @@ class EnterpriseDashboardController extends ApplicationController
                     ))
                     ->getResult();*/
 
+                if ($dashType === 0) {
+                    $cmss = $manager->createQuery("SELECT cms 
+                                                FROM App\Entity\CommercialSheet cms
+                                                WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                AND cms.type = 'bill'
+                                                AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
+                                                AND cms.deliverAt >= :startDate                                                                                  
+                                                AND cms.deliverAt <= :endDate                                                                                  
+                                                
+                                            ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'startDate' => $startDate,
+                            'endDate'   => $endDate,
+                        ))
+                        ->getResult();
+                } else {
+                    $cmss = $manager->createQuery("SELECT cms 
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = 'bill'
+                                                    AND cms.inventory = :invId
+                                                    AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
+                                                    AND cms.deliverAt >= :startDate                                                                                  
+                                                    AND cms.deliverAt <= :endDate                                                                                  
+                                                    
+                                                ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'invId'     => $dashType,
+                            'startDate' => $startDate,
+                            'endDate'   => $endDate,
+                        ))
+                        ->getResult();
+                }
 
 
-                $cmss = $manager->createQuery("SELECT cms 
-                                            FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
-                                            AND cms.type = 'bill'
-                                            AND (cms.deliveryStatus = 1 OR cms.completedStatus = 1)
-                                            AND cms.deliverAt >= :startDate                                                                                  
-                                            AND cms.deliverAt <= :endDate                                                                                  
-                                            
-                                        ")
-                    ->setParameters(array(
-                        'entId'     => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate,
-                        'endDate'   => $endDate,
-                    ))
-                    ->getResult();
                 //dump($cmss);
                 $nbNewCustomer = $manager->createQuery("SELECT COUNT(b) AS nbNewCustomer
                                             FROM App\Entity\BusinessContact b
@@ -993,29 +1213,55 @@ class EnterpriseDashboardController extends ApplicationController
                 //dump($nbNewCustomer);
             }
             //dump($nbProductsSold);
-            $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
-                                            FROM App\Entity\CommercialSheet cms
-                                            WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
-                                            AND cms.type = :type_
-                                                                                                                            
-                                        ")
-                ->setParameters(array(
-                    'entId'   => $this->getUser()->getEnterprise()->getId(),
-                    'type_'   => 'bill',
-                ))
-                ->getResult();
+            if ($dashType === 0) {
+                $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
+                                                FROM App\Entity\CommercialSheet cms
+                                                WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
+                                                AND cms.type = :type_
+                                                                                                                                
+                                            ")
+                    ->setParameters(array(
+                        'entId'   => $this->getUser()->getEnterprise()->getId(),
+                        'type_'   => 'bill',
+                    ))
+                    ->getResult();
 
-            $purchaseOrderPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
+                $purchaseOrderPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
                                             FROM App\Entity\CommercialSheet cms
                                             WHERE cms.inventory IN (SELECT inv.id FROM App\Entity\Inventory inv WHERE inv.enterprise = :entId)
                                             AND cms.type = :type_
                                                                                                                             
                                         ")
-                ->setParameters(array(
-                    'entId'   => $this->getUser()->getEnterprise()->getId(),
-                    'type_'   => 'purchaseorder',
-                ))
-                ->getResult();
+                    ->setParameters(array(
+                        'entId'   => $this->getUser()->getEnterprise()->getId(),
+                        'type_'   => 'purchaseorder',
+                    ))
+                    ->getResult();
+            } else {
+                $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.inventory = :invId
+                                                    AND cms.type = :type_
+                                                                                                                                    
+                                                ")
+                    ->setParameters(array(
+                        'invId'   => $dashType,
+                        'type_'   => 'bill',
+                    ))
+                    ->getResult();
+
+                $purchaseOrderPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
+                                            FROM App\Entity\CommercialSheet cms
+                                            WHERE cms.inventory = :invId
+                                            AND cms.type = :type_
+                                                                                                                            
+                                        ")
+                    ->setParameters(array(
+                        'invId'   => $dashType,
+                        'type_'   => 'purchaseorder',
+                    ))
+                    ->getResult();
+            }
 
             $outstandingClaim = 0.0;
             foreach ($billPaymentOnpending as $commercialSheet) {

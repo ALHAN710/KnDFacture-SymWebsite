@@ -44,14 +44,37 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                 {# <h4 class="mt-0 header-title">Date Range Picker</h4>  
                             <P class="mt-0 text-muted mb-4">A JavaScript component for choosing date ranges, dates and times.</P>  #}
                 <div class="my-3">
-                    <label class="my-3">Choisir la plage de date</label>
-                    <div class="input-group">
-                        <input type="text" id="reportrange" class="form-control" value="07/10/2020">
-                            <div class="input-group-append">
-                                <span class="input-group-text">
-                                    <i class="fas fa-calendar"></i>
-                                </span>
+                    <div class="row">
+                        {% if iconStock %}
+                        <div class="col-4 ">
+                            <div class="form-group">
+                                <label class="my-3" for="dashType">Choisir le type</label>
+                                <div class="input-group">
+                                    <select class="custom-select" id="dashType">
+                                        <option selected="" value="0">Général</option>
+                                        {%  for inv in app.user.enterprise.inventories %}
+                                        <option value="{{inv.id}}">{{inv.name|capitalize}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {# <div class="input-group-append">
+                                        <button class="btn btn-outline-primary" type="button">Button</button>
+                                    </div> #}
+                                </div>
                             </div>
+                        </div>
+                        {% endif %}
+                        <div class="col">
+                            <label class="my-3">Choisir la plage de date</label>
+                            <div class="input-group">
+                                <input type="text" id="reportrange" class="form-control" value="07/10/2020">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        
                         </div>
                     </div>
                     <div class="row">
@@ -990,14 +1013,20 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
         var endDate = drp.endDate.format('YYYY-MM-DD');
         
         var _url = "{{ path('enterprise_dash_update') }}";
+        {% if iconStock %}
+        var type = $('#dashType').val();
+        {% else %}
+        var type = 0;
+        {% endif %}
 
-        var $data = JSON.stringify({
+        /*var $data = JSON.stringify({
             "startDate": startDate, // tabGridId,
             "endDate": endDate, // tabFuelId,
-            "ent": ent
-        });
+            "ent": ent,
+            "type": type
+        });*/
 
-        swal.queue([{
+        {# swal.queue([{
                 title: 'Le tableau de bord sera mis à jour pour la plage de date suivante :',
                 confirmButtonText: 'Confirmez',
                 text: 'Du ' + startDate + ' Au ' + endDate,
@@ -1148,175 +1177,186 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                 })
             },
             allowOutsideClick: false
-        }]);
+        }]); #}
+
+        updateDashboard();
 
         $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
-            console.log(picker.startDate.format('YYYY-MM-DD'));
-            console.log(picker.endDate.format('YYYY-MM-DD'));
+            //console.log(picker.startDate.format('YYYY-MM-DD'));
+            //console.log(picker.endDate.format('YYYY-MM-DD'));
 
             $('.fa-sync').addClass('fa-spin');
-            var startDate = picker.startDate.format('YYYY-MM-DD');
-            var endDate = picker.endDate.format('YYYY-MM-DD');
-
-            console.log('startDate = ' + startDate);
-            console.log('endDate = ' + endDate);
+            startDate = picker.startDate.format('YYYY-MM-DD');
+            endDate = picker.endDate.format('YYYY-MM-DD');
+            
+            updateDashboard();
+            //console.log('startDate = ' + startDate);
+            //console.log('endDate = ' + endDate);
             // block of code that runs when the click event triggers
 
-            var $data = JSON.stringify({
+        });
+
+        {% if iconStock %}
+        $('#dashType').change(function(){
+            updateDashboard();
+        });
+        {% endif %}
+
+        function updateDashboard(){
+            $data = JSON.stringify({
                 "startDate": startDate, // tabGridId,
                 "endDate": endDate, // tabFuelId,
-                "ent": ent
+                "ent": ent,
+                "type": type
             });
 
             // Danger
 
             swal.queue([{
-                    title: 'Le tableau de bord sera mis à jour pour la plage de date suivante :',
-                    confirmButtonText: 'Confirmez',
-                    text: 'Du ' + startDate + ' Au ' + endDate,
-                    showCancelButton: true,
-                    showLoaderOnConfirm: true,
-                    confirmButtonClass: 'btn btn-primary',
-                    cancelButtonClass: 'btn btn-danger ml-2',
-                    preConfirm: function () {
-                        return new Promise(function (resolve) { 
-                            
-                            $.ajax({
-                                type: "POST", // method type
-                                contentType: "application/json; charset=utf-8",
-                                url: _url, // /Target function that will be return result
-                                data: $data, // parameter pass data is parameter name param is value
-                                dataType: "json",
-                                timeout: 120000, // 64241
-                                success: function (data) {
-                                    // $('.fa-sync').removeClass('fa-spin');
-                                    // console.log(data);
-                                    $('#turnOver').text(data['turnOverHT']);
-                                    // $('#amountRecettes').text(data['amountRecettes']);
-                                    // $('#expenses').text(data['expenses']);
-                                    $('#nbBill').text(data['billNb']);
-                                    $('#nbPurchaseOrder').text(data['purchaseNb']);
-                                    $('#nbQuote').text(data['quoteNb']);
-                                    $('#nbConvertedQuote').text(data['converted']);
-                                    $('#DFHT').text(data['outstandingDebt']);
-                                    $('#outstandingClaim').text(data['outstandingClaim']);
-                                    $('#nbProductsSold').text(data['nbProductsSold']);
-                                    $('#nbNewCustomer').text(data['nbNewCustomer']);
-                                    $('#nbCustomer').text(data['nbCustomer']);
+                title: 'Le tableau de bord sera mis à jour pour la plage de date suivante :',
+                confirmButtonText: 'Confirmez',
+                text: 'Du ' + startDate + ' Au ' + endDate,
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                confirmButtonClass: 'btn btn-primary',
+                cancelButtonClass: 'btn btn-danger ml-2',
+                preConfirm: function () {
+                    return new Promise(function (resolve) { 
+                        
+                        $.ajax({
+                            type: "POST", // method type
+                            contentType: "application/json; charset=utf-8",
+                            url: _url, // /Target function that will be return result
+                            data: $data, // parameter pass data is parameter name param is value
+                            dataType: "json",
+                            timeout: 120000, // 64241
+                            success: function (data) {
+                                // $('.fa-sync').removeClass('fa-spin');
+                                // console.log(data);
+                                $('#turnOver').text(data['turnOverHT']);
+                                // $('#amountRecettes').text(data['amountRecettes']);
+                                // $('#expenses').text(data['expenses']);
+                                $('#nbBill').text(data['billNb']);
+                                $('#nbPurchaseOrder').text(data['purchaseNb']);
+                                $('#nbQuote').text(data['quoteNb']);
+                                $('#nbConvertedQuote').text(data['converted']);
+                                $('#DFHT').text(data['outstandingDebt']);
+                                $('#outstandingClaim').text(data['outstandingClaim']);
+                                $('#nbProductsSold').text(data['nbProductsSold']);
+                                $('#nbNewCustomer').text(data['nbNewCustomer']);
+                                $('#nbCustomer').text(data['nbCustomer']);
 
-                                    // console.log('Type of best : ' + typeof data['bestSellingProducts'] );
-                                    tableProduct.clear().draw();
-                                    var n = -1;
-                                    data['bestSellingProducts'].forEach(function (item, index) {
-                                        $('#ref_' + index).text(item['ref']);
-                                        $('#designation_' + index).text(item['designation']);
-                                        $('#pu_' + index).text(item['pu']);
-                                        $('#totalSale_' + index).text(item['totalSale']);
-                                        $('#amount_' + index).text(item['amount']);
+                                // console.log('Type of best : ' + typeof data['bestSellingProducts'] );
+                                tableProduct.clear().draw();
+                                var n = -1;
+                                data['bestSellingProducts'].forEach(function (item, index) {
+                                    $('#ref_' + index).text(item['ref']);
+                                    $('#designation_' + index).text(item['designation']);
+                                    $('#pu_' + index).text(item['pu']);
+                                    $('#totalSale_' + index).text(item['totalSale']);
+                                    $('#amount_' + index).text(item['amount']);
 
-                                        tableProduct.row.add([
-                                            String(index + 1),
-                                            item['ref'],
-                                            String(item['designation']),
-                                            String(item['pu']),
-                                            String(item['totalSale']),
-                                            String(item['amount'])
-                                        ]).draw();
-                                        n = index;
-                                    });
+                                    tableProduct.row.add([
+                                        String(index + 1),
+                                        item['ref'],
+                                        String(item['designation']),
+                                        String(item['pu']),
+                                        String(item['totalSale']),
+                                        String(item['amount'])
+                                    ]).draw();
+                                    n = index;
+                                });
 
-                                    if (n != -1 && n < 9) {
-                                        for (let i = n + 1; i < 9; i++) {
-                                            $('#ref_' + i).text('####');
-                                            $('#designation_' + i).text("");
-                                            $('#pu_' + i).text('0');
-                                            $('#totalSale_' + i).text('0');
-                                            $('#amount_' + i).text('0');
+                                if (n != -1 && n < 9) {
+                                    for (let i = n + 1; i < 9; i++) {
+                                        $('#ref_' + i).text('####');
+                                        $('#designation_' + i).text("");
+                                        $('#pu_' + i).text('0');
+                                        $('#totalSale_' + i).text('0');
+                                        $('#amount_' + i).text('0');
 
-                                        }
-                                    } else if (n == -1) {
-                                        for (let i = 0; i < 9; i++) {
-                                            $('#ref_' + i).text('####');
-                                            $('#designation_' + i).text("");
-                                            $('#pu_' + i).text('0');
-                                            $('#totalSale_' + i).text('0');
-                                            $('#amount_' + i).text('0');
-
-                                        }
                                     }
+                                } else if (n == -1) {
+                                    for (let i = 0; i < 9; i++) {
+                                        $('#ref_' + i).text('####');
+                                        $('#designation_' + i).text("");
+                                        $('#pu_' + i).text('0');
+                                        $('#totalSale_' + i).text('0');
+                                        $('#amount_' + i).text('0');
 
-                                    tableCategory.clear().draw();
-                                    n = -1;
-                                    data['bestSellingProdCategory'].forEach(function (item, index) {
-                                        $('#nameCat_' + index).text(item['name']);
-                                        $('#totalSaleCat_' + index).text(item['totalSale']);
-                                        $('#amountCat_' + index).text(item['amount']);
-
-                                        tableCategory.row.add([
-                                            String(index + 1),
-                                            item['name'],
-                                            String(item['totalSale']),
-                                            String(item['amount'])
-                                        ]).draw();
-
-                                        n = index;
-                                    });
-
-                                    if (n != -1 && n < 9) {
-                                        for (let i = n + 1; i < 9; i++) {
-                                            $('#nameCat_' + i).text('####');
-                                            $('#totalSaleCat_' + i).text("0");
-                                            $('#amountCat_' + i).text("0");
-                                        }
-                                    } else if (n == -1) {
-                                        for (let i = 0; i < 9; i++) {
-                                            $('#nameCat_' + i).text('####');
-                                            $('#totalSaleCat_' + i).text("0");
-                                            $('#amountCat_' + i).text("0");
-
-                                        }
                                     }
-
-                                    displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
-                                                                           
-                                    var dataArray = [
-                                        parseFloat(data['flux_tresorerie'][0]),
-                                        parseFloat(data['flux_tresorerie'][1])
-                                    ];
-                                    updateDonutChart(fluxTresorerieDonutChart, [
-                                        String("Recettes : " + data['flux_tresorerie'][0] + " XAF"),
-                                        String("Dépenses : " + data['flux_tresorerie'][1] + " XAF")
-                                    ], dataArray);
-
-                                    swal({
-                                        type: 'success', 
-                                        title: 'Le tableau de bord a été mis à jour !',
-                                        // html: 'Submitted email: ' + email
-                                    });
-
-                                    setTimeout(function () {
-                                        resolve()
-                                    }, 2000);
-                                },
-                                error: function (result) {
-                                    // console.log("Error");
-                                    // console.log(result);
-                                    swal('Oops...', 'Something went wrong!', 'error'
-                                    // footer: '<a href>Why do I have this issue?</a>'
-                                    );
-
-                                    setTimeout(function () {
-                                        resolve()
-                                    }, 5000);
                                 }
-                            });
-                        })
-                    },
-                    allowOutsideClick: false
-                }]);
 
+                                tableCategory.clear().draw();
+                                n = -1;
+                                data['bestSellingProdCategory'].forEach(function (item, index) {
+                                    $('#nameCat_' + index).text(item['name']);
+                                    $('#totalSaleCat_' + index).text(item['totalSale']);
+                                    $('#amountCat_' + index).text(item['amount']);
 
-        });
+                                    tableCategory.row.add([
+                                        String(index + 1),
+                                        item['name'],
+                                        String(item['totalSale']),
+                                        String(item['amount'])
+                                    ]).draw();
+
+                                    n = index;
+                                });
+
+                                if (n != -1 && n < 9) {
+                                    for (let i = n + 1; i < 9; i++) {
+                                        $('#nameCat_' + i).text('####');
+                                        $('#totalSaleCat_' + i).text("0");
+                                        $('#amountCat_' + i).text("0");
+                                    }
+                                } else if (n == -1) {
+                                    for (let i = 0; i < 9; i++) {
+                                        $('#nameCat_' + i).text('####');
+                                        $('#totalSaleCat_' + i).text("0");
+                                        $('#amountCat_' + i).text("0");
+
+                                    }
+                                }
+
+                                displayNewData1(turnOverColumnChart, data['xturnOverPer'], data['turnOverAmountPer'], /*dateopt, */1, data['per']);
+                                                                        
+                                var dataArray = [
+                                    parseFloat(data['flux_tresorerie'][0]),
+                                    parseFloat(data['flux_tresorerie'][1])
+                                ];
+                                updateDonutChart(fluxTresorerieDonutChart, [
+                                    String("Recettes : " + data['flux_tresorerie'][0] + " XAF"),
+                                    String("Dépenses : " + data['flux_tresorerie'][1] + " XAF")
+                                ], dataArray);
+
+                                swal({
+                                    type: 'success', 
+                                    title: 'Le tableau de bord a été mis à jour !',
+                                    // html: 'Submitted email: ' + email
+                                });
+
+                                setTimeout(function () {
+                                    resolve()
+                                }, 2000);
+                            },
+                            error: function (result) {
+                                // console.log("Error");
+                                // console.log(result);
+                                swal('Oops...', 'Something went wrong!', 'error'
+                                // footer: '<a href>Why do I have this issue?</a>'
+                                );
+
+                                setTimeout(function () {
+                                    resolve()
+                                }, 5000);
+                            }
+                        });
+                    })
+                },
+                allowOutsideClick: false
+            }]);
+        }
 
         function updateDonutChart(chart, label, data) {
             chart.updateOptions({labels: label});
