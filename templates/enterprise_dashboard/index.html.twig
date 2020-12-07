@@ -1203,6 +1203,9 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
         {% endif %}
 
         function updateDashboard(){
+            {% if iconStock %}
+            type = $('#dashType').val();
+            {% endif %}
             $data = JSON.stringify({
                 "startDate": startDate, // tabGridId,
                 "endDate": endDate, // tabFuelId,
