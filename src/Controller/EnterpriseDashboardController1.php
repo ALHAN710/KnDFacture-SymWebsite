@@ -12,7 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class EnterpriseDashboardController extends ApplicationController
+class EnterpriseDashboardController1 extends ApplicationController
 {
     /**
      * @Route("/enterprise/{id<\d+>}/dashbord", name="enterprise_dashbord")
