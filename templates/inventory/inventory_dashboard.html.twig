@@ -846,13 +846,17 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                     $dat = new moment(String(item['dlc']));
                                     var dlc = $dat.format("DD MMM YYYY").toString(); #}
                         
-                                    table
+                                    {# table
                                     .row.add( [ item['dat'], String(item['sku']), 
                                     String(item['nam']), String(item['numLot']),item['dlc'],
                                     String(item['typ']), String(item['qty'])] )
-                                    .draw();
+                                    .draw(); #}
 
-                                });
+                                    table
+                                    .row.add( [ item['dat'], String(item['sku']), 
+                                    String(item['nam']),String(item['typ']), String(item['qty'])] )
+                                    .draw();
+                                    });
 
                             } 
                             swal({
