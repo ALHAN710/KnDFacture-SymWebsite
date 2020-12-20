@@ -279,7 +279,7 @@ class InventoryController extends ApplicationController
         //dump($inventoryAvailability);
         //dd($productStats);
 
-        $stockMovements = $manager->getRepository('App:StockMovement')->findAll();
+        /*$stockMovements = $manager->getRepository('App:StockMovement')->findAll();
         foreach ($stockMovements as $stockMovement) {
             if (!$stockMovement->getInventoryAvailability()->getId()) dump($stockMovement->getInventoryAvailability());
             if (!empty($stockMovement->getLot()) && !$stockMovement->getInventoryAvailability()->getId()) {
@@ -292,7 +292,7 @@ class InventoryController extends ApplicationController
                     $manager->flush();
                 }
             }
-        }
+        }*/
 
         $inventories = $inventoryRepo->findAll();
 
