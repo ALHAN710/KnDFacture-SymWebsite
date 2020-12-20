@@ -281,7 +281,8 @@ class InventoryController extends ApplicationController
 
         $stockMovements = $manager->getRepository('App:StockMovement')->findAll();
         foreach ($stockMovements as $stockMovement) {
-            if (!empty($stockMovement->getLot())) {
+            if (!$stockMovement->getInventoryAvailability()->getId()) dump($stockMovement->getInventoryAvailability());
+            if (!empty($stockMovement->getLot()) && !$stockMovement->getInventoryAvailability()->getId()) {
                 $lot = $stockMovement->getLot();
                 $inventoryAvailability = $manager->getRepository('App:InventoryAvailability')->findOneBy(['product' => $lot->getProduct(), 'inventory' => $lot->getInventory()]);
                 if ($inventoryAvailability) {
