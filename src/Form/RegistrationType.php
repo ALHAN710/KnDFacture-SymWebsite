@@ -79,20 +79,6 @@ class RegistrationType extends ApplicationType
                 TextType::class,
                 $this->getConfiguration("N° Tel (*) :", "Your Phone Number please...")
 
-            )
-            ->add(
-                'role',
-                ChoiceType::class,
-                [
-                    'choices' => [
-                        'USER'          => 'ROLE_USER',
-                        'SELLER'        => 'ROLE_SELLER',
-                        'STOCK MANAGER' => 'ROLE_STOCK_MANAGER',
-                        'ADMIN'         => 'ROLE_ADMIN',
-
-                    ],
-                    'label'    => 'Rôle'
-                ]
             );
         // ->add('phoneNumber')
         // ->add('countryCode')
@@ -137,6 +123,34 @@ class RegistrationType extends ApplicationType
                     // used to render a select box, check boxes or radios
                     // 'multiple' => true,
                     // 'expanded' => true,
+                ]
+            )
+                ->add(
+                    'role',
+                    ChoiceType::class,
+                    [
+                        'choices' => [
+                            'FACTURIER'             => 'ROLE_USER',
+                            'SELLER'                => 'ROLE_SELLER',
+                            'GESTIONNAIRE DE STOCK' => 'ROLE_STOCK_MANAGER',
+                            'ADMINISTRATEUR'        => 'ROLE_ADMIN',
+
+                        ],
+                        'label'    => 'Attribut'
+                    ]
+                );
+        } else {
+            $builder->add(
+                'role',
+                ChoiceType::class,
+                [
+                    'choices' => [
+                        'FACTURIER'             => 'ROLE_USER',
+                        'GESTIONNAIRE DE STOCK' => 'ROLE_STOCK_MANAGER',
+                        'ADMINISTRATEUR'        => 'ROLE_ADMIN',
+
+                    ],
+                    'label'    => 'Attribut'
                 ]
             );
         }
