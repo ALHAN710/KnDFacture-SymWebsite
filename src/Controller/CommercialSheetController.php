@@ -194,7 +194,7 @@ class CommercialSheetController extends ApplicationController
                                 if ($inventoryAvailability) { //Si cette disponibilité existe la mettre à jour ainsi que la quantité des lots relatifs à ce produit
                                     if ($commercialSheetItem->getQuantity() <= $inventoryAvailability->getAvailable()) {
 
-                                        //Recherche des lots relatifs à ce produit dans l'inventaire reçu ordonné suivant le mode de management 
+                                        /*//Recherche des lots relatifs à ce produit dans l'inventaire reçu ordonné suivant le mode de management 
                                         //de ce dernier
                                         $order_ = $inventory_->getManagementMode() == 'FIFO' ? 'asc' : 'desc';
                                         //dump($commercialSheetItem->getProduct());
@@ -289,7 +289,22 @@ class CommercialSheetController extends ApplicationController
                                                 //dump($inventoryAvailability);
                                                 $manager->persist($inventoryAvailability);
                                             }
-                                        }
+                                        }*/
+
+                                        //Gestion du mouvement de stock
+                                        $stockMovement = new StockMovement();
+                                        $stockMovement->setCreatedAt($date)
+                                            ->setInventoryAvailability($inventoryAvailability)
+                                            ->setQuantity($commercialSheetItem->getQuantity())
+                                            ->setType('Sale Exit')
+                                            ->setCommercialSheet($commercialSheet);
+                                        //dump($stockMovement);
+                                        $manager->persist($stockMovement);
+
+                                        $inventoryAvailability->setAvailable($commercialSheetItem->getAvailable());
+                                        //dump($inventoryAvailability);
+                                        $manager->persist($inventoryAvailability);
+
                                         $manager->persist($commercialSheetItem);
                                     } else {
                                         $commercialSheetItemErrorFlag = true;

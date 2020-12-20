@@ -46,7 +46,7 @@
                     <div class="row my-3 align-items-center">
                         <div class="col-lg-3 my-3">
                             {# <a href="{{path('lot_create', {'prod':0, 'inv':inventory.id})}}"  class="btn btn-soft-primary btn-lg rounded mr-2 mb-2 waves-effect" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot dans l'inventaire de {{inventory.name|capitalize}}"><i class="fa fa-plus-circle "></i></a> #}
-                            <a href="{{path('lots_index', {'prod':0, 'inv':inventory.id})}}" class="btn btn-soft-pink  btn-lg rounded mb-2 waves-effect" data-toggle="tooltip" data-placement="top" title="Voir les Lots de l'inventaire de {{inventory.name|capitalize}}"><i class="far fa-eye"></i></a>
+                            {# <a href="{{path('lots_index', {'prod':0, 'inv':inventory.id})}}" class="btn btn-soft-pink  btn-lg rounded mb-2 waves-effect" data-toggle="tooltip" data-placement="top" title="Voir les Lots de l'inventaire de {{inventory.name|capitalize}}"><i class="far fa-eye"></i></a> #}
                                                             
                         </div>
                         <div class="col-lg-9">
@@ -101,14 +101,8 @@
                                     <tbody>
                                         {% for product in products %}                    
                                         <tr class="text-center">
-                                            {# <td style="width:5px">
-                                                <div class="checkbox checkbox-primary">
-                                                    <input id="Journal{{commercialSheet.id}}" type="checkbox" name="journal" value="{{commercialSheet.id}}">
-                                                    <label for="Journal{{commercialSheet.id}}"></label>
-                                                </div>
-                                            </td> #}
                                             <td>{{ product.sku }}</td>
-                                            <td>{{ product.name }}</td>
+                                            <td><a href="#" class="editAV" data-prod="{{product.id}}" data-row={{loop.index0}} data-av=0 data-name="{{ product.name }}" data-toggle="modal" data-target=".editAV-modal-xl" data-toggle="tooltip" data-placement="top" title="Modifier la Disponibilité ?">{{ product.name }}</a></td>
                                             <td><span id="qtyAVG_{{product.id}}">0</span></td>
                                             <td><span id="ET_{{product.id}}">0</span></td>
                                             {# <td><span id="qtyMin_{{product.id}}">0</span></td>
@@ -129,7 +123,7 @@
                                                 </a>
                                                 <span class="bg bg-soft-success d-none" id="noAlertRefuel_{{product.id}}"></span>
                                                 {# {% endif %} #}
-                                                {% set lotPeremp = [] %}
+                                                {# {% set lotPeremp = [] %}
                                                 {% for lot in product.lots %}
                                                     {% if lot.alert == false and lot.quantity > 0 and lot.inventory == inventory %}
                                                         {% set lotPeremp = lotPeremp|merge([lot]) %}
@@ -137,51 +131,9 @@
                                                     {% endif %} 
                                                 {% endfor %}
                                                 {% if lotPeremp|length > 0 %}
-                                                {# <a href="#bd-example-modal-xl" class="waves-effect" data-animation="blur" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Click to see alerts">
-                                                    <i class="fas fa-exclamation-triangle text-danger "></i>
-                                                </a> #}
                                                 <a href="" class="" data-toggle="modal" data-target=".bd-example-modal-xl_{{product.id}}" data-toggle="tooltip" data-placement="top" title="Alerte Lots Expirés"><i class="fas fa-exclamation-triangle text-danger "></i></a>
                                                 <!-- Custom Modal -->
-                                                {# <div id="custom-modalAlert" class="modal-demo">
-                                                    <button type="button" class="close" onclick="Custombox.modal.close();">
-                                                        <span>&times;</span><span class="sr-only">Close</span>
-                                                    </button>
-                                                    <h4 class="custom-modal-title text-danger text-center">Expiration Alert</h4>
-                                                    <div class="custom-modal-text">
-                                                        <table id="" class="table dt-responsive nowrap table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                                            <thead>
-                                                                <tr class="text-center">
-                                                                    <th>N° Lot</th>
-                                                                    <th>DLC</th>
-                                                                    <th>Actions</th>
-                                                                </tr>
-                                                            </thead>
-
-                                                            <tbody>
-                                                                {% for lot in lotPeremp %}
-                                                                <tr class="text-center">
-                                                                    <td>{{ lot.number }}</td>
-                                                                    <td>{{ lot.dlc|date('d-m-Y') }}</td>
-                                                                    <td style="width:5px">
-                                                                        <div class="checkbox checkbox-primary">
-                                                                            <input id="Journal{{lot.id}}" type="checkbox" name="journal" value="{{lot.id}}">
-                                                                            <label for="Journal{{lot.id}}"></label>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                                {% endfor %}
-                                                            </tbody>
-                                                        </table>
-
-                                                        <div class="row mx-2 my-2 float-right">
-                                                            <button type="button" id="saveBtn" data-action="place" data-target="{{'1'}}" class="btn btn-success btn-lg">
-                                                                <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
-                                                                Save
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div> #}
-
+                                                
                                                 <div class="modal fade bd-example-modal-xl_{{product.id}}" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog modal-xl">
                                                         <div class="modal-content">
@@ -200,7 +152,7 @@
                                                                     </thead>
 
                                                                     <tbody>
-                                                                        {# {{dump(lotPeremp)}} #}
+                                                                        
                                                                         {% for lot_ in lotPeremp %}
                                                                         <tr class="text-center">
                                                                             <td>{{ lot_.number }}</td>
@@ -227,7 +179,7 @@
                                                         </div><!-- /.modal-content -->
                                                     </div><!-- /.modal-dialog -->
                                                 </div>
-                                                {% endif %}
+                                                {% endif %} #}
                                             </td>
                                             <td><span id="demand_{{product.id}}"></span></td>
                                             {# <td>
@@ -240,11 +192,60 @@
                                         </tr>
                                         {% endfor %}
                                     </tbody>
-                                </table>                    
+                                </table>       
+
+                                <div class="modal fade editAV-modal-xl" id="editAV-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title mt-0" id="myModalLabel">Modification de la disponibilité en Stock</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">SKU</span>
+                                                        </div>
+                                                        <input type="text" id="sku" class="form-control" disabled value="A1001"></input>
+                                                    </div>                                                    
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">Nom</span>
+                                                        </div>
+                                                        <input type="text" id="productName" class="form-control" disabled value="Ma première purée de carottes"></input>
+                                                    </div>                                                    
+                                                </div>
+                                                <div class="form-group">
+                                                    {# <label>Left Addons With Textarea</label> #}
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">Disponibilité</span>
+                                                        </div>
+                                                        <input type="number" id="available" min="0" class="form-control" value="0"></input>
+                                                    </div>                                                    
+                                                </div>
+                                                <input type="hidden" id="tableRow">
+                                                <input type="hidden" id="prod">
+                                            </div>
+                                            <div class="modal-footer">
+                                                {# <button type="button" class="btn btn-soft-warning waves-effect" data-dismiss="modal">Fermer</button> #}
+                                                <button type="button" id="saveAVBtn" data-toggle="tooltip" data-placement="top" title="Sauvegarder les Modifications" class="btn btn-soft-primary btn-lg">
+                                                    <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                                                    Sauvegarder
+                                                </button>
+                                                
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div> 
+
                             </div>
 
                             <div class="tab-pane p-3" id="stockMovementTab" role="tabpanel">
-                              {# <div class="form-group my-2">
+                                {# <div class="form-group my-2">
                                     <h6 class=" input-title mt-lg-3">Specify the Date Range</h6>
                                     <div class="row">
                                         <div class="input-daterange input-group col-6" id="date-range">
@@ -264,8 +265,8 @@
                                                 <th>Date</th>
                                                 <th>SKU</th>
                                                 <th>Nom</th>
-                                                <th>N° Lot</th>
-                                                <th>DLC</th>
+                                                {# <th>N° Lot</th>
+                                                <th>DLC</th> #}
                                                 <th>Type</th>
                                                 <th>Qté</th>
                                             </tr>
@@ -653,9 +654,92 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
 
     
     $(document).ready(function(){
-        $('.buttons-pdf').children('span').prepend('<i class="mdi mdi-download mr-2"></i>')
+        $('.buttons-pdf').children('span').prepend('<i class="mdi mdi-download mr-2"></i>');
 
+        $('.editAV').click(function(){
+            {# console.log('row = ' + $(this).data('row'));
+            var av = statsTable.cell($(this).data('row'),4).data();
+            $(this).data('av', av);
+            console.log('av = ' + $(this).data('av')); 
+            //statsTable.cell($(this).data('row'),4).data(0); 
+            #}
+
+            $('#sku').val(statsTable.cell($(this).data('row'),0).data());
+            $('#productName').val($(this).data('name'));
+            $('#available').val(statsTable.cell($(this).data('row'),4).data());
+            $('#tableRow').val($(this).data('row'));
+            $('#prod').val($(this).data('prod'));
+            //console.log('tableRow = ' + $('#tableRow').val());
+        });
+
+        $('#saveAVBtn').click(function(){
+            var $data = JSON.stringify({
+                {# "SKU": $('#sku').val(),
+                "Name": $('#productName').val(), #}
+                "prod": $('#prod').val(),
+                "available": $('#available').val(),
+                "inv": inv
+            });   
+
+            swal.queue([{
+                title: 'Modification de la disponibilité du produit ' + $('#productName').val() + " dans l'inventaire " + "{{ inventory.name|capitalize }}",
+                confirmButtonText: 'Confirmez',
+                text: 'Disponibilité = ' + $('#available').val(),
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                confirmButtonClass: 'btn btn-primary',
+                cancelButtonClass: 'btn btn-info ml-2',
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+                        
+                        $.ajax({
+                            type: "POST",//method type
+                            contentType: "application/json; charset=utf-8",
+                            url: "{{ path('update_product_availability') }}",///Target function that will be return result
+                            data: $data,//parameter pass data is parameter name param is value 
+                            dataType: "json",
+                            timeout: 120000,//64241
+                            success: function (data) {
+                                {# console.log(data)   ; #}
+
+                                statsTable.cell($('#tableRow').val(),4).data($('#available').val());
+
+                                swal({
+                                    type: 'success',
+                                    title: 'La disponibilité a été mis à jour avec succès !',
+                                    //html: 'Submitted email: ' + email
+                                });
+
+                                setTimeout(function () {
+                                    resolve();
+                                    //Fermer le modal d'édition
+                                    //$('#editAV-modal-xl').modal('toggle');   
+
+                                }, 2000);
+                            },
+                            error: function (result) {
+                                //console.log("Error");
+                                //console.log(result);
+                                swal(
+                                    'Oops...',
+                                    "Une erreur s'est produite !",
+                                    'error'
+                                    //footer: '<a href>Why do I have this issue?</a>'
+                                );
+
+                                setTimeout(function () {
+                                    resolve()
+                                }, 5000);
+                            }
+                        });
+                    })
+                },
+                allowOutsideClick: false
+            }]);
+
+        });
     });
+
     var const_ = {{ inventory.const }};
     var approvDelay = {{ inventory.approvDelay }};
     var freqReapp = {{ inventory.orderingFreq }};
@@ -665,7 +749,6 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
     $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
         //console.log(picker.startDate.format('YYYY-MM-DD'));
         //console.log(picker.endDate.format('YYYY-MM-DD'));
-    
         //$('.fa-sync').addClass('fa-spin');
         var startDate = picker.startDate.format('YYYY-MM-DD');
         var endDate = picker.endDate.format('YYYY-MM-DD');
@@ -847,7 +930,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                     timeout: 120000,//64241
                     success: function (data) {
                         //$('.fa-sync').removeClass('fa-spin');                                  
-                        //console.log(data);
+                        console.log(data);
                         
                         //console.log(data['productStats']);
 
@@ -899,7 +982,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                         var stockMovementTab = data['stockMovements'];
                         if(stockMovementTab){
                             //console.log('Type = ' + typeof stockMovementTab.length);  
-                            //console.log(stockMovementTab);  
+                            console.log(stockMovementTab);  
                             stockMovementTab.forEach(function (item, index) {
                                 {# var $dat = new moment(String(item['dat']));
                                 var date = $dat.format("DD MMM YYYY hh:mm:ss").toString();
@@ -907,10 +990,15 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                 $dat = new moment(String(item['dlc']));
                                 var dlc = $dat.format("DD MMM YYYY").toString(); #}
                     
-                                table
+                                {# table
                                 .row.add( [ item['dat'], String(item['sku']), 
                                 String(item['nam']), String(item['numLot']),item['dlc'],
                                 String(item['typ']), String(item['qty'])] )
+                                .draw(); #}
+
+                                table
+                                .row.add( [ item['dat'], String(item['sku']), 
+                                String(item['nam']),String(item['typ']), String(item['qty'])] )
                                 .draw();
 
                             });
@@ -945,8 +1033,8 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
         },
         allowOutsideClick: false
     }]);
-                  
-    $('#saveBtn').click(function(){
+       
+    {# $('#saveBtn').click(function(){
         //console.log('Lot To Remove Btn clicked');
         var tabLotToRemove = [];
         $("input:checkbox[name=lotToRemove]:checked").each(function(){
@@ -986,7 +1074,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
             prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Aucun Lot n\'est sélectionné pour la suppression !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
             
         }
-    });
+    }); #}
     
 </script>
 {% endblock %}

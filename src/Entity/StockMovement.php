@@ -34,7 +34,7 @@ class StockMovement
 
     /**
      * @ORM\ManyToOne(targetEntity=Lot::class, inversedBy="stockMovements")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $lot;
 
@@ -42,6 +42,12 @@ class StockMovement
      * @ORM\ManyToOne(targetEntity=CommercialSheet::class, inversedBy="stockMovements")
      */
     private $commercialSheet;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=InventoryAvailability::class, inversedBy="stockMovements")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $inventoryAvailability;
 
     public function getId(): ?int
     {
@@ -104,6 +110,18 @@ class StockMovement
     public function setCommercialSheet(?CommercialSheet $commercialSheet): self
     {
         $this->commercialSheet = $commercialSheet;
+
+        return $this;
+    }
+
+    public function getInventoryAvailability(): ?InventoryAvailability
+    {
+        return $this->inventoryAvailability;
+    }
+
+    public function setInventoryAvailability(?InventoryAvailability $inventoryAvailability): self
+    {
+        $this->inventoryAvailability = $inventoryAvailability;
 
         return $this;
     }
