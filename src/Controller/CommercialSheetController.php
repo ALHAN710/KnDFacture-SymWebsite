@@ -733,23 +733,36 @@ class CommercialSheetController extends ApplicationController
         //dump($businessContact);
         foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
             $cmsiLots = $manager->getRepository('App:CommercialSheetItemLot')->findBy(['commercialSheetItem' => $commercialSheetItem]);
-            //dump($cmsiLots);
-            foreach ($cmsiLots as $cmsiLot) {
-                $lot = $cmsiLot->getLot();
-                //dump($lot);
-                $inventoryAvailability = $manager->getRepository('App:InventoryAvailability')->findOneBy(['inventory' => $lot->getInventory(), 'product' => $lot->getProduct()]);
+            if (!empty($cmsiLots)) {
+                //dump($cmsiLots);
+                foreach ($cmsiLots as $cmsiLot) {
+                    $lot = $cmsiLot->getLot();
+                    //dump($lot);
+                    $inventoryAvailability = $manager->getRepository('App:InventoryAvailability')->findOneBy(['inventory' => $lot->getInventory(), 'product' => $lot->getProduct()]);
+                    if ($inventoryAvailability) {
+                        //dump($inventoryAvailability);
+                        $tmp = $inventoryAvailability->getAvailable() + $cmsiLot->getQuantity();
+                        $inventoryAvailability->setAvailable($tmp);
+                        //dump($inventoryAvailability);
+
+                        $manager->persist($inventoryAvailability);
+                    }
+                    $qty = $lot->getQuantity() + $cmsiLot->getQuantity();
+                    $lot->setQuantity($qty);
+                    //dump($lot);
+                    $manager->persist($lot);
+                }
+            } else if ($commercialSheet->getType() === 'bill') {
+
+                $inventoryAvailability = $manager->getRepository('App:InventoryAvailability')->findOneBy(['inventory' => $commercialSheet->getInventory(), 'product' => $commercialSheetItem->getProduct()]);
                 if ($inventoryAvailability) {
                     //dump($inventoryAvailability);
-                    $tmp = $inventoryAvailability->getAvailable() + $cmsiLot->getQuantity();
+                    $tmp = $inventoryAvailability->getAvailable() + $commercialSheetItem->getQuantity();
                     $inventoryAvailability->setAvailable($tmp);
                     //dump($inventoryAvailability);
 
                     $manager->persist($inventoryAvailability);
                 }
-                $qty = $lot->getQuantity() + $cmsiLot->getQuantity();
-                $lot->setQuantity($qty);
-                //dump($lot);
-                $manager->persist($lot);
             }
             $commercialSheetItem->removeCommercialSheet($commercialSheet);
             //dump($commercialSheetItem);
