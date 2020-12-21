@@ -730,11 +730,11 @@ class CommercialSheetController extends ApplicationController
     public function delete(CommercialSheet $commercialSheet, EntityManagerInterface $manager)
     {
         $businessContact = $manager->getRepository('App:BusinessContact')->findOneBy(['id' => $commercialSheet->getBusinessContact()->getId()]);
-        //dump($businessContact);
         foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
-            $cmsiLots = $manager->getRepository('App:CommercialSheetItemLot')->findBy(['commercialSheetItem' => $commercialSheetItem]);
+            //dump($commercialSheetItem);
+            /*$cmsiLots = $manager->getRepository('App:CommercialSheetItemLot')->findBy(['commercialSheetItem' => $commercialSheetItem]);
             if (!empty($cmsiLots)) {
-                //dump($cmsiLots);
+                dump($cmsiLots);
                 foreach ($cmsiLots as $cmsiLot) {
                     $lot = $cmsiLot->getLot();
                     //dump($lot);
@@ -752,7 +752,8 @@ class CommercialSheetController extends ApplicationController
                     //dump($lot);
                     $manager->persist($lot);
                 }
-            } else if ($commercialSheet->getType() === 'bill') {
+            } else */
+            if ($commercialSheet->getType() === 'bill') {
 
                 $inventoryAvailability = $manager->getRepository('App:InventoryAvailability')->findOneBy(['inventory' => $commercialSheet->getInventory(), 'product' => $commercialSheetItem->getProduct()]);
                 if ($inventoryAvailability) {
@@ -768,6 +769,7 @@ class CommercialSheetController extends ApplicationController
             //dump($commercialSheetItem);
             $manager->persist($commercialSheetItem);
         }
+
         $businessContact->removeCommercialSheet($commercialSheet);
         $manager->persist($businessContact);
         //die();
