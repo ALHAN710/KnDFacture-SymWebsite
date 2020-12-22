@@ -76,7 +76,7 @@
                                             <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Ref produits en stock max : {{ productRefNumber }}</li>
                                             {% endif %}
                                         </ul>
-                                        <h5 class="seling-data-detail {% if app.user.enterprise.isActivated == true %}text-warning{% else %}text-danger{% endif %}">{% if app.user.enterprise.isActivated == true %}Fin d'abonnenement dans : {{app.user.enterprise.subscriptionDeadLine}}{% else %}Abonnement Expiré{% endif %}</h5>
+                                        <h5 class="seling-data-detail {% if app.user.enterprise.isActivated == true %}text-warning{% else %}text-danger{% endif %}">{% if app.user.enterprise.isActivated == true %}Fin d'abonnement dans : {{app.user.enterprise.subscriptionDeadLine}}{% else %}Abonnement Expiré{% endif %}</h5>
                                     </div>                                                            
                                 </div>
                                 {# <div class="col-5 align-item-center">
