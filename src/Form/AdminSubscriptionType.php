@@ -47,7 +47,7 @@ class AdminSubscriptionType extends ApplicationType
                 [
                     'choices' => [
                         '1 Mois'  => '1',
-                        '6 Mois'  => '6',
+                        //'6 Mois'  => '6',
                         '12 Mois' => '12',
 
                     ],
