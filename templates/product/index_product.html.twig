@@ -32,7 +32,7 @@
                 <div class="card-body table-responsive">
                     <h5 class="header-title">Liste des Produits</h5>
                     <div class="mt-2 mb-2 mr-5 text-right">
-                        <a href="{% if subIsActivated == true %}{{path('product_create')}}{% else %}#{% endif %}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau Produit ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="dripicons-shopping-bag"></i></a>
+                        <a href="{% if subIsActivated == true %}{{path('product_create')}}{% else %}#{% endif %}"  class="btn btn-info btn-lg rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau Produit ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="dripicons-shopping-bag"></i></a>
                     </div> 
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" role="tablist">
@@ -73,11 +73,11 @@
                                                 <td>{{product.price}}</td>
                                                 {# <td>{{product.description}}</td> #}
                                                 <td>
-                                                    <a href="{{path('product_edit', {'id':product.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifiez le produit ?"><i class="far fa-edit"></i> </a></a>
+                                                    <a href="{{path('product_edit', {'id':product.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Modifiez le produit ?"><i class="far fa-edit"></i> </a></a>
                                                     {# {% if product.lots|length > 0 %}
                                                     <a href="{{path('lots_index', {'prod':product.id, 'inv':0})}}" class="btn btn-soft-purple btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View Lots"><i class="far fa-eye"></i></a>
                                                     {% endif %} #}
-                                                    <a href="{{path('product_delete', {'id':product.id})}}" class="btn btn-soft-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimez le produit ?"><i class="fas fa-trash"></i> </a>   
+                                                    <a href="{{path('product_delete', {'id':product.id})}}" class="btn btn-soft-danger btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Supprimez le produit ?"><i class="fas fa-trash"></i> </a>   
                                                 </td>    
                                             </tr>
                                             {% endif %}
@@ -110,11 +110,11 @@
                                                 <td>{{product.price}}</td>
                                                 {# <td>{{product.description}}</td> #}
                                                 <td>
-                                                    <a href="{{path('product_edit', {'id':product.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifiez le produit ?"><i class="far fa-edit"></i> </a></a>
+                                                    <a href="{{path('product_edit', {'id':product.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Modifiez le produit ?"><i class="far fa-edit"></i> </a></a>
                                                     {# {% if product.lots|length > 0 %}
                                                     <a href="{{path('lots_index', {'prod':product.id, 'inv':0})}}" class="btn btn-soft-purple btn-xs rounded" data-toggle="tooltip" data-placement="top" title="View Lots"><i class="far fa-eye"></i></a>
                                                     {% endif %} #}
-                                                    <a href="{{path('product_delete', {'id':product.id})}}" class="btn btn-soft-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimez le produit ?"><i class="fas fa-trash"></i> </a>   
+                                                    <a href="{{path('product_delete', {'id':product.id})}}" class="btn btn-soft-danger btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Supprimez le produit ?"><i class="fas fa-trash"></i> </a>   
                                                 </td>    
                                             </tr>
                                             {% endif %}

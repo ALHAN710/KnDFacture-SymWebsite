@@ -21,22 +21,17 @@ class AccountType extends ApplicationType
             ->add(
                 'firstName',
                 TextType::class,
-                $this->getConfiguration("First Name", "Please enter your first Name...")
+                $this->getConfiguration("Prénom (*)", "Entrer le prénom...")
             )
             ->add(
                 'lastName',
                 TextType::class,
-                $this->getConfiguration("Nom", "Please enter your last Name...")
+                $this->getConfiguration("Nom (*)", "Entrer le nom...")
             )
-            /*->add(
-                'hash',
-                PasswordType::class,
-                $this->getConfiguration("Password", "Please enter your password...")
-            )*/
             ->add(
                 'email',
                 EmailType::class,
-                $this->getConfiguration("Email", "Please enter your email here...")
+                $this->getConfiguration("Email (*)", "Entrer l'adresse email...")
             )
             ->add(
                 'avatar',
@@ -67,15 +62,10 @@ class AccountType extends ApplicationType
                     ]
                 )
             )
-            /*->add(
-                'passwordConfirm',
-                PasswordType::class,
-                $this->getConfiguration("Confirmation de mot de passe", "Veuillez confirmer votre mot de passe")
-            )*/
             ->add(
                 'countryCode',
                 TextType::class,
-                $this->getConfiguration("Country code :", "Telephone code of your country", [
+                $this->getConfiguration("Code téléphonique :", "Ex : +237", [
                     'required' => false,
                 ])
 
@@ -83,7 +73,7 @@ class AccountType extends ApplicationType
             ->add(
                 'phoneNumber',
                 TextType::class,
-                $this->getConfiguration("N° Tel :", "Your Phone Number please...")
+                $this->getConfiguration("N° Tél (*) :", "Entrer le numéro de téléphone...")
 
             )
             /*->add(

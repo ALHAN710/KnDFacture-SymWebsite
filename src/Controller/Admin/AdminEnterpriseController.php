@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Enterprise;
+use Cocur\Slugify\Slugify;
 use App\Form\EnterpriseType;
 use App\Entity\BusinessContact;
 use App\Entity\CommercialSheet;
@@ -10,11 +11,13 @@ use App\Form\AdminEnterpriseType;
 use App\Entity\CommercialSheetItem;
 use App\Form\AdminSubscriptionType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class AdminEnterpriseController extends AbstractController
 {
@@ -55,6 +58,7 @@ class AdminEnterpriseController extends AbstractController
     public function create(Request $request, EntityManagerInterface $manager)
     { // @IsGranted("ROLE_SUPER_ADMIN")
         $enterprise = new Enterprise();
+        $enterprise->setRegisterBy($this->getUser());
 
         $tarifs = null;
         $subscriptions = $manager->getRepository('App:Subscription')->findAll();
@@ -62,6 +66,10 @@ class AdminEnterpriseController extends AbstractController
             $tarifs['' . $subscription->getId()] = $subscription->getTarifs();
         }
         //dump($tarifs);
+        $lastLogo = $enterprise->getLogo();
+        $filesystem = new Filesystem();
+        $slugify = new Slugify();
+
         //  instancier un form externe
         $form = $this->createForm(AdminEnterpriseType::class, $enterprise);
         $form->handleRequest($request);
@@ -122,6 +130,30 @@ class AdminEnterpriseController extends AbstractController
             $manager->persist($commercialSheetItem);
             $manager->persist($commercialSheet);
 
+            // @var UploadedFile $logoFile 
+            $logoFile = $form->get('logo')->getData();
+
+            // this condition is needed because the 'logo' field is not required
+            // so the Image file must be processed only when a file is uploaded
+            if ($logoFile) {
+                $originalFilename = pathinfo($logoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                // this is needed to safely include the file name as part of the URL
+                $safeFilename = $slugify->slugify($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $logoFile->guessExtension();
+
+                // Move the file to the directory where logos are stored
+                try {
+                    $logoFile->move(
+                        $this->getParameter('logo_directory'),
+                        $newFilename
+                    );
+                    $path = $this->getParameter('logo_directory') . '/' . $lastLogo;
+                    if ($lastLogo != NULL) $filesystem->remove($path);
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+                $enterprise->setLogo($newFilename);
+            }
 
             //$manager = $this->getDoctrine()->getManager();
             $manager->persist($enterprise);

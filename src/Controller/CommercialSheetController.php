@@ -525,7 +525,7 @@ class CommercialSheetController extends ApplicationController
         foreach ($inventories as $inventory) {
             $choices['' . strtoupper($inventory)] = ucfirst($inventory);
         }*/
-
+        $oldCommercialSheet = $commercialSheet;
         //  instancier un form externe
         $form = $this->createForm(CommercialSheetType::class, $commercialSheet, [
             'entId'  => $this->getUser()->getEnterprise()->getId(),
@@ -669,6 +669,12 @@ class CommercialSheetController extends ApplicationController
             //}
             //die();
             // dump($commercialSheet->getCommercialSheetItems());
+            // foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
+            //     //dump($commercialSheetItem);
+            //     $commercialSheetItem->addCommercialSheet($commercialSheet);
+            //     $commercialSheet->addCommercialSheetItem($commercialSheetItem);
+            // }
+
             if ($commercialSheet->getDeliveryStatus() == true) {
                 $commercialSheet->setDeliverAt($date);
             }
@@ -684,7 +690,8 @@ class CommercialSheetController extends ApplicationController
             }
 
             if (!$commercialSheetItemErrorFlag) { //Si la commande est valide 
-                //die();
+                //dump($oldCommercialSheet);
+                //dd($commercialSheet);
                 $manager->persist($commercialSheet);
                 $manager->flush();
 

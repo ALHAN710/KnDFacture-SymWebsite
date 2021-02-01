@@ -19,12 +19,12 @@ class InventoryType extends ApplicationType
             ->add(
                 'name',
                 TextType::class,
-                $this->getConfiguration("Name", "Please enter the name of Inventory...")
+                $this->getConfiguration("Nom (*)", "Entrer le nom  de l'inventaire svp...")
             )
             ->add(
                 'approvDelay',
                 NumberType::class,
-                $this->getConfiguration("Supply Delay (Days)", "Please enter the supply delay...", [
+                $this->getConfiguration("Délai d'approvisionnement", "Please enter the supply delay...", [
                     'attr' => [
                         'min'  =>  '0'
                     ]
@@ -33,7 +33,7 @@ class InventoryType extends ApplicationType
             ->add(
                 'orderingFreq',
                 NumberType::class,
-                $this->getConfiguration("Ordering Frequency (Days)", "Please enter the ordering frequency...", [
+                $this->getConfiguration("Fréquence de réapprovisionnement", "Please enter the ordering frequency...", [
                     'attr' => [
                         'min'  =>  '0'
                     ]
@@ -42,7 +42,7 @@ class InventoryType extends ApplicationType
             ->add(
                 'txOfService',
                 ChoiceType::class,
-                $this->getConfiguration("Service scale (%)", "Select the coef", [
+                $this->getConfiguration("Coef de sécurité (%)", "Select the coef", [
                     'choices' => [
                         '99.9%' => '3.09',
                         '99%'   => '2.33',
@@ -118,7 +118,7 @@ class InventoryType extends ApplicationType
             ->add(
                 'managementMode',
                 ChoiceType::class,
-                $this->getConfiguration("Management Mode ", "Select the Management Mode...", [
+                $this->getConfiguration("Mode de Management", "Select the Management Mode...", [
                     'choices' => [
                         'LIFO'   => 'LIFO',
                         'FIFO'   => 'FIFO',
@@ -128,7 +128,7 @@ class InventoryType extends ApplicationType
             ->add(
                 'type',
                 ChoiceType::class,
-                $this->getConfiguration("Stock Type ", "Select the Stock Type...", [
+                $this->getConfiguration("Type de Stock ", "Select the Stock Type...", [
                     'choices' => [
                         // 'MP'   => 'MP',
                         'PF'   => 'PF',

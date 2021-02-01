@@ -32,7 +32,8 @@ $('#add-commercialSheetItems').click(function () {
         //console.log('tabQtyError[' + i + '] = ' + tabQtyError[i]);
     }
     //J'ajoute à la suite de la div contenant le sous-formulaire ce code
-    $('#commercial_sheet_commercialSheetItems').append(tmpl).ready(() => {
+    //$('#commercial_sheet_commercialSheetItems').append(tmpl).ready(() => {
+    $('#tableRow').append(tmpl).ready(() => {
         // Select2
         var refId = '#commercial_sheet_commercialSheetItems_' + index + '_reference';
         var designationId = '#commercial_sheet_commercialSheetItems_' + index + '_designation';
@@ -521,28 +522,28 @@ $('#add-commercialSheetItems').click(function () {
             //console.log('precQty = ' + precQty);
         });
 
-        /*const commercialSheetItemsCounter_ = +$('#commercialSheet_commercialSheetItems div.nbItems').length;
-        console.log('commercialSheetItemsCounter_ = ' + commercialSheetItemsCounter_);
-        for (let index_ = 0; index_ < commercialSheetItemsCounter_; index_++) {
-            var SKUId_ = '#commercialSheet_commercialSheetItems_' + index_ + '_sku';
-            var productId_ = '#commercialSheet_commercialSheetItems_' + index_ + '_product';
-            $(SKUId_ + " option").each(function () {
-                //console.log($(this).html());
-                $(this).removeClass('d-none');
-            });
-            var Str_ = String($(SKUId).val());
-            tabHideSKU.push(Str_);
-            //var Name_ = $(SKUId_ + ' option[value=\"' + Str_ + '\"]').text();
-            tabHideSKU.forEach(element => {
-                $(SKUId_ + " option[value='" + element + "']").attr('selected', '');
-                $(SKUId_ + " option[value='" + element + "']").addClass('d-none');
-                $(productId_ + " option[value='" + element + "']").attr('selected', '');
-                $(productId_ + " option[value='" + element + "']").addClass('d-none');
+        // const commercialSheetItemsCounter_ = +$('#commercialSheet_commercialSheetItems div.nbItems').length;
+        // console.log('commercialSheetItemsCounter_ = ' + commercialSheetItemsCounter_);
+        // for (let index_ = 0; index_ < commercialSheetItemsCounter_; index_++) {
+        //     var SKUId_ = '#commercialSheet_commercialSheetItems_' + index_ + '_sku';
+        //     var productId_ = '#commercialSheet_commercialSheetItems_' + index_ + '_product';
+        //     $(SKUId_ + " option").each(function () {
+        //         //console.log($(this).html());
+        //         $(this).removeClass('d-none');
+        //     });
+        //     var Str_ = String($(SKUId).val());
+        //     tabHideSKU.push(Str_);
+        //     //var Name_ = $(SKUId_ + ' option[value=\"' + Str_ + '\"]').text();
+        //     tabHideSKU.forEach(element => {
+        //         $(SKUId_ + " option[value='" + element + "']").attr('selected', '');
+        //         $(SKUId_ + " option[value='" + element + "']").addClass('d-none');
+        //         $(productId_ + " option[value='" + element + "']").attr('selected', '');
+        //         $(productId_ + " option[value='" + element + "']").addClass('d-none');
 
-            });
+        //     });
 
 
-        }*/
+        // }
 
         handleDeleteButton();
     });

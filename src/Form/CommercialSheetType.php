@@ -45,7 +45,7 @@ class CommercialSheetType extends ApplicationType
             ->add(
                 'fixReduction',
                 NumberType::class,
-                $this->getConfiguration("Reductions Fixes (XAF)", "Veuillez spécifier le montant des réductions fixes...", [
+                $this->getConfiguration("Réductions Fixes (XAF)", "Veuillez spécifier le montant des réductions fixes...", [
                     'attr' => [
                         'min'   => '0',
                         //'value' => '0'

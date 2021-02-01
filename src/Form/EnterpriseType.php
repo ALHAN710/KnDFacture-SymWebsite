@@ -28,7 +28,7 @@ class EnterpriseType extends ApplicationType
             ->add(
                 'niu',
                 TextType::class,
-                $this->getConfiguration("", "Entrer le numéro d'idantification unique(NIU)...", ['required' => false])
+                $this->getConfiguration("", "Entrer le numéro d'identification unique(NIU)...", ['required' => false])
             )
             ->add(
                 'rccm',

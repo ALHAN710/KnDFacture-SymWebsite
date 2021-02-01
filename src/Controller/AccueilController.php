@@ -23,7 +23,7 @@ class AccueilController extends AbstractController
         $username = $utils->getLastUsername();
         //dump($user->getRoles()[0]);
         if ($user !== NULL) {
-            if ($user->getRoles()[0] === 'ROLE_SUPER_ADMIN') return $this->redirectToRoute('admin_enterprises_index');
+            if ($user->getRoles()[0] === 'ROLE_SUPER_ADMIN' || $user->getRoles()[0] === 'ROLE_SELLER') return $this->redirectToRoute('admin_enterprises_index');
             else return $this->redirectToRoute('business_contacts_index', ['type' => 'customer']);
         } else {
             return $this->render('account/login.html.twig', [

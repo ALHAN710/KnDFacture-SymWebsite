@@ -120,6 +120,11 @@ class User implements UserInterface, \Serializable
     private $enterprise;
 
     /**
+     * @ORM\OneToMany(targetEntity=Enterprise::class, mappedBy="registerBy")
+     */
+    private $enterprises;
+
+    /**
      * Permet d'initialiser la date de création de l'utilisateur
      *
      * @ORM\PrePersist
@@ -154,6 +159,7 @@ class User implements UserInterface, \Serializable
         //$this->sites = new ArrayCollection();
         $this->userRoles = new ArrayCollection();
         $this->orders = new ArrayCollection();
+        $this->enterprises = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -431,6 +437,37 @@ class User implements UserInterface, \Serializable
     public function setEnterprise(?Enterprise $enterprise): self
     {
         $this->enterprise = $enterprise;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Enterprise[]
+     */
+    public function getEnterprises(): Collection
+    {
+        return $this->enterprises;
+    }
+
+    public function addEnterprise(Enterprise $enterprise): self
+    {
+        if (!$this->enterprises->contains($enterprise)) {
+            $this->enterprises[] = $enterprise;
+            $enterprise->setRegisterBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEnterprise(Enterprise $enterprise): self
+    {
+        if ($this->enterprises->contains($enterprise)) {
+            $this->enterprises->removeElement($enterprise);
+            // set the owning side to null (unless already changed)
+            if ($enterprise->getRegisterBy() === $this) {
+                $enterprise->setRegisterBy(null);
+            }
+        }
 
         return $this;
     }

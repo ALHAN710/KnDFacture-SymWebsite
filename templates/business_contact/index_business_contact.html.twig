@@ -91,7 +91,7 @@
                 <div class="card-body table-responsive">
                     <h5 class="header-title">Liste des {% if type == 'customer' %}Clients{% elseif type == 'supplier' %}Fournisseurs{% endif %}</h5>
                     <div class="mt-2 mb-2 mr-5 text-right">
-                        <a href="{% if subIsActivated == true %}{{path('business_contact_create',{'type':type})}}{% else %}#{% endif %}"  class="btn btn-info btn-lg rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
+                        <a href="{% if subIsActivated == true %}{{path('business_contact_create',{'type':type})}}{% else %}#{% endif %}"  class="btn btn-info btn-lg rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="fa fa-plus-circle mr-2"></i> <i class="mdi mdi-account-multiple"></i></a>
                     </div>
                     <div class="table-responsive">
                         <table id="datatable2" class="table table-striped table-fixed nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -164,9 +164,9 @@
                                     </td>
                                     <td class="d-none d-sm-table-cell">{{ rest }}</td> #}
                                     <td>
-                                        <a href="{{path('business_contact_edit', {'id':businessContact.id})}}"  class="btn btn-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifiez le {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}"><i class="far fa-edit"></i> </a>
+                                        <a href="{{path('business_contact_edit', {'id':businessContact.id})}}"  class="btn btn-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Modifiez le {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}"><i class="far fa-edit"></i> </a>
                                         {% if type == 'customer' %}
-                                        <a href="{% if subIsActivated == true %}#custom-modal{{businessContact.id}}{% else %}#{% endif %}" class="btn btn-primary btn-xs rounded waves-effect" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Editer un document ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="mdi mdi-file-table-outline"></i></a>
+                                        <a href="{% if subIsActivated == true %}#custom-modal{{businessContact.id}}{% else %}#{% endif %}" class="btn btn-primary btn-xs rounded waves-effect mr-2" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" data-toggle="tooltip" data-placement="top" title="Editer un document ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="mdi mdi-file-table-outline"></i></a>
                                         <!-- Custom Modal -->
                                         <div id="custom-modal{{businessContact.id}}" class="modal-demo">
                                             <button type="button" class="close" onclick="Custombox.modal.close();">
@@ -226,7 +226,7 @@
                                             </div>
                                         </div> <!--end custom modal--> 
                                         {% elseif type == 'supplier' %}
-                                        <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'purchaseorder'}) }}" class="btn btn-secondary btn-xs rounded text-right" data-toggle="tooltip" data-placement="top" title="Editer une facture d'achat ?"><i class="mdi mdi-file-table-outline"></i></a>
+                                        <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'purchaseorder'}) }}" class="btn btn-secondary btn-xs rounded text-right mr-2" data-toggle="tooltip" data-placement="top" title="Editer une facture d'achat ?"><i class="mdi mdi-file-table-outline"></i></a>
                                         {% endif %}
                                         <a href="{{path('business_contact_delete', {'id':businessContact.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimez {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}"><i class="fas fa-trash"></i> </a>
                                     

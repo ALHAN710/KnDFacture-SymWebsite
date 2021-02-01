@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Création d'un Product {% endblock %}
+{% block title %} Création d'un Produit {% endblock %}
 
 {% block stylesheets %}
 
@@ -22,14 +22,14 @@
 {% form_theme form 'product/_collection.html.twig' %}
 
 {% block body %}
-<div class="row ">
+<div class="row mb-4">
     <div class="col-12">
         <div class="card">
             <div class="card-body mx-5">        
-                <h4 class="mt-2 mb-4 header-title">Création de Product</h4>
+                <h4 class="mt-2 mb-4 header-title">Création du Produit</h4>
                 {{ form_start(form) }}
                 {#{{ form_widget(form) }}#}
-                <div class="form-group">
+                {# <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             {{ form_label(form.name, null, {'label_attr': {'class': 'input-group-text'}}) }}
@@ -37,39 +37,37 @@
                         {{ form_widget(form.name, {'attr': {'class': "form-control"}}) }}
                         
                     </div>
+                </div> #}
+
+                <div class="form-group">
+                    {{ form_label(form.name, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.name, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">Obligatoire</small>
+                </div>
+
+                
+                <div class="form-group">
+                    {{ form_label(form.sku, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.sku, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">Référence du produit (obligatoire)</small>
                 </div>
 
                 <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.sku, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.sku, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
+                    {{ form_label(form.price, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.price, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">Prix unitaire du produit (obligatoire)</small>
                 </div>
 
                 <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.price, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.price, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
+                    {{ form_label(form.description, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': "form-control"}}) }}
+                    {# <small class="form-text text-muted">Prix unitaire du produit</small> #}
                 </div>
+                
                 {# {{ form_widget(form.categories) }} #}
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.description, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.description, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
-                </div>
+                
                 {% if iconStock == true %}
-                <div class="text-center">
+                <div class="text-center mb-4">
                     {{ form_widget(form.hasStock) }}
                 
                 </div>
@@ -95,7 +93,7 @@
                 
                 <button type="submit" class="btn btn-primary mt-4 waves-effect" id="saveBtn">
                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
-                    Save
+                    Enregistrer
                 </button>
 
                 {{ form_end(form) }}

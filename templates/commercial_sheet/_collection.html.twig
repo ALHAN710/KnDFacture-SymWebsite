@@ -2,8 +2,9 @@
 {% block _commercial_sheet_commercialSheetItems_widget %}
 
     
-    {{form_widget(form)}}
-
+            {{form_widget(form)}}
+        </tbody>
+    </table>
     <input type="hidden" id="commercialSheetItems-widgets-count">
     
     <div class="form-group mt-4 text-right">
@@ -24,8 +25,68 @@
 {% endblock %} 
 
 {% block _commercial_sheet_commercialSheetItems_entry_widget %}
-    
-    <div class="row form-group mb-0 align-items-center nbItems" id = "block_{{id}}">
+    <tr class="nbItems" id = "block_{{id}}">
+        <td class="d-none colRef_{{id}}">
+            {{ form_widget(form.reference, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+        </td>
+        <td class="d-none colSKU_{{id}}">
+            {{ form_widget(form.productSku, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+        </td>
+        <td class="coldesignation_{{id}}">
+            {{ form_errors(form.designation) }}
+            {{ form_widget(form.designation, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+                                    
+        </td>
+        <td class="colproduct_{{id}} d-none">
+            {{ form_widget(form.product, {'attr': {'class': "select2 custom-select"}}) }}
+        </td>
+        <td class="">
+            {{ form_errors(form.pu) }}
+            {{ form_widget(form.pu, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+                                    
+        </td>
+        <td class="" >
+            {{ form_errors(form.quantity) }}
+            {{ form_widget(form.quantity, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+                                    
+        </td>
+        <td class="">
+            {{ form_widget(form.amountBrutHT, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+                                    
+        </td>
+        <td class="">
+            {{ form_widget(form.remise, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+                                    
+        </td>
+        <td class="">
+            {{ form_widget(form.amountNetHT, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+                                    
+        </td>
+        <td class="d-none">
+            {{ form_widget(form.productPrice, {'attr': {'class': "form-control text-center"}}) }}
+                            
+        </td>
+        <td class="d-none">
+            {{ form_widget(form.productType, {'attr': {'class': "form-control text-center"}}) }}
+                            
+        </td>
+        <td class="d-none">
+            {{ form_widget(form.itemOfferType, {'attr': {'class': "form-control text-center"}}) }}
+                            
+        </td>
+        <td class="colavai_{{id}}">
+            {{ form_errors(form.available) }}
+            {{ form_widget(form.available, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+                            
+        </td>
+        <td class="btn_delete_row">
+            <button type="button" data-action="delete" data-target="#block_{{id}}" class="btn  btn-soft-danger">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+        
+    </tr>
+    {# <div class="row form-group mb-0 align-items-center nbItems" id = "block_{{id}}">
         <div class="col-10 mt-4">
             <div class="row text-center">
                 <div class="col-3">
@@ -33,9 +94,6 @@
                         <div class="col-4 d-none colRef_{{id}}">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.reference, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_widget(form.reference, {'attr': {'class': "form-control text-center"}}) }}
                                     
                                 </div>
@@ -44,9 +102,6 @@
                         <div class="col-4 d-none colSKU_{{id}}">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.productSku, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_widget(form.productSku, {'attr': {'class': "form-control text-center"}}) }}
                                     
                                 </div>
@@ -56,9 +111,6 @@
                         <div class="col coldesignation_{{id}}">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.designation, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_errors(form.designation) }}
                                     {{ form_widget(form.designation, {'attr': {'class': "form-control text-center"}}) }}
                                     
@@ -69,9 +121,6 @@
                         <div class="col colproduct_{{id}} d-none">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.product, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_widget(form.product, {'attr': {'class': "select2 custom-select"}}) }}
                                     
                                 </div>
@@ -84,9 +133,6 @@
                         <div class="col">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.productPrice, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_errors(form.pu) }}
                                     {{ form_widget(form.pu, {'attr': {'class': "form-control text-center"}}) }}
                                     
@@ -97,9 +143,6 @@
                         <div class="col">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.quantity, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_errors(form.quantity) }}
                                     {{ form_widget(form.quantity, {'attr': {'class': "form-control text-center"}}) }}
                                     
@@ -114,9 +157,6 @@
                         <div class="col">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.amount, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_widget(form.amountBrutHT, {'attr': {'class': "form-control text-center"}}) }}
                                     
                                 </div>
@@ -125,9 +165,6 @@
                         <div class="col-3">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.amount, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_widget(form.remise, {'attr': {'class': "form-control text-center"}}) }}
                                     
                                 </div>
@@ -136,9 +173,6 @@
                         <div class="col-5">
                             <div class="form-group">
                                 <div class="input-group">
-                                    {# <div class="input-group-prepend">
-                                        {{ form_label(form.amount, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                    </div> #}
                                     {{ form_widget(form.amountNetHT, {'attr': {'class': "form-control text-center"}}) }}
                                     
                                 </div>
@@ -150,9 +184,6 @@
                 <div class="col d-none">
                     <div class="form-group">
                         <div class="input-group">
-                            {# <div class="input-group-prepend">
-                                {{ form_label(form.productPrice, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                            </div> #}
                             {{ form_widget(form.productPrice, {'attr': {'class': "form-control text-center"}}) }}
                             
                         </div>
@@ -188,9 +219,6 @@
                 <div class="col-6 colavai_{{id}}">
                     <div class="form-group">
                         <div class="input-group">
-                            {# <div class="input-group-prepend">
-                                {{ form_label(form.available, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                            </div> #}
                             {{ form_errors(form.available) }}
                             {{ form_widget(form.available, {'attr': {'class': "form-control text-center"}}) }}
                             
@@ -206,7 +234,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> #}
 
 
 {% endblock %}

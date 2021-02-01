@@ -50,7 +50,7 @@
                                 <tr class="text-center">
                                     {# <td>{{user.id}}</td> #}
                                     <td class="text-left"><a href="{{ path('account_password',{'id':user.id}) }}">{{user.fullName}}</a></td>
-                                    <td>{{user.roles[0]}}</td>
+                                    <td>{{userRoles[user.roles[0]]}}</td>
                                     <td>
                                         <a href="{{path('user_edit', {'id':user.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifiez l'utilisateur ?"><i class="far fa-edit"></i> </a></a>
                                         {# <a href="{{path('user_delete', {'id':user.id})}}" class="btn btn-soft-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimez l'utilisateur ?"><i class="fas fa-trash"></i> </a>    #}

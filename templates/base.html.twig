@@ -1,3 +1,4 @@
+{% apply spaceless %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -27,7 +28,7 @@
     {% if app.user.enterprise.subscription.productRefNumber == 0 or subIsActivated == false %}
     {% set iconStock = false %}
     {% endif %}
-    <body>
+    <body >
         <!-- Top Bar Start -->
         {% include 'partials/topBar.html.twig' %}
         <!-- Top Bar End -->
@@ -208,3 +209,4 @@
         {% block javascripts %}{% endblock %}
     </body>
 </html>
+{% endapply %}

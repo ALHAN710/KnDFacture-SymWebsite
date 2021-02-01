@@ -67,9 +67,10 @@
                                 <div class="col-12">
                                     <div class="seling-report">
                                         {# <h6 class="seling-data mb-1">Fin d'abonnenemnt dans : JJ-HH-MM</h6> #}
+                                        <h6 class="seling-data mb-1"></h6>
                                         <ul class="mb-0">
-                                            <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Ref Abonnement : {{"RF1234"}}</li>
-                                            <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Durée de validité : {{app.user.enterprise.subscriptionDuration}} Mois</li>
+                                            {# <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Ref Abonnement : {{"RF1234"}}</li> #}
+                                            <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Durée de validité : {{app.user.enterprise.subscriptionDuration}} Mois</li> 
                                             <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Date de souscription : {{ app.user.enterprise.subscribeAt|date('d-m-Y') }}</li>
                                             <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Nombre de documents max : {% if sheetNumber == 7102020 %}Illimités{% else %}{{ sheetNumber }}{% endif %}</li>
                                             {% if hasStockModule %}
@@ -478,52 +479,59 @@
                                         <div class="form-group">
                                             {# <input type="text" placeholder="Full Name" class="form-control"> #}
                                             {{ form_widget(form.socialReason, {'attr': {'class': "form-control"}}) }}
+                                            <small class="form-text text-muted">Raison Sociale ou Nom de l'entreprise</small>
                                         </div>
                                         
                                         <div class="form-group row">
-                                            <div class="col-md-5">
+                                            <div class="col-md-5 mb-2">
                                                 {# <input type="email" placeholder="Email" class="form-control" name="example-email" id="example-email"> #}
                                                 {{ form_widget(form.niu, {'attr': {'class': "form-control"}}) }}
+                                                <small class="form-text text-muted">Numéro d'Identification Unique</small>
                                             </div>
-                                            <div class="col-md-5">
+                                            <div class="col-md-5 mb-2">
                                                 {# <input type="password" placeholder="password" class="form-control"> #}
                                                 {{ form_widget(form.rccm, {'attr': {'class': "form-control"}}) }}
+                                                <small class="form-text text-muted">Numéro du Registre du Commerce</small>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 ">
                                                 {# <input type="password" placeholder="Re-password" class="form-control"> #}
                                                 {# {{ form_widget(form.tva, {'attr': {'class': "form-control"}}) }} #}
                                                 <div class="input-group">
                                                     {{ form_widget(form.tva, {'attr': {'class': "form-control"}}) }}
-                                                    <div class="input-group-prepend">
-                                                        {{ form_label(form.tva, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                                    </div>
+                                                    <small class="form-text text-muted">TVA(en %) à appliquer dans les factures (* Obligatoire)</small>
                                                     
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <div class="col-md-4">
+                                            <div class="col-md-4 mb-2">
                                                 {# <input type="text" placeholder="Phone No" class="form-control"> #}
                                                 {{ form_widget(form.phoneNumber, {'attr': {'class': "form-control"}}) }}
+                                                <small class="form-text text-muted">Numéro de téléphone de l'entreprise</small>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-4 mb-2">
                                                 {{ form_widget(form.email, {'attr': {'class': "form-control"}}) }}
+                                                <small class="form-text text-muted">Email de l'entreprise</small>
                                             </div>
                                             <div class="col-md-4">
                                                 {{ form_widget(form.country, {'attr': {'class': "form-control"}}) }}
+                                                <small class="form-text text-muted">Pays</small>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             {# <input type="text" placeholder="Full Name" class="form-control"> #}
                                             {{ form_widget(form.address, {'attr': {'class': "form-control"}}) }}
+                                            <small class="form-text text-muted">Adresse du siège social de l'entreprise</small>
                                         </div>
                                         <div class="form-group">
                                             {# <input type="text" placeholder="Full Name" class="form-control"> #}
                                             {{ form_widget(form.logo, {'attr': {'class': "form-control"}}) }}
+                                            <small class="form-text text-muted">Logo de l'entreprise (formats : png ou jpg)</small>
                                         </div>
                                         <div class="form-group">
                                             {# <textarea rows="5" placeholder="Message" class="form-control"></textarea> #}
                                             {{ form_widget(form.description, {'attr': {'class': "form-control"}}) }}
+                                            <small class="form-text text-muted">Brève description de l'entreprise</small>
                                             <button type="submit" class="btn btn-primary btn-sm text-light px-4 mt-3 float-right mb-0" id="updateBtn">Update Profile</button>
                                         </div>
                                     {# </form> #}

@@ -27,12 +27,12 @@ class AdminEnterpriseType extends ApplicationType
             ->add(
                 'socialReason',
                 TextType::class,
-                $this->getConfiguration("Raison Social ou Nom (*)", "Entrer la raison sociale ou nom (Obligatoire))")
+                $this->getConfiguration("Raison Social ou Nom (*)", "Entrer la raison sociale ou nom")
             )
             ->add(
                 'niu',
                 TextType::class,
-                $this->getConfiguration("NIU", "Entrer le numéro d'idantification unique(NIU)...", ['required' => false])
+                $this->getConfiguration("NIU", "Entrer le numéro d'identification unique(NIU)...", ['required' => false])
             )
             ->add(
                 'rccm',
@@ -42,23 +42,23 @@ class AdminEnterpriseType extends ApplicationType
             ->add(
                 'address',
                 TextType::class,
-                $this->getConfiguration("Adresse (*)", "Adresse siège sociale (Obligatoire)...")
+                $this->getConfiguration("Adresse", "Adresse siège sociale ...", ['required' => false])
             )
             ->add(
                 'phoneNumber',
                 TextType::class,
-                $this->getConfiguration("Tél (*)", "Numéro de téléphone (Obligatoire)...")
+                $this->getConfiguration("Tél (*)", "Numéro de téléphone...")
             )
             ->add(
                 'email',
                 EmailType::class,
-                $this->getConfiguration("Email", "Email...", ['required' => false])
+                $this->getConfiguration("Email (*)", "Email...")
             )
             ->add(
                 'logo',
                 FileType::class,
                 $this->getConfiguration(
-                    "logo (IMG file)",
+                    "Logo (IMG file)",
                     "",
                     [
                         // unmapped means that this field is not associated to any entity property
@@ -86,7 +86,7 @@ class AdminEnterpriseType extends ApplicationType
             ->add(
                 'tva',
                 NumberType::class,
-                $this->getConfiguration("TVA (*)", "TVA appliquée (Obligatoire)...", [
+                $this->getConfiguration("TVA (*)", "TVA appliquée...", [
                     'attr' => [
                         'min'   => '0',
                     ]
@@ -113,7 +113,7 @@ class AdminEnterpriseType extends ApplicationType
             ->add(
                 'town',
                 TextType::class,
-                $this->getConfiguration("Ville (*)", "Entrer la ville du client (Obligatoire)...")
+                $this->getConfiguration("Ville (*)", "Entrer la ville du client...")
             )
             /*->add('subscribeAt')
             ->add('createdAt')

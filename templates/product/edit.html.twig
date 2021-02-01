@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Modification d'un Product {% endblock %}
+{% block title %} Modification d'un Produit {% endblock %}
 
 {% block stylesheets %}
 
@@ -29,7 +29,7 @@
                 <h4 class="mt-2 mb-4 header-title">Modification de Produit</h4>
                 {{ form_start(form) }}
                 {#{{ form_widget(form) }}#}
-                <div class="form-group">
+                {# <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             {{ form_label(form.name, null, {'label_attr': {'class': 'input-group-text'}}) }}
@@ -37,39 +37,37 @@
                         {{ form_widget(form.name, {'attr': {'class': "form-control"}}) }}
                         
                     </div>
+                </div> #}
+
+                <div class="form-group">
+                    {{ form_label(form.name, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.name, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">Obligatoire</small>
+                </div>
+
+                
+                <div class="form-group">
+                    {{ form_label(form.sku, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.sku, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">Référence du produit (obligatoire)</small>
                 </div>
 
                 <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.sku, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.sku, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
+                    {{ form_label(form.price, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.price, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">Prix unitaire du produit (obligatoire)</small>
                 </div>
 
                 <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.price, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.price, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
+                    {{ form_label(form.description, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': "form-control"}}) }}
+                    {# <small class="form-text text-muted">Prix unitaire du produit</small> #}
                 </div>
+                
                 {# {{ form_widget(form.categories) }} #}
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.description, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.description, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
-                </div>
+                
                 {% if iconStock == true %}
-                <div class="text-center">
+                <div class="text-center mb-4">
                     {{ form_widget(form.hasStock) }}
                 
                 </div>
@@ -95,7 +93,7 @@
                 
                 <button type="submit" class="btn btn-primary waves-effect" id="saveBtn">
                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
-                    Save changes
+                    Enregistrer
                 </button>
 
                 {{ form_end(form) }}

@@ -50,21 +50,25 @@
                                     <th>Pays</th>
                                     <th>Ville</th> 
                                     <th>Adresse</th>
+                                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                    <th>Enregistré par</th>
+                                    {% endif %}
                                     <th>Actions</th>
                                 </tr>
                             </thead>
 
                             <tbody>
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
                                 {% for enterprise in enterprises %}
                                 {% if enterprise != app.user.enterprise %}
                                 <tr class="text-center">
-                                    {# <td>{{enterprise.id}}</td> #}
                                     <td class="text-left"><a href="#{#{{path('business_contact_details', {'id':enterprise.id})}}#}"  class="" >{{enterprise.socialReason}}</a></td>
                                     <td>{{enterprise.phoneNumber }}</td>
                                     <td>{{enterprise.email }}</td>
                                     <td>{{enterprise.country }}</td>
                                     <td>{{enterprise.town}}</td>
                                     <td>{{enterprise.address}}</td>
+                                    <td>{{enterprise.registerBy.fullName}}</td>
                                     
                                     <td>
                                         <a href="{{path('admin_enterprise_edit', {'id':enterprise.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier Client"><i class="far fa-edit"></i> </a>
@@ -76,6 +80,27 @@
                                 </tr>
                                 {% endif %}
                                 {% endfor %}
+                            {% elseif is_granted('ROLE_SELLER') %}
+                                {% for enterprise in app.user.enterprises %}
+                                <tr class="text-center">
+                                    {# <td>{{enterprise.id}}</td> #}
+                                    <td class="text-left"><a href="#{#{{path('business_contact_details', {'id':enterprise.id})}}#}"  class="" >{{enterprise.socialReason}}</a></td>
+                                    <td>{{enterprise.phoneNumber }}</td>
+                                    <td>{{enterprise.email }}</td>
+                                    <td>{{enterprise.country }}</td>
+                                    <td>{{enterprise.town}}</td>
+                                    <td>{{enterprise.address}}</td>
+                                    
+                                    <td>
+                                        {# <a href="{{path('admin_enterprise_edit', {'id':enterprise.id})}}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier Client"><i class="far fa-edit"></i> </a> #}
+                                        <a href="#" data-ent={{enterprise.id}} class="btn btn-soft-primary btn-xs rounded text-right orderRef waves-effect" data-toggle="modal" data-target=".bd-example-modal-xl_orderForm" data-placement="top" title="Commander un nouvel abonnement"><i class="mdi mdi-cart-outline"></i></a>
+                                        {# <a href="{{ path('admin_enterprise_delete', {'id':enterprise.id}) }}" class="btn btn-soft-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer le Client"><i class="fas fa-trash"></i> </a> #}
+                                    
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            {% endif %}
                             </tbody>
                         </table>
                     </div>   

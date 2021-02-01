@@ -25,8 +25,8 @@
 {% block body %}
 <div class="row ">
     <div class="col-12">
-        <div class="card">
-            <div class="card-body mx-5">        
+        {# <div class="card">
+            <div class="card-body mx-5">         #}
                 <h4 class="mt-2 mb-4 header-title">Créer une catégorie</h4>
                 {{ form_start(form) }}
                 {#{{ form_widget(form) }}#}
@@ -42,14 +42,14 @@
 
                 {{ form_widget(form.products) }}
 
-                <button type="submit" class="btn btn-primary mt-4 waves-effect" id="saveBtn">
+                <button type="submit" class="btn btn-primary mt-4 mb-5 waves-effect" id="saveBtn">
                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
                     Save
                 </button>
 
                 {{ form_end(form) }}
-            </div>
-        </div>
+            {# </div>
+        </div> #}
     </div>
 </div>
 {% endblock %}

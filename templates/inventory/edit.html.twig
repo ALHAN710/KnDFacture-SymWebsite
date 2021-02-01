@@ -28,6 +28,12 @@
                 {{ form_start(form) }}
                 {#{{ form_widget(form) }}#}
                 <div class="form-group">
+                    {{ form_label(form.name, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.name, {'attr': {'class': "form-control"}}) }}
+                    <small id="emailHelp" class="form-text text-muted">* Champ obligatoire</small>
+                </div>
+
+                {# <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             {{ form_label(form.name, null, {'label_attr': {'class': 'input-group-text'}}) }}
@@ -35,61 +41,41 @@
                         {{ form_widget(form.name, {'attr': {'class': "form-control"}}) }}
                         
                     </div>
+                </div> #}
+
+                <div class="form-group">
+                    {{ form_label(form.approvDelay, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.approvDelay, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">(en jours)</small>
                 </div>
 
                 <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.approvDelay, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.approvDelay, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
+                    {{ form_label(form.orderingFreq, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.orderingFreq, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">(en jours)</small>
                 </div>
 
                 <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.orderingFreq, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.orderingFreq, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
+                    {{ form_label(form.txOfService, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.txOfService, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">Image de taux de satisfaction client</small>
                 </div>
 
                 <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.txOfService, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.txOfService, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
+                    {{ form_label(form.managementMode, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.managementMode, {'attr': {'class': "form-control"}}) }}
+                    {# <small class="form-text text-muted">* Champ obligatoire</small> #}
                 </div>
 
                 <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.managementMode, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.managementMode, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            {{ form_label(form.type, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                        </div>
-                        {{ form_widget(form.type, {'attr': {'class': "form-control"}}) }}
-                        
-                    </div>
+                    {{ form_label(form.type, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.type, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">PF : Produit Fini</small>
                 </div>
                 
                 <button type="submit" class="btn btn-primary waves-effect" id="saveBtn">
                     <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
-                    Save changes
+                    Enregistrer
                 </button>
 
                 {{ form_end(form) }}

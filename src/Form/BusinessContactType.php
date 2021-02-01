@@ -19,19 +19,19 @@ class BusinessContactType extends ApplicationType
             ->add(
                 'socialReason',
                 TextType::class,
-                $this->getConfiguration("Social Reason or Name (*)", "Please enter the social reason or name...")
+                $this->getConfiguration("Raison Sociale ou Nom (*)", "Entrer la raison sociale ou le nom...")
             )
             ->add(
                 'niu',
                 TextType::class,
-                $this->getConfiguration("NIU", "Please enter the NIU...", [
+                $this->getConfiguration("NIU", "Entrer le numéro d'identification unique...", [
                     'required' => false,
                 ])
             )
             ->add(
                 'rccm',
                 TextType::class,
-                $this->getConfiguration("RCCM", "Please enter the RCCM...", [
+                $this->getConfiguration("RCCM", "Entrer le numéro du registre du commerce...", [
                     'required' => false,
                 ])
 
@@ -39,17 +39,17 @@ class BusinessContactType extends ApplicationType
             ->add(
                 'phoneNumber',
                 TextType::class,
-                $this->getConfiguration("Tel (*)", "Please enter phonenumber...")
+                $this->getConfiguration("Tél (*)", "Entrer le numéro de téléphone...")
             )
             ->add(
                 'address',
                 TextType::class,
-                $this->getConfiguration("Address (*)", "Please enter address...")
+                $this->getConfiguration("Adresse (*)", "Entrer l'adresse...")
             )
             ->add(
                 'email',
                 EmailType::class,
-                $this->getConfiguration("Email Address", "Please enter email address...", [
+                $this->getConfiguration("Adresse Email", "Entrer l'adresse email svp...", [
                     'required' => false,
                 ])
 

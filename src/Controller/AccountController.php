@@ -139,10 +139,17 @@ class AccountController extends ApplicationController
             else return $this->redirectToRoute('admin_users_index');
         }
 
-        return $this->render('account/new.html.twig', [
-            'form' => $form->createView(),
+        if ($isSupAdmin) {
+            return $this->render('admin/users/new.html.twig', [
+                'form' => $form->createView(),
 
-        ]);
+            ]);
+        } else {
+            return $this->render('account/new.html.twig', [
+                'form' => $form->createView(),
+
+            ]);
+        }
     }
 
     /**

@@ -25,12 +25,32 @@ class UserEntrepriseController extends AbstractController
      *@Security( "is_granted('ROLE_HIDE_ADMIN') or is_granted('ROLE_ADMIN')" )
      * 
      */
-    public function index(EntityManagerInterface $manager)
+    public function index(EntityManagerInterface $manager, RoleRepository $roles)
     {
         $userRepo = $manager->getRepository('App:User');
         $users = $userRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
+        $userRoles = [];
+        foreach ($roles->findAll() as $role) {
+            $userRoles['' . $role->getTitle()] = $role->getTitle();
+            switch ($role->getTitle()) {
+                case 'ROLE_USER':
+                    $userRoles['' . $role->getTitle()] = 'FACTURIER';
+                    break;
+                case 'ROLE_STOCK_MANAGER':
+                    $userRoles['' . $role->getTitle()] = 'GESTIONNAIRE DE STOCK';
+                    break;
+                case 'ROLE_ADMIN':
+                    $userRoles['' . $role->getTitle()] = 'ADMINISTRATEUR';
+                    break;
+
+                default:
+
+                    break;
+            }
+        }
         return $this->render('user_entreprise/index.html.twig', [
             'users' => $users,
+            'userRoles' => $userRoles
         ]);
     }
 

@@ -55,13 +55,13 @@
                     </div>
                     <div class="card-body text-left">
                         <h5 class="card-title"></h5>
-                        <p class="card-text">{% if commercialSheet.type != 'purchaseorder' %}Name :{% else %}Social Reason :{% endif %} {{commercialSheet.businessContact.socialReason}}</p>
+                        <p class="card-text">{% if commercialSheet.type != 'purchaseorder' %}Nom :{% else %}Raison Social :{% endif %} {{commercialSheet.businessContact.socialReason}}</p>
                         {% if commercialSheet.type == 'purchaseorder' %}
                         <p class="card-text">NIU : {{commercialSheet.businessContact.niu}}</p>
                         <p class="card-text">RCCM : {{commercialSheet.businessContact.rccm}}</p>
                         {% endif %}
-                        <p class="card-text">Tel : {{commercialSheet.businessContact.phoneNumber}}</p>
-                        <p class="card-text">{% if commercialSheet.type != 'purchaseorder' %}Delivery Address :{% else %}Address :{% endif %} {{commercialSheet.businessContact.address}}</p>
+                        <p class="card-text">Tél : {{commercialSheet.businessContact.phoneNumber}}</p>
+                        <p class="card-text">{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison :{% else %}Adresse :{% endif %} {{commercialSheet.businessContact.address}}</p>
                         {# <p class="card-text">Delivery Town : {{order.customer.deliveryAddress.town}}</p> #}
                         
                     </div>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title"></h5>
-                        <div class="row text-center">
+                        {# <div class="row text-center">
                             <div class="col-10">
                                 <div class="row">
                                     <div class="col-3">
@@ -107,8 +107,24 @@
                                 
                                 </div>
                             </div>
-                        </div>
-                        {{form_widget(form.commercialSheetItems)}}
+                        </div> #}
+                        <table class="table table-borderless table-responsive nowrap table-fixed" >
+                            <thead>
+                                <tr>
+                                    <th scope="col">Désignation</th>
+                                    <th scope="col">P.U (XAF)</th>
+                                    <th scope="col">Qty</th>
+                                    <th scope="col">Montant HT Brut</th>
+                                    <th scope="col">Remise(%)</th>
+                                    <th scope="col">Montant HT Net</th>
+                                    <th class="mx-4 {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Dispo</th>
+                                    <th class=""></th>
+                                </tr>
+                            </thead>
+                                <tbody id="tableRow">
+                                                                        
+                                    {{form_widget(form.commercialSheetItems)}}
+
                         <p class="card-text">Quantité Totale        : <span id="itemsqtytotal">0</span></p>
                         <p class="card-text">Montant Total HT Brut  : <span id="itemsAmountBrutHT">0</span> XAF</p>
                         <p class="card-text">Montant Total Remise   : <span id="itemsAmountRemise">0</span> XAF</p>
@@ -437,7 +453,7 @@
 
     });
 </script>
-<script src="/js/commercial_sheet4.js" type="text/javascript"></script>
+<script src="/js/commercial_sheet5.js" type="text/javascript"></script>
 
 
 {% endblock %}

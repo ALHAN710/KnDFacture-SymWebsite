@@ -141,8 +141,8 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a href="{% if subIsActivated == true %}{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}{% else %}#{% endif %}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier la Commande ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="far fa-edit"></i> </a>
-                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline "></i> </a>
+                                                    <a href="{% if subIsActivated == true %}{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}{% else %}#{% endif %}"  class="btn btn-soft-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Modifier la Commande ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="far fa-edit"></i> </a>
+                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline "></i> </a>
                                                     <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer {{docType}}"><i class="fas fa-trash"></i> </a>
                                                     
                                                 </td>
@@ -195,8 +195,8 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a href="{% if subIsActivated == true %}{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}{% else %}#{% endif %}"  class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier la Commande ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="far fa-edit"></i> </a>
-                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline"></i> </a>
+                                                    <a href="{% if subIsActivated == true %}{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}{% else %}#{% endif %}"  class="btn btn-soft-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Modifier la Commande ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="far fa-edit"></i> </a>
+                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline"></i> </a>
                                                     <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer {{docType}}"><i class="fas fa-trash"></i> </a>
                                                 </td>
                                                 
@@ -311,9 +311,9 @@
                                     </td> #}
                                     <td>
                                         {# <a href="{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}"  class="btn btn-info btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Modify Quote"><i class="far fa-edit"></i> </a> #}
-                                        <a href="{% if subIsActivated == true %}{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}{% else %}#{% endif %}" class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Convertir le Devis en Facture de vente ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="fas fa-exchange-alt"></i> </a>
-                                        <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir la Facture de la commande ?"><i class="mdi mdi-file-table-outline"></i> </a>    
-                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer le Devis ?"><i class="fas fa-trash"></i> </a>
+                                        <a href="{% if subIsActivated == true %}{{path('commercial_sheet_convert', {'id':commercialSheet.id})}}{% else %}#{% endif %}" class="btn btn-soft-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Convertir le Devis en Facture de vente ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="fas fa-exchange-alt"></i> </a>
+                                        <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Voir la Facture de la commande ?"><i class="mdi mdi-file-table-outline"></i> </a>    
+                                        <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Supprimer le Devis ?"><i class="fas fa-trash"></i> </a>
                                                 
                                     </td>
                                     

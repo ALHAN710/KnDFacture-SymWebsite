@@ -1,6 +1,6 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
-{% block title %} Modification d'un Utilisateur {% endblock %}
+{% block title %} Création d'un Utilisateur {% endblock %}
 
 {% block stylesheets %}
 
@@ -13,7 +13,7 @@
 {% block breadcrumb %}
     <div class="">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active">Modification</li>
+            <li class="breadcrumb-item active">Nouvel</li>
             <li class="breadcrumb-item active">Utilisateur</li>
         </ol>
     </div>
@@ -24,7 +24,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body mx-5">        
-                <h4 class="mt-2 mb-4 header-title">Modifier Utilisateur</h4>
+                <h4 class="mt-2 mb-4 header-title">Créer Utilisateur</h4>
                 {{ form_start(form) }}
                 {#{{ form_widget(form) }}#}
                 {# <div class="form-group">
@@ -55,7 +55,19 @@
                     {{ form_widget(form.email, {'attr': {'class': "form-control"}}) }}
                     <small class="form-text text-muted">* Obligatoire</small>
                 </div>
-            
+
+                <div class="form-group">
+                    {{ form_label(form.hash, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.hash, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">8 caractères minimum (Obligatoire)</small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.passwordConfirm, null, {'label_attr': {'class': ''}}) }}
+                    {{ form_widget(form.passwordConfirm, {'attr': {'class': "form-control"}}) }}
+                    <small class="form-text text-muted">* Obligatoire</small>
+                </div>
+
                 <div class="form-group">
                     {{ form_label(form.countryCode, null, {'label_attr': {'class': ''}}) }}
                     {{ form_widget(form.countryCode, {'attr': {'class': "form-control"}}) }}
@@ -74,22 +86,22 @@
                     <small class="form-text text-muted">Fichier Image pour Photo de profil</small>
                 </div>
 
-                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                {# {% if is_granted('ROLE_SUPER_ADMIN') %} #}
                 <div class="form-group">
                     {{ form_label(form.enterprise, null, {'label_attr': {'class': ''}}) }}
                     {{ form_widget(form.enterprise, {'attr': {'class': "form-control"}}) }}
                     {# <small class="form-text text-muted"></small> #}
                 </div>
-                {% endif %}
+                {# {% endif %} #}
 
                 <div class="form-group">
                     {{ form_label(form.role, null, {'label_attr': {'class': ''}}) }}
                     {{ form_widget(form.role, {'attr': {'class': "form-control"}}) }}
                     <small class="form-text text-muted">Ordre : Facturier < Gestionnaire de stock < Administrateur </small>
                 </div>
-                
-                <button type="submit" class="btn btn-primary mt-4" id="saveBtn">
-                    <span class="spinner-border spinner-border-sm mr-1 d-none waves-effect" role="status" aria-hidden="true"></span>
+                                
+                <button type="submit" class="btn btn-primary mt-4 waves-effect" id="saveBtn">
+                    <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
                     Enregistrer
                 </button>
 
