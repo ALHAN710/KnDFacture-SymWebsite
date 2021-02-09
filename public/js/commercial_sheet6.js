@@ -606,7 +606,8 @@ $('#add-servItems').click(function () {
         console.log('tabQtyError[' + i + '] = ' + tabQtyError[i]);
     }
     //J'ajoute à la suite de la div contenant le sous-formulaire ce code
-    $('#commercial_sheet_commercialSheetItems').append(tmpl).ready(() => {
+    //$('#commercial_sheet_commercialSheetItems').append(tmpl).ready(() => {
+    $('#tableRow').append(tmpl).ready(() => {
         // var SKUId = '#commercial_sheet_commercialSheetItems_' + index + '_sku';
         //var productId = '#commercial_sheet_commercialSheetItems_' + index + '_product';
         var offerInId = '#commercial_sheet_commercialSheetItems_' + index + '_offerIn';
