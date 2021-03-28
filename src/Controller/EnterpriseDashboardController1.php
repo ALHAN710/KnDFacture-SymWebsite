@@ -220,8 +220,23 @@ class EnterpriseDashboardController1 extends ApplicationController
             // $amountRecettesPer = new ArrayCollection();
             // $xexpensesPer = new ArrayCollection();
             // $expensesAmountPer = new ArrayCollection();
+
+            //Variables stockag kPIs
+            $A_T = [];
+            $B_T = [];
+            $C_T = [];
+            $minBasket = 0;
+            $maxBasket = 0;
+            $moyBasket = 0;
+            $txVarBasket = 0;
+            $nbClientActif = 0;
+            $txFidelisation = 0;
+            $nbCommandeMoy = 0;
+            $liveTimeValueMoy = 0;
+
             $dashType = intval($paramJSON['type']);
             //dump($type);
+
             //Vérification de l'existance et de l'appartenance de l'inventaire à l'entreprise de l'utilisateur connecté
             if ($dashType !== 0) {
                 $inventory = $manager->getRepository('App:Inventory')->findOneBy(['id' => $dashType]);
@@ -375,6 +390,22 @@ class EnterpriseDashboardController1 extends ApplicationController
                             'type_'   => 'bill',
                         ))
                         ->getResult();
+
+                    //Récupération des factures livrées et payées
+                    /*$completedBills = $manager->createQuery("SELECT cms
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = :type_
+                                                    AND cms.completedStatus = 1
+                                                    AND cms.completedAt LIKE :dat  
+                                                    ORDER BY cms.completedAt ASC                                                                               
+                                            ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'dat'     => $endDate_,
+                            'type_'   => 'bill',
+                        ))
+                        ->getResult();*/
                 } else {
                     $bills = $manager->createQuery("SELECT cms
                                                     FROM App\Entity\CommercialSheet cms
@@ -392,6 +423,24 @@ class EnterpriseDashboardController1 extends ApplicationController
                             'type_'   => 'bill',
                         ))
                         ->getResult();
+
+                    //Récupération des factures livrées et payées
+                    /*$completedBills = $manager->createQuery("SELECT cms
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = :type_
+                                                    AND cms.inventory = :invId
+                                                    AND cms.completedStatus = 1 
+                                                    AND cms.completedAt LIKE :dat  
+                                                    ORDER BY cms.completedAt ASC                                                                               
+                                            ")
+                        ->setParameters(array(
+                            'entId'   => $this->getUser()->getEnterprise()->getId(),
+                            'invId'   => $dashType,
+                            'dat'     => $endDate_,
+                            'type_'   => 'bill',
+                        ))
+                        ->getResult();*/
                 }
 
                 //dump($bills);
@@ -427,6 +476,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                 }
                 $turnOverHT = number_format((float) $turnOverHT, 2, '.', ' ');
                 $amountRecettes = number_format((float) $amountRecettes, 2, '.', '');
+
+
                 // dump($turnOverHT);
                 // dump($xturnOverPer);
                 // dd($turnOverAmountPer);
@@ -766,6 +817,23 @@ class EnterpriseDashboardController1 extends ApplicationController
                             'type_'     => 'bill',
                         ))
                         ->getResult();
+
+                    /*$completedBills = $manager->createQuery("SELECT cms
+                                                FROM App\Entity\CommercialSheet cms
+                                                WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                AND cms.type = :type_
+                                                AND cms.completedStatus = 1
+                                                AND cms.completedAt >= :startDate                                                                                  
+                                                AND cms.completedAt <= :endDate  
+                                                ORDER BY cms.completedAt ASC                                                                               
+                                            ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'startDate' => $startDate->format('Y-m-d H:m:i'),
+                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'type_'     => 'bill',
+                        ))
+                        ->getResult();*/
                 } else {
                     $bills = $manager->createQuery("SELECT cms
                                                     FROM App\Entity\CommercialSheet cms
@@ -785,6 +853,25 @@ class EnterpriseDashboardController1 extends ApplicationController
                             'type_'     => 'bill',
                         ))
                         ->getResult();
+
+                    /*$completedBills = $manager->createQuery("SELECT cms
+                                                    FROM App\Entity\CommercialSheet cms
+                                                    WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
+                                                    AND cms.type = :type_
+                                                    AND cms.inventory = :invId
+                                                    AND cms.completedStatus = 1
+                                                    AND cms.completedAt >= :startDate                                                                                  
+                                                    AND cms.completedAt <= :endDate  
+                                                    ORDER BY cms.completedAt ASC                                                                               
+                                                ")
+                        ->setParameters(array(
+                            'entId'     => $this->getUser()->getEnterprise()->getId(),
+                            'invId'     => $dashType,
+                            'startDate' => $startDate->format('Y-m-d H:m:i'),
+                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'type_'     => 'bill',
+                        ))
+                        ->getResult();*/
                 }
 
                 //dump($bills);
@@ -1213,6 +1300,104 @@ class EnterpriseDashboardController1 extends ApplicationController
                     ->getResult();
                 //dump($nbNewCustomer);
             }
+
+            //Calcul des kPIs des Paniers
+            $i = 0;
+            $billAmount = 0;
+            foreach ($bills as $commercialSheet) {
+                $billAmount = $commercialSheet->getTotalAmountNetHT();
+                $billsAmountArray[$i++] = [
+                    'amount' => $billAmount
+                ];
+            }
+            //dump($billsAmountArray);
+
+            if (!empty($billsAmountArray)) {
+                //Rangement par ordre décroissant de total de vente
+                usort($billsAmountArray, function ($item1, $item2) {
+                    return $item2['amount'] <=> $item1['amount'];
+                });
+                //dump($billsAmountArray);
+
+
+                foreach ($billsAmountArray as $value) {
+                    $A_T[] = $value['amount'];
+                }
+                //dump($A_T);
+                $minBasket = end($A_T);
+                $minBasket = number_format((float) $minBasket, 2, '.', ' ');
+
+                $maxBasket = $A_T[0];
+                $maxBasket = number_format((float) $maxBasket, 2, '.', ' ');
+
+                $moyBasket = (array_sum($A_T) * 1.0) / count($A_T);
+
+                $txVarBasket = ($this->ecart_type($A_T) * 1.0 / $moyBasket) * 100;
+
+                $moyBasket = number_format((float) $moyBasket, 2, '.', ' ');
+                $txVarBasket = number_format((float) $txVarBasket, 2, '.', ' ');
+            }
+            //dump('minBasket = ' . $minBasket);
+            //dump('maxBasket = ' . $maxBasket);
+            //dump('moyBasket = ' . $moyBasket);
+            //dump('txVarBasket = ' . $txVarBasket);
+
+            //Calcul des kPIs Clients(Revenu, nombre de commande)
+            $customerStats = [];
+            $index = 0;
+            foreach ($bills as $commercialSheet) {
+                $isNew = true;
+                foreach ($customerStats as $key => $value) {
+                    if ((array_key_exists("id", $value) && !empty($value['id'])) && (array_key_exists("cms", $value) && !empty($value['cms'])) && (array_key_exists("income", $value) && !empty($value['income']))) {
+                        if ($value['id'] === $commercialSheet->getBusinessContact()->getId()) {
+                            $customerStats[$key]['cms']++;
+                            $customerStats[$key]['income'] += $commercialSheet->getTotalAmountNetHT();
+                            $B_T[$key] = $customerStats[$key]['income'];
+                            $C_T[$key] = $customerStats[$key]['cms'];
+                            $isNew = false;
+                        }
+                    }
+                }
+                if ($isNew) {
+                    $i = $index++;
+                    $customerStats[$i] = [
+                        'id'     => $commercialSheet->getBusinessContact()->getId(),
+                        'cms'    => 1,
+                        'income' => $commercialSheet->getTotalAmountNetHT()
+                    ];
+
+                    $B_T[$i] = $commercialSheet->getTotalAmountNetHT();
+                    $C_T[$i] = 1;
+                }
+            }
+            //dump($customerStats);
+            $nbClientActif = count($C_T);
+
+            //Calcul du revenu moyen généré par client actif
+            if ($nbClientActif !== 0) {
+                $liveTimeValueMoy = array_sum($B_T) / $nbClientActif;
+                $liveTimeValueMoy = number_format((float) $liveTimeValueMoy, 2, '.', ' ');
+            }
+
+            if ($nbClientActif !== 0) {
+                //Calcul du nombre de commande moyen passé par client actif
+                $nbCommandeMoy = array_sum($C_T) / $nbClientActif;
+                $nbCommandeMoy = number_format((float) $nbCommandeMoy, 2, '.', ' ');
+
+                //Calcul de Taux de Fidélisation
+                $client = 0;
+                foreach ($customerStats as $key => $value) {
+                    if ($value['cms'] >= 2) $client++;
+                }
+                //dump('client = ' . $client);
+                $txFidelisation = ($client * 100.0) / $nbClientActif;
+                $txFidelisation = number_format((float) $txFidelisation, 2, '.', ' ');
+            }
+            //dump('nbClientActif = ' . $nbClientActif);
+            //dump('liveTimeValueMoy = ' . $liveTimeValueMoy);
+            //dump('nbCommandeMoy = ' . $nbCommandeMoy);
+            //dump('txFidelisation = ' . $txFidelisation);
+
             //dump($nbProductsSold);
             if ($dashType === 0) {
                 $billPaymentOnpending = $manager->createQuery("SELECT cms AS paymentOnPending
@@ -1456,6 +1641,14 @@ class EnterpriseDashboardController1 extends ApplicationController
                 'outstandingClaim'        => $outstandingClaim,
                 'nbCustomer'              => $nbCustomer,
                 'nbNewCustomer'           => $nbNewCustomer[0]['nbNewCustomer'] ?? 0,
+                'minBasket'               => $minBasket,
+                'maxBasket'               => $maxBasket,
+                'moyBasket'               => $moyBasket,
+                'txVarBasket'             => $txVarBasket,
+                'nbClientActif'           => $nbClientActif,
+                'txFidelisation'          => $txFidelisation,
+                'nbCommandeMoy'           => $nbCommandeMoy,
+                'liveTimeValueMoy'        => $liveTimeValueMoy,
             ], 200);
         }
         return $this->json([
