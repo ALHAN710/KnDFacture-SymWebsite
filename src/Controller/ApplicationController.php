@@ -117,7 +117,7 @@ class ApplicationController extends AbstractController
                 //écart entre la valeur et la moyenne
                 $ecart_donnee = $donnees[$i] - $moyenne;
                 //carré de l'écart
-                $ecart_donnee_carre = bcpow($ecart_donnee, 2, 2);
+                $ecart_donnee_carre = pow($ecart_donnee, 2);
                 //Insertion dans le tableau
                 array_push($ecart, $ecart_donnee_carre);
             }
@@ -126,7 +126,7 @@ class ApplicationController extends AbstractController
             //5 - division de la somme des écarts par la population
             $division = $somme_ecart / $population;
             //6 - racine carrée de la division
-            $ecart_type = bcsqrt($division, 2);
+            $ecart_type = sqrt($division);
         } else {
             $ecart_type = 0; //"Le tableau est vide";
         }
