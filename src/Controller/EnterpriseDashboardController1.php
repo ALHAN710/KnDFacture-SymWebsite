@@ -1595,7 +1595,7 @@ class EnterpriseDashboardController1 extends ApplicationController
                 if ($customer->getType() === 'customer') $nbCustomer++;
             }
             //dump($nbCustomer);
-            dump($deliveredCMS);
+            //dump($deliveredCMS);
 
             $i = 0;
             $billAmount = 0;
