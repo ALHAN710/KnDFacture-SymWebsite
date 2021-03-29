@@ -1007,7 +1007,7 @@ class CommercialSheetController extends ApplicationController
     }
 
     /**
-     * Permet d'afficher la fiche journalière de livraison ou de sortie de stock
+     * Permet d'afficher la fiche journalière de livraison ou de demande de producction //sortie de stock
      * 
      * @Route("/journal/{journal<[a-z]+>}", name="print_journal")
      *
@@ -1038,7 +1038,15 @@ class CommercialSheetController extends ApplicationController
                         //'town'             => $inventoryRepo->findOneBy(['id' => $town])->getName(),
                         'inventories'      => $inventories
                     ]);
-                } else if ($journal == 'inventory') {
+                } else if ($journal == 'demand') {
+                    $products = $productRepo->findAll();
+                    return $this->render('commercial_sheet/printDemand.html.twig', [
+                        'commercialSheets'  => $commercialSheets,
+                        //'town'              => $inventoryRepo->findOneBy(['id' => $town])->getName(),
+                        'products'          => $products,
+                        'inventories'       => $inventories,
+                    ]);
+                }/*else if ($journal == 'inventory') {
                     $products = $productRepo->findAll();
                     return $this->render('commercial_sheet/printInventoryExitJournal.html.twig', [
                         'commercialSheets'  => $commercialSheets,
@@ -1046,7 +1054,7 @@ class CommercialSheetController extends ApplicationController
                         'products'          => $products,
                         'inventories'       => $inventories,
                     ]);
-                }
+                }*/
             }
         }
         return $this->json([

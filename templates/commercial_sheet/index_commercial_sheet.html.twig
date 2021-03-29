@@ -85,9 +85,11 @@
                             <div class="tab-pane active p-3" id="delivery" role="tabpanel">    
                                 {% if type == 'bill' %}
                                 {% if subIsActivated == true %}
-                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2 waves-effect"  data-toggle="tooltip" data-placement="top" title="Imprimer les Commandes cochées dans le journal des livraisons du jour ?"><i class="fa fa-print"></i></button>
+                                <button type="button" id="deliveryJournalBtn" class="btn btn-info btn-xs rounded mr-2 mb-2 waves-effect"  data-toggle="tooltip" data-placement="top" title="Imprimer les Commandes cochées dans le journal des livraisons du jour ?"><i class="fa fa-print"></i></button>
+                                <button type="button" id="demandJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2 waves-effect"  data-toggle="tooltip" data-placement="top" title="Imprimer la demande de production pour les Commandes cochées ?"><i class="fa fa-print mr-1"></i>Demande</button>
                                 {% else %}
                                 <a href="#" class="btn btn-info btn-xs rounded mr-1 mb-2 waves-effect"  data-toggle="tooltip" data-placement="top" title="Imprimer les Commandes cochées dans le journal des livraisons du jour ? Veuillez vous réabonner pour utiliser cette fonctionnalité"><i class="fa fa-print"></i></a>
+                                <a href="#" class="btn btn-info btn-xs rounded mr-1 mb-2 waves-effect"  data-toggle="tooltip" data-placement="top" title="Imprimer la demande de production pour les Commandes cochées ? Veuillez vous réabonner pour utiliser cette fonctionnalité"><i class="fa fa-print mr-1"></i>Demande</a>
 
                                 {% endif %}
                                 {# <button type="button" id="inventoryExitJournalBtn" class="btn btn-info btn-xs rounded mr-1 mb-2" data-toggle="tooltip" data-placement="top" title="Print Inventory Exit Journal"><i class="fa fa-print"></i></button>  #}
@@ -511,6 +513,28 @@
             
         }
     });
+
+    $('#demandJournalBtn').click(function(){
+        console.log('Demand Journal Btn clicked');
+        var tabJournal = [];
+        $("input:checkbox[name=journal]:checked").each(function(){
+            tabJournal.push($(this).val());
+        });
+        console.log('Tab Journal : ' + tabJournal);
+        if (tabJournal.length > 0){
+            $.redirect("{{path('print_journal',{'journal':'demand'})}}",
+                {
+                    commercialSheetIds: {'commercialSheetIds':tabJournal},
+                },
+            "POST", "_blank");
+        }
+        else{
+            $('#delivery').
+            prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Aucune Commande n\'est cochée pour le journal de livraison !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
+
+        }
+    }); 
+
     {# $('#inventoryExitJournalBtn').click(function(){
         console.log('Inventory Exit Journal Btn clicked');
         var tabJournal = [];
