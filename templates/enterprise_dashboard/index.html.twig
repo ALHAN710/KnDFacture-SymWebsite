@@ -528,12 +528,72 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                             <div class="row">
                                 <div class="col-12 align-self-center">
                                     <div class="text-center">
+                                        <h6 class="mt-0 header-title text-left">Live Time Value Min</h6>
+                                        <div class="icon-info my-5">
+                                            <i class="dripicons-cart bg-soft-info"></i>
+                                        </div>
+                                        <h2 class="mt-0 font-weight-bold text-dark">
+                                            <span id="liveTimeValueMin">0</span> XAF
+                                        </h2>
+                                        {# <p class="mb-1 text-muted">All International Brands</p> #}
+                                    </div>
+                                </div>
+                                <!--end col-->
+                            </div>
+                            <!--end row-->
+                        </div>
+                        <!--end carousel-item-->
+
+                        <div class="carousel-item">
+                            <div class="row">
+                                <div class="col-12 align-self-center">
+                                    <div class="text-center">
+                                        <h6 class="mt-0 header-title text-left">Live Time Value Max</h6>
+                                        <div class="icon-info my-5">
+                                            <i class="dripicons-cart bg-soft-info"></i>
+                                        </div>
+                                        <h2 class="mt-0 font-weight-bold text-dark">
+                                            <span id="liveTimeValueMax">0</span> XAF
+                                        </h2>
+                                        {# <p class="mb-1 text-muted">All International Brands</p> #}
+                                    </div>
+                                </div>
+                                <!--end col-->
+                            </div>
+                            <!--end row-->
+                        </div>
+                        <!--end carousel-item-->
+
+                        <div class="carousel-item">
+                            <div class="row">
+                                <div class="col-12 align-self-center">
+                                    <div class="text-center">
                                         <h6 class="mt-0 header-title text-left">Live Time Value Moy</h6>
                                         <div class="icon-info my-5">
                                             <i class="dripicons-cart bg-soft-info"></i>
                                         </div>
                                         <h2 class="mt-0 font-weight-bold text-dark">
                                             <span id="liveTimeValueMoy">0</span> XAF
+                                        </h2>
+                                        {# <p class="mb-1 text-muted">All International Brands</p> #}
+                                    </div>
+                                </div>
+                                <!--end col-->
+                            </div>
+                            <!--end row-->
+                        </div>
+                        <!--end carousel-item-->
+
+                        <div class="carousel-item">
+                            <div class="row">
+                                <div class="col-12 align-self-center">
+                                    <div class="text-center">
+                                        <h6 class="mt-0 header-title text-left">Taux de Variation Live Time Value</h6>
+                                        <div class="icon-info my-5">
+                                            <i class="dripicons-cart bg-soft-info"></i>
+                                        </div>
+                                        <h2 class="mt-0 font-weight-bold text-dark">
+                                            <span id="txVarLiveTimeValue">0</span> %
                                         </h2>
                                         {# <p class="mb-1 text-muted">All International Brands</p> #}
                                     </div>
@@ -616,7 +676,19 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                                 <td class="text-center">0</td>
                                             </tr>
                                             <tr>
+                                                <td>Live Time Value Min (XAF)</td>
+                                                <td class="text-center">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Live Time Value Max (XAF)</td>
+                                                <td class="text-center">0</td>
+                                            </tr>
+                                            <tr>
                                                 <td>Live Time Value Moy (XAF)</td>
+                                                <td class="text-center">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Taux de Variation Live Time Value(%)</td>
                                                 <td class="text-center">0</td>
                                             </tr>
                                             <tr>
@@ -1644,7 +1716,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
             // Danger
 
             swal.queue([{
-                title: 'Le tableau de bord sera mis à jour pour la plage de date suivante :',
+                title: 'Le tableau de bord sera mis à jour pour la fenêtre de date suivante :',
                 confirmButtonText: 'Confirmez',
                 text: 'Du ' + startDate + ' Au ' + endDate,
                 showCancelButton: true,
@@ -1663,7 +1735,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                             timeout: 120000, // 64241
                             success: function (data) {
                                 // $('.fa-sync').removeClass('fa-spin');
-                                 console.log(data);
+                                console.log(data);
                                 $('#turnOver').text(data['turnOverHT']);
                                 // $('#amountRecettes').text(data['amountRecettes']);
                                 // $('#expenses').text(data['expenses']);
@@ -1704,25 +1776,44 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                 $('#nbCustomer').text(data['nbCustomer']);
                                 $('#nbActifCustomer').text(data['nbClientActif']);
                                 $('#txfidelisation').text(data['txFidelisation']);    
+                                $('#liveTimeValueMin').text(data['liveTimeValueMin']); 
+                                $('#liveTimeValueMax').text(data['liveTimeValueMax']); 
                                 $('#liveTimeValueMoy').text(data['liveTimeValueMoy']); 
+                                $('#txVarLiveTimeValue').text(data['txVarLiveTimeValue']); 
                                 $('#nbCommandeMoy').text(data['nbCommandeMoy']);
 
                                 tablekPICustomer.clear().draw();
+                                tablekPICustomer.row.add([
+                                    String('Nombre Clients Actifs'),
+                                    String(data['nbClientActif'])
+                                ]).draw();
                                 tablekPICustomer.row.add([
                                     String('Nombre Nouveaux Clients'),
                                     data['nbNewCustomer']
                                 ]).draw();
                                 tablekPICustomer.row.add([
-                                    String('Total Client'),
-                                    data['nbCustomer']
+                                    String('Nombre Total Client'),
+                                    String(data['nbCustomer'])
                                 ]).draw();
                                 tablekPICustomer.row.add([
                                     String('Taux de Fidélisation (%)'),
                                     data['txFidelisation']
                                 ]).draw();
                                 tablekPICustomer.row.add([
+                                    String('Live Time Value Min (XAF)'),
+                                    data['liveTimeValueMin']
+                                ]).draw();
+                                tablekPICustomer.row.add([
+                                    String('Live Time Value Max (XAF)'),
+                                    data['liveTimeValueMax']
+                                ]).draw();
+                                tablekPICustomer.row.add([
                                     String('Live Time Value Moy (XAF)'),
                                     data['liveTimeValueMoy']
+                                ]).draw();
+                                tablekPICustomer.row.add([
+                                    String('Taux de Variation Live Time Value(%)'),
+                                    data['txVarLiveTimeValue']
                                 ]).draw();
                                 tablekPICustomer.row.add([
                                     String('Nombre de Commande Moyenne'),

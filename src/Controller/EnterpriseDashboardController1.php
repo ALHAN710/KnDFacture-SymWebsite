@@ -1379,15 +1379,6 @@ class EnterpriseDashboardController1 extends ApplicationController
                 //Calcul du nombre de commande moyen passé par client actif
                 $nbCommandeMoy = array_sum($C_T) / $nbClientActif;
                 $nbCommandeMoy = number_format((float) $nbCommandeMoy, 2, '.', ' ');
-
-                //Calcul de Taux de Fidélisation
-                $client = 0;
-                foreach ($customerStats as $key => $value) {
-                    if ($value['cms'] >= 2) $client++;
-                }
-                //dump('client = ' . $client);
-                $txFidelisation = ($client * 100.0) / $nbClientActif;
-                $txFidelisation = number_format((float) $txFidelisation, 2, '.', ' ');
             }
             //dump('nbClientActif = ' . $nbClientActif);
             //dump('liveTimeValueMoy = ' . $liveTimeValueMoy);
@@ -1589,27 +1580,85 @@ class EnterpriseDashboardController1 extends ApplicationController
             }
 
             $nbCustomer = 0;
-
+            $client = 0;
             $customers = $this->getUser()->getEnterprise()->getBusinessContacts();
             foreach ($customers as $customer) {
-                if ($customer->getType() === 'customer') $nbCustomer++;
+                if ($customer->getType() === 'customer') {
+                    $nbCustomer++;
+
+                    if (count($customer->getCommercialSheets()) >= 2) $client++;
+                }
             }
             //dump($nbCustomer);
-            //dump($deliveredCMS);
 
+            //Calcul de Taux de Fidélisation
+            //dump('client = ' . $client);
+            $txFidelisation = ($client * 100.0) / $nbCustomer;
+            //dump('txFidelisation = ' . $txFidelisation);
+            $txFidelisation = number_format((float) $txFidelisation, 2, '.', ' ');
+
+            //dump($deliveredCMS);
+            //Calcul du revenu moyen généré par client actif
+            /*if ($nbCustomer !== 0) {
+                $liveTimeValueMin = (array_sum($B_T) * 1.0) / $nbCustomer;
+                $liveTimeValueMin = number_format((float) $liveTimeValueMin, 2, '.',
+                    ' '
+                );
+
+                $liveTimeValueMax = (array_sum($B_T) * 1.0) / $nbCustomer;
+                $liveTimeValueMax = number_format((float) $liveTimeValueMax, 2,
+                    '.',
+                    ' '
+                );
+
+                $liveTimeValueMoy = (array_sum($B_T) * 1.0) / $nbCustomer;
+                $liveTimeValueMoy = number_format((float) $liveTimeValueMoy, 2, '.', ' ');
+
+                $txVarLiveTimeValue = (array_sum($B_T) * 1.0) / $nbCustomer;
+                $txVarLiveTimeValue = number_format((float) $txVarLiveTimeValue, 2, '.', ' ');
+            }*/
             $i = 0;
             $billAmount = 0;
+            $billsAmountArrayB_T = [];
             foreach ($deliveredCMS as $commercialSheet) {
                 $billAmount = $commercialSheet->getTotalAmountNetHT();
                 if ($billAmount > 0) {
-                    $B_T[$i++] = $billAmount;
+                    $billsAmountArrayB_T[$i++] = [
+                        'amount' => $billAmount
+                    ];
                 }
             }
+            //dump($billsAmountArrayB_T);
 
-            //Calcul du revenu moyen généré par client actif
-            if ($nbCustomer !== 0) {
-                $liveTimeValueMoy = array_sum($B_T) / $nbCustomer;
+            if (!empty($billsAmountArrayB_T)) {
+                //Rangement par ordre décroissant de total de vente
+                usort($billsAmountArrayB_T, function (
+                    $item1,
+                    $item2
+                ) {
+                    return $item2['amount'] <=> $item1['amount'];
+                });
+                //dump($billsAmountArrayB_T);
+
+
+                foreach ($billsAmountArrayB_T as $value) {
+                    $B_T[] = $value['amount'];
+                }
+                //dump($B_T);
+                $liveTimeValueMin = end($B_T);
+                $liveTimeValueMin = number_format((float) $liveTimeValueMin, 2, '.', ' ');
+
+                $liveTimeValueMax = $B_T[0];
+                $liveTimeValueMax = number_format((float) $liveTimeValueMax, 2, '.', ' ');
+
+                dump('sum B = ' . array_sum($B_T));
+                dump('count B = ' . count($B_T));
+                $liveTimeValueMoy = (array_sum($B_T) * 1.0) / count($B_T);
+
+                $txVarLiveTimeValue = ($this->ecart_type($B_T) * 1.0 / $liveTimeValueMoy) * 100;
+
                 $liveTimeValueMoy = number_format((float) $liveTimeValueMoy, 2, '.', ' ');
+                $txVarLiveTimeValue = number_format((float) $txVarLiveTimeValue, 2, '.', ' ');
             }
 
             //dump($bestSellingProdCategory);
@@ -1661,7 +1710,10 @@ class EnterpriseDashboardController1 extends ApplicationController
                 'nbClientActif'           => $nbClientActif,
                 'txFidelisation'          => $txFidelisation,
                 'nbCommandeMoy'           => $nbCommandeMoy,
+                'liveTimeValueMin'        => $liveTimeValueMin,
+                'liveTimeValueMax'        => $liveTimeValueMax,
                 'liveTimeValueMoy'        => $liveTimeValueMoy,
+                'txVarLiveTimeValue'      => $txVarLiveTimeValue,
             ], 200);
         }
         return $this->json([
