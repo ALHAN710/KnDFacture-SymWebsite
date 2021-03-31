@@ -1651,8 +1651,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                 $liveTimeValueMax = $B_T[0];
                 $liveTimeValueMax = number_format((float) $liveTimeValueMax, 2, '.', ' ');
 
-                dump('sum B = ' . array_sum($B_T));
-                dump('count B = ' . count($B_T));
+                //dump('sum B = ' . array_sum($B_T));
+                //dump('count B = ' . count($B_T));
                 $liveTimeValueMoy = (array_sum($B_T) * 1.0) / count($B_T);
 
                 $txVarLiveTimeValue = ($this->ecart_type($B_T) * 1.0 / $liveTimeValueMoy) * 100;
