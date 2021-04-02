@@ -1617,7 +1617,50 @@ class EnterpriseDashboardController1 extends ApplicationController
                 $txVarLiveTimeValue = (array_sum($B_T) * 1.0) / $nbCustomer;
                 $txVarLiveTimeValue = number_format((float) $txVarLiveTimeValue, 2, '.', ' ');
             }*/
-            $i = 0;
+            //$customerStats = [];
+            $billsAmountArrayB_T = [];
+            $index = 0;
+            $amountNetHT = 0;
+            foreach ($deliveredCMS as $commercialSheet) {
+                $isNew = true;
+                foreach ($billsAmountArrayB_T as $key => $value) {
+                    if ((array_key_exists("id", $value) && !empty($value['id'])) && (array_key_exists("cms", $value) && !empty($value['cms'])) && (array_key_exists("income", $value) && !empty($value['income']))) {
+                        //dump($value['id']);
+                        if ($value['id'] === $commercialSheet->getBusinessContact()->getId()) {
+                            $amountNetHT = $commercialSheet->getTotalAmountNetHT();
+                            if ($amountNetHT > 0) {
+                                $billsAmountArrayB_T[$key]['cms']++;
+                                $billsAmountArrayB_T[$key]['income'] += $amountNetHT;
+                                //$billsAmountArrayB_T[$key]['cmsId'] .= ', ' . $commercialSheet->getId();
+                                //$B_T[$key] = $billsAmountArrayB_T[$key]['income'];
+                                //$C_T[$key] = $billsAmountArrayB_T[$key]['cms'];
+                                $isNew = false;
+                            }
+                        }
+                    }
+                }
+                if ($isNew) {
+                    $amountNetHT = $commercialSheet->getTotalAmountNetHT();
+                    if ($amountNetHT > 0) {
+                        $i = $index++;
+                        $billsAmountArrayB_T[$i] = [
+                            'id'     => $commercialSheet->getBusinessContact()->getId(),
+                            'customer'     => $commercialSheet->getBusinessContact()->getSocialReason(),
+                            'cms'    => 1,
+                            'income' => $amountNetHT,
+                            //'cmsId'  => '' . $commercialSheet->getId()
+                        ];
+
+                        /*$billsAmountArrayB_T[$i] = [
+                            'amount' => $amountNetHT
+                        ];*/
+                        //$B_T[$i] = $amountNetHT;
+                        //$C_T[$i] = 1;
+                    }
+                }
+            }
+
+            /*$i = 0;
             $billAmount = 0;
             $billsAmountArrayB_T = [];
             foreach ($deliveredCMS as $commercialSheet) {
@@ -1627,7 +1670,7 @@ class EnterpriseDashboardController1 extends ApplicationController
                         'amount' => $billAmount
                     ];
                 }
-            }
+            }*/
             //dump($billsAmountArrayB_T);
 
             if (!empty($billsAmountArrayB_T)) {
@@ -1636,13 +1679,13 @@ class EnterpriseDashboardController1 extends ApplicationController
                     $item1,
                     $item2
                 ) {
-                    return $item2['amount'] <=> $item1['amount'];
+                    return $item2['income'] <=> $item1['income'];
                 });
                 //dump($billsAmountArrayB_T);
 
 
                 foreach ($billsAmountArrayB_T as $value) {
-                    $B_T[] = $value['amount'];
+                    $B_T[] = $value['income'];
                 }
                 //dump($B_T);
                 $liveTimeValueMin = end($B_T);
@@ -1653,7 +1696,7 @@ class EnterpriseDashboardController1 extends ApplicationController
 
                 //dump('sum B = ' . array_sum($B_T));
                 //dump('count B = ' . count($B_T));
-                $liveTimeValueMoy = (array_sum($B_T) * 1.0) / count($B_T);
+                $liveTimeValueMoy = (array_sum($B_T) * 1.0) / $nbCustomer;
 
                 $txVarLiveTimeValue = ($this->ecart_type($B_T) * 1.0 / $liveTimeValueMoy) * 100;
 
