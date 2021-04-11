@@ -68,13 +68,14 @@
                     </ul>
                     
                     <div class="p-3 sw-circle-content mb-3">
+                        {% if hasBC == false %}
                         <div class="d-none sym mb-0">
                             <h5 class="card-title"></h5>
 
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
-                                        {% if hasBC %}
+                                        {% if hasBC == true %}
                                         <label>Raison Soaciale ou Nom  <small class="text-danger font-13">*</small></label>
                                         <input type="text" class="form-control" name="socialReason" id="socialReason" placeholder="" readonly value="{{commercialSheet.businessContact.socialReason}}" required="">
                                         {% else %}
@@ -104,7 +105,7 @@
 
                             {% if commercialSheet.type == 'purchaseorder' %}
                             <div class="row row2">
-                                {% if hasBC %}
+                                {% if hasBC == true %}
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>NIU</label>
@@ -143,7 +144,7 @@
                                     <div class="form-group">
                                         {# <label>Tél <small class="text-danger font-13">*</small></label>
                                         <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required=""> #}
-                                        {% if hasBC %}
+                                        {% if hasBC == true %}
                                         <label>Tél <small class="text-danger font-13">*</small></label>
                                         <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required="" readonly>
                                         {% else %}
@@ -157,7 +158,7 @@
                                     <div class="form-group">
                                         {# <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
                                         <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required=""> #}
-                                        {% if hasBC %}
+                                        {% if hasBC == true %}
                                         <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
                                         <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required="" readonly>
                                         {% else %}
@@ -179,8 +180,80 @@
                             </div>
                                                                 
                         </div> 
+                        {% endif %}
                         <div id="customer" class="">
-                           
+                           {% if hasBC %}
+                           <div class="mb-0">
+                                <h5 class="card-title"></h5>
+
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label>Raison Soaciale ou Nom  <small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="socialReason" id="socialReason" placeholder="" readonly value="{{commercialSheet.businessContact.socialReason}}" required="">
+                                            
+                                        </div>
+
+                                    </div>
+                                    {# <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Last Name <small class="text-danger font-13">*</small></label>
+                                            <input type="email" class="form-control" id="lastname" >
+                                        </div>
+
+                                        <div class="form-group">
+                                                                                        
+                                            {{ form_label(form.socialReason, null, {'label_attr': {'class': ''}}) }}
+                                            {{ form_errors(form.socialReason) }}
+                                            {{ form_widget(form.socialReason, {'attr': {'class': "form-control text-center"}}) }}
+                                                
+                                            
+                                        </div>
+                                    </div>                                                 #}
+                                </div>
+
+                                {% if commercialSheet.type == 'purchaseorder' %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>NIU</label>
+                                            <input type="text" class="form-control" name="niu" id="niu" placeholder="" readonly value="{{commercialSheet.businessContact.niu}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label pt-0">RCCM</label>
+                                            <input type="text" class="form-control" name="rccm" id="rccm" placeholder="" readonly value="{{commercialSheet.businessContact.rccm}}">
+                                        </div>
+                                    </div>
+                                                                                                                        
+                                </div>
+                                {% endif %}
+
+                                <div class="row">
+                                    <div class="col-md-6">                            
+                                        <div class="form-group">
+                                            {# <label>Tél <small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required=""> #}
+                                            <label>Tél <small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required="" readonly>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">                            
+                                        <div class="form-group">
+                                            {# <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required=""> #}
+                                            <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required="" readonly>
+                                            
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                                                    
+                            </div>
+                           {% endif %}
 
                         </div>
 
