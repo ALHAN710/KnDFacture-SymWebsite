@@ -237,7 +237,9 @@
                                                 <td>{{ commercialSheet.payAt is empty ? "-" : commercialSheet.payAt|date("d/m/Y") }}</td>
                                                 <td>{{commercialSheet.amountNetToPaid}}</td>
                                                 <td>
-                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline"></i> </a>    
+                                                    {# <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline"></i> </a>     #}
+                                                    <a href="{{path('commercial_sheet_print', {'id':commercialSheet.id})}}" class="btn btn-soft-primary btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Voir {{docType}} ?"><i class="mdi mdi-file-table-outline"></i> </a>
+                                                    <a href="{{path('commercial_sheet_delete', {'id':commercialSheet.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer {{docType}}"><i class="fas fa-trash"></i> </a>
                                                 </td>
                                                 
                                             </tr>
