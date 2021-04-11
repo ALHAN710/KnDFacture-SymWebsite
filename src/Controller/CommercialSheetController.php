@@ -70,13 +70,13 @@ class CommercialSheetController extends ApplicationController
     /**
      * Permet de créer une commande (order)
      *
-     * @Route("/commercial/sheet/new/{id<\d+>}/{type<[a-z]+>}/{stock<\d+>?0}", name = "commercial_sheet_create")
+     * @Route("/commercial/sheet/new/{id<\d+>?0}/{type<[a-z]+>}/{stock<\d+>?0}", name = "commercial_sheet_create")
      * 
      * @Security( "is_granted('ROLE_USER') and user.getEnterprise().getIsActivated() == true " )
      * 
      * @return Response
      */
-    public function create(BusinessContact $businessContact, $type, $stock, Request $request, InventoryRepository $inventoryRepo, LotRepository $lotRepo, EntityManagerInterface $manager, InventoryAvailabilityRepository $inventoryAvailabilityRepo, CommercialSheetItemRepository $commercialSheetItemRepo)
+    public function create($id, $type, $stock, Request $request, InventoryRepository $inventoryRepo, LotRepository $lotRepo, EntityManagerInterface $manager, InventoryAvailabilityRepository $inventoryAvailabilityRepo, CommercialSheetItemRepository $commercialSheetItemRepo)
     { //
         $commercialSheet = new CommercialSheet();
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
@@ -97,41 +97,53 @@ class CommercialSheetController extends ApplicationController
         $availabilities = [];
         $inventoryAvailabilities = [];
         $inventory_ = null;
-        if ($businessContact) {
-            $commercialSheet->setBusinessContact($businessContact)
-                ->setUser($this->getUser())
-                ->setType($type);
-            if ($iconStock == true) {
-                if ($type == 'bill') {
-                    //Récupération de l'inventaire du client Entreprise
-                    $inventory_ = $inventoryRepo->findOneBy(['id' => $stock, 'type' => 'PF']);
-                    if ($inventory_) { //Si l'inventaire existe
-                        $commercialSheet->setInventory($inventory_);
-                        //dump($inventory_);
-                        //$lots = $inventory_->getLots();
-                        //Recherche des disponibilités relatif à l'inventaire passé en paramètre à la route
-                        foreach ($inventories as $inventory) {
-                            if ($inventory == $inventory_) {
-                                $inventoryAvailabilities = $inventoryAvailabilityRepo->findBy(['inventory' => $inventory]);
-                                break;
-                            }
-                        }
+        $businessContact = null;
+        $hasBC = false;
+        $commercialSheet->setUser($this->getUser())
+            ->setType($type);
+        if ($id > 0) {
+            $businessContact = $manager->getRepository('App:BusinessContact')->findOneBy(['id' => $id]);
+            if ($businessContact) {
+                $commercialSheet->setBusinessContact($businessContact);
+                $hasBC = true;
+            } else {
 
-                        foreach ($inventoryAvailabilities as $inventoryAvailability) {
-                            $productId = $inventoryAvailability->getProduct()->getId();
-                            $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
-                        }
-                    } else {
-                        //Exception de l'erreur Inventory non défini pour ce document
-                    }
-                } else if ($type == 'quote') {
-                    $commercialSheet->setInventory($inventory_);
-                    //$inventory_ = $inventoryRepo->findOneBy(['id' => $stock]);
-                }
+                //Exception de l'erreur Customer/Supplier non défini pour ce document
             }
-        } else {
-            //Exception de l'erreur Customer/Supplier non défini pour ce document
+        } else if ($id === 0) {
+            $hasBC = false;
         }
+
+
+        if ($iconStock == true) {
+            if ($type == 'bill') {
+                //Récupération de l'inventaire du client Entreprise
+                $inventory_ = $inventoryRepo->findOneBy(['id' => $stock, 'type' => 'PF']);
+                if ($inventory_) { //Si l'inventaire existe
+                    $commercialSheet->setInventory($inventory_);
+                    //dump($inventory_);
+                    //$lots = $inventory_->getLots();
+                    //Recherche des disponibilités relatif à l'inventaire passé en paramètre à la route
+                    foreach ($inventories as $inventory) {
+                        if ($inventory == $inventory_) {
+                            $inventoryAvailabilities = $inventoryAvailabilityRepo->findBy(['inventory' => $inventory]);
+                            break;
+                        }
+                    }
+
+                    foreach ($inventoryAvailabilities as $inventoryAvailability) {
+                        $productId = $inventoryAvailability->getProduct()->getId();
+                        $availabilities['' . $productId] = $inventoryAvailability->getAvailable();
+                    }
+                } else {
+                    //Exception de l'erreur Inventory non défini pour ce document
+                }
+            } else if ($type == 'quote') {
+                $commercialSheet->setInventory($inventory_);
+                //$inventory_ = $inventoryRepo->findOneBy(['id' => $stock]);
+            }
+        }
+
 
         //Permet d'obtenir un constructeur de formulaire
         // Externaliser la création du formulaire avec la cmd php bin/console make:form
@@ -144,8 +156,10 @@ class CommercialSheetController extends ApplicationController
 
         //  instancier un form externe
         $form = $this->createForm(CommercialSheetType::class, $commercialSheet, [
-            'entId' => $this->getUser()->getEnterprise()->getId(),
+            'entId'  => $this->getUser()->getEnterprise()->getId(),
             'isEdit' => false,
+            'hasBC'  => $hasBC,
+            'type'   => $type,
         ]);
         $form->handleRequest($request);
 
@@ -154,6 +168,32 @@ class CommercialSheetController extends ApplicationController
         $message = "<ul>";
         if ($form->isSubmitted() && $form->isValid()) {
             $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Africa/Douala'));
+            if (!$hasBC) {
+                $businessContact = $manager->getRepository('App:BusinessContact')->findOneBy([
+                    'id' => intval($request->get('socialReason'))
+                ]);
+
+                if ($businessContact) {
+                    //dd($businessContact);
+                } else {
+                    $businessContact = new BusinessContact();
+                    $businessContact->setSocialReason($request->get('socialReason') !== "-1" ? $request->get('socialReason') : "")
+                        ->setAddress($request->get('address') !== "-1" ? $request->get('address') : null)
+                        ->setPhoneNumber($request->get('tel') !== "-1" ? $request->get('tel') : null)
+                        ->addEnterprise($this->getUser()->getEnterprise())
+                        ->setCreatedAt($date);
+                    if ($type === 'purchaseorder') {
+                        $businessContact->setType('supplier')
+                            ->setNiu($request->get('niu') !== "-1" ? $request->get('niu') : null)
+                            ->setRccm($request->get('rccm') !== "-1" ? $request->get('rccm') : null);
+                    } else {
+                        $businessContact->setType('customer');
+                    }
+                    //dd($request->get('socialReason'));
+                    //dd($businessContact);
+                }
+                $commercialSheet->setBusinessContact($businessContact);
+            }
             //dump($commercialSheet->getCommercialSheetItems());
             foreach ($commercialSheet->getCommercialSheetItems() as $commercialSheetItem) {
                 //dump($commercialSheetItem);
@@ -411,6 +451,8 @@ class CommercialSheetController extends ApplicationController
                         //dump('$commercialSheetItemErrorFlag = ' . $commercialSheetItemErrorFlag);
                         //$commercialSheetItem->addCommercialSheet($commercialSheet);
                         //$manager->persist($commercialSheetItem);
+                        // dd($commercialSheet);
+                        $manager->persist($businessContact);
                         $manager->persist($commercialSheet);
                         $manager->flush();
 
@@ -451,13 +493,14 @@ class CommercialSheetController extends ApplicationController
         }
 
         return $this->render(
-            'commercial_sheet/new.html.twig',
+            'commercial_sheet/new1.html.twig',
             [
                 'form'            => $form->createView(),
                 'businessContact' => $businessContact,
                 'commercialSheet' => $commercialSheet,
                 'availabilities'  => $availabilities,
                 'inventories'     => $inventories,
+                'hasBC'           => $hasBC,
             ]
         );
     }
@@ -525,11 +568,13 @@ class CommercialSheetController extends ApplicationController
         foreach ($inventories as $inventory) {
             $choices['' . strtoupper($inventory)] = ucfirst($inventory);
         }*/
-        $oldCommercialSheet = $commercialSheet;
+        //$oldCommercialSheet = $commercialSheet;
+        $hasBC = true;
         //  instancier un form externe
         $form = $this->createForm(CommercialSheetType::class, $commercialSheet, [
             'entId'  => $this->getUser()->getEnterprise()->getId(),
             'isEdit' => true,
+            'hasBC'  => $hasBC,
         ]);
 
         $form->handleRequest($request);
@@ -713,7 +758,7 @@ class CommercialSheetController extends ApplicationController
         }
 
         return $this->render(
-            'commercial_sheet/edit.html.twig',
+            'commercial_sheet/edit1.html.twig',
             [
                 'form'            => $form->createView(),
                 'commercialSheet' => $commercialSheet,

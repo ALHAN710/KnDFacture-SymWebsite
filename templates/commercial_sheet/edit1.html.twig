@@ -11,6 +11,12 @@
 
 {% block title %} Modification de {{docType}} {% endblock %}
 
+{% block smartwizardstylesheets %}
+<link href="/plugins/form-wizard/css/smart_wizard.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/form-wizard/css/smart_wizard_theme_arrows.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/form-wizard/css/smart_wizard_theme_circles.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
 {% block stylesheets %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
 <style>
@@ -56,244 +62,283 @@
 {% block body %}
 {# {{dump(app.user.enterprise.subscription.tarifs['' ~ app.user.enterprise.subscriptionDuration])}} #}
 
-<div class="row " >
-    <div class="col-12">       
+<div class="row">
+    <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="mt-0 header-title">Informations {% if docType != 'Facture' %}du{% else %}de la{% endif %} {{ docType }}</h4>
                 {{ form_start(form) }}
-                <div class="card border mb-0 text-center">
-                    <div class="card-header">
-                        Détails du {% if docType != 'Facture' %}Fournisseur{% else %}Client{% endif %}
-                    </div>
-                    <div class="card-body text-left">
-                        <h5 class="card-title"></h5>
-                        <p class="card-text">{% if commercialSheet.type != 'purchaseorder' %}Nom :{% else %}Raison Social :{% endif %} {{commercialSheet.businessContact.socialReason}}</p>
-                        {% if commercialSheet.type == 'purchaseorder' %}
-                        <p class="card-text">NIU : {{commercialSheet.businessContact.niu}}</p>
-                        <p class="card-text">RCCM : {{commercialSheet.businessContact.rccm}}</p>
-                        {% endif %}
-                        <p class="card-text">Tél : {{commercialSheet.businessContact.phoneNumber}}</p>
-                        <p class="card-text">{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison :{% else %}Adresse :{% endif %} {{commercialSheet.businessContact.address}}</p>
-                        {# <p class="card-text">Delivery Town : {{order.customer.deliveryAddress.town}}</p> #}
-                        
-                    </div>
-                </div>
-
-                <div class="card border mb-0 text-center" >
-                    <div class="card-header">
-                        Détails des articles de la commande
-                    </div>
-                    <div class="card-body" >
-                        <h5 class="card-title"></h5>
-                        {# <div class="row text-center ">
-                            <div class="col-10">
-                                <div class="row" >
-                                    <div class="col-3">
-                                        <div class="row">
-                                            <div class="col-4 d-none">Ref</div>
-                                            <div class="col">Désignation</div>
-                                        </div>
-                                    
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="row">
-                                            <div class="col">P.U (XAF)</div>
-                                            <div class="col">Qty</div>
-                                        
-                                        </div>
-                                    
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="row">
-                                            <div class="col-4">Montant HT Brut</div>
-                                            <div class="col-3">Remise(%)</div>
-                                            <div class="col-5">Montant HT Net</div>
-                                        
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-2">
-                                <div class="row">
-                                    <div class="col-6 {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Dispo</div>
-                                    <div class="col-6"></div>
-                                </div>
-                            </div>
-                        </div> #}
-                        {# <div class="scrolltab">
-                            <span class="d-none">Réf</span>
-                            <span class="mx-4">Désignation</span>
-                            <span class="mx-4">P.U (XAF)</span>
-                            <span class="mx-4">Qty</span>
-                            <span class="mx-4">Montant HT Brut</span>
-                            <span class="mx-4">Remise(%)</span>
-                            <span class="mx-4">Montant HT Net</span>
-                            <span class="mx-4 {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Dispo</span>
-                            <span class=""></span>
-                        </div> #}
-                        <table class="table table-borderless table-responsive nowrap table-fixed" >
-                            <thead>
-                                <tr>
-                                    <th scope="col">Désignation</th>
-                                    <th scope="col">P.U (XAF)</th>
-                                    <th scope="col">Qty</th>
-                                    <th scope="col">Montant HT Brut</th>
-                                    <th scope="col">Remise(%)</th>
-                                    <th scope="col">Montant HT Net</th>
-                                    <th class="mx-4 {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Dispo</th>
-                                    <th class=""></th>
-                                </tr>
-                            </thead>
-                                <tbody>
-                                                                        
-                                    {{form_widget(form.commercialSheetItems)}}
-                                
-                        <p class="card-text">Quantité Totale        : <span id="itemsqtytotal">0</span></p>
-                        <p class="card-text">Montant Total HT Brut  : <span id="itemsAmountBrutHT">0</span> XAF</p>
-                        <p class="card-text">Montant Total Remise   : <span id="itemsAmountRemise">0</span> XAF</p>
-                        <p class="card-text">Montant Total HT Net   : <span id="itemsAmountNetHT">0</span> XAF</p>
-                        <p class="card-text">Taxes ({{app.user.enterprise.tva}}%)     : <span id="taxes">0</span> XAF</p>
-                        <p class="card-text">Montant TTC            : <span id="amountTTC">0</span> XAF</p>
-
-                    </div>
+                {# <h4 class="mt-0 header-title">Form Wizard Rounded</h4> #}
+                {# <p class="text-muted mb-4">Basic example to demonstrate smart wizard rounded styles.</p>  #}
+                <div id="smart_wizard_circles">
+                    <ul>
+                        <li class="mt-5"><a href="#customer" id="customerLi"><i class="far fa-user d-block"></i><small>Détails du {% if docType != "Facture d'Achat" %}Client{% else %}Fournisseur{% endif %}</small></a></li>
+                        <li class="mt-5"><a href="#chart"><i class="mdi mdi-cart-outline d-block"></i><small>Commande</small></a></li>
+                        <li class="mt-5"><a href="#promo"><i class="fas fa-cart-arrow-down d-block"></i><small>Détail Promotion</small></a></li>
+                        <li class="mt-5"><a href="#payment"><i class="mdi mdi-credit-card d-block"></i><small>Paiement</small></a></li>
+                    </ul>
                     
-                </div>
-                
-                <!--end card-->
-                <div class="card border mb-0 text-center">
-                    <div class="card-header">
-                        Détails de Promotion
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title"></h5>
-                        {# {{form_widget(form.reductions)}} #}
-                        {# <div class="form-group">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    {{ form_label(form.itemsReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                    <div class="p-3 sw-circle-content mb-3">
+                         
+                        <div id="customer" class="">
+                           
+                            <div class="mb-0">
+                                <h5 class="card-title"></h5>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Raison Soaciale ou Nom  <small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="socialReason" id="socialReason" placeholder="" readonly value="{{commercialSheet.businessContact.socialReason}}" required="">
+                                            
+                                        </div>
+
+                                    </div>
+                                    {# <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Last Name <small class="text-danger font-13">*</small></label>
+                                            <input type="email" class="form-control" id="lastname" >
+                                        </div>
+
+                                        <div class="form-group">
+                                                                                        
+                                            {{ form_label(form.socialReason, null, {'label_attr': {'class': ''}}) }}
+                                            {{ form_errors(form.socialReason) }}
+                                            {{ form_widget(form.socialReason, {'attr': {'class': "form-control text-center"}}) }}
+                                                
+                                            
+                                        </div>
+                                    </div>                                                 #}
                                 </div>
-                                {{ form_errors(form.itemsReduction) }}
-                                {{ form_widget(form.itemsReduction, {'attr': {'class': "form-control text-center"}}) }}
-                                
+
+                                {% if commercialSheet.type == 'purchaseorder' %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>NIU</label>
+                                            <input type="text" class="form-control" name="niu" id="niu" placeholder="" readonly value="{{commercialSheet.businessContact.niu}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label pt-0">RCCM</label>
+                                            <input type="text" class="form-control" name="rccm" id="rccm" placeholder="" readonly value="{{commercialSheet.businessContact.rccm}}">
+                                        </div>
+                                    </div>                                   
+                                                                                    
+                                </div>
+                                {% endif %}
+
+                                <div class="row">
+                                    <div class="col-md-6">                            
+                                        <div class="form-group">
+                                            {# <label>Tél <small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required=""> #}
+                                            <label>Tél <small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required="" readonly>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">                            
+                                        <div class="form-group">
+                                            {# <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required=""> #}
+                                            <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required="" readonly>
+                                            
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                                                    
                             </div>
-                        </div> #}
-                        <div class="form-group">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    {{ form_label(form.fixReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                </div>
+                        </div>
+
+                        <div id="chart" class="">
+                            <div class="table-responsive shopping-cart">
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            {# <th>Product</th>
+                                            <th>Quantity</th>                                                        
+                                            <th>Total</th> #}
+                                            <th scope="col" class="text-center">Désignation</th>
+                                            {# <th scope="col">P.U (XAF)</th> #}
+                                            <th scope="col">Qté</th>
+                                            {# <th scope="col">Montant HT Brut</th> #}
+                                            <th scope="col">Remise(%)</th>
+                                            {# <th scope="col">Montant HT Net</th> #}
+                                            {# <th class="mx-4 {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Dispo</th> #}
+                                            <th class=""></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tbody id="tableRow">
+                                                                                    
+                                            {{form_widget(form.commercialSheetItems)}}
+                            </div>
+
+                            <div class="total-payment mt-2">
+                                <table class="table mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="payment-title">Quantité Totale</td>
+                                            <td><span id="itemsqtytotal">0</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="payment-title">Montant Total HT Brut</td>
+                                            <td><span id="itemsAmountBrutHT">0</span> XAF</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="payment-title">Montant Total Remise</td>
+                                            <td><span id="itemsAmountRemise">0</span> XAF</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="payment-title">Montant Total HT Net</td>
+                                            <td><span id="itemsAmountNetHT">0</span> XAF</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="payment-title">TVA ({{app.user.enterprise.tva}}%)</td>
+                                            <td><span id="taxes">0</span> XAF</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">Montant TTC</td>
+                                            <td class="font-weight-bold"><span id="amountTTC">0</span> XAF</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="promo" class="">
+                            <div class="form-group">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.fixReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.fixReduction) }}
+                                    {{ form_widget(form.fixReduction, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                
+                                {{ form_label(form.fixReduction, null, {'label_attr': {'class': ''}}) }}
                                 {{ form_errors(form.fixReduction) }}
                                 {{ form_widget(form.fixReduction, {'attr': {'class': "form-control text-center"}}) }}
+                                    
                                 
                             </div>
+                            </br>
+                            <p class="font-weight-bold"><h5 class="text-center">Montant des Remises Forfaitaires : <span id="totalPromoAmount">0</span> XAF</h5></p>
+                            
                         </div>
-                        </br>
-                        <p class="card-text">Montant des Remises Forfaitaires: <span id="totalPromoAmount">0</span> XAF</p>
-                    </div>
-                    
-                </div>
-                <!--end card-->
-                <div class="card border mb-0 text-center">
-                    <div class="card-header">Détails du Paiement</div>
-                    <div class="card-body">
-                        <h5 class="card-title"></h5>
-                        <p class="card-text">Montant Net à payer : <span id="totalAmount">0</span> XAF</p>
-                        
-                        <div class="form-group {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    {{ form_label(form.advancePayment, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                </div>
+
+                        <div id="payment" class="">
+                            <p class="font-weight-bold"><h5 class="text-center">Montant Net à payer : <span id="totalAmount">0</span> XAF</h5></p>
+                            <div class="form-group {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.advancePayment, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.advancePayment) }}
+                                    {{ form_widget(form.advancePayment, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.advancePayment, null, {'label_attr': {'class': ''}}) }}
                                 {{ form_errors(form.advancePayment) }}
                                 {{ form_widget(form.advancePayment, {'attr': {'class': "form-control text-center"}}) }}
-                                
+                                    
                             </div>
-                        </div>
-                        <p class="card-text">Reste à payer : <span id="totalRestAmount">0</span> XAF</p>
-                        {# {% if commercialSheet.type != 'quote' %}
-                        {% set dnone = "" %}
-                        {% else %}
-                        {% set dnone = "d-none" %}
-                        {% endif %}
-                        {{form_widget(form.paymentStatus, {'attr': {'class': dnone}}) }}
-                        {{form_widget(form.deliveryStatus, {'attr': {'class': dnone}}) }}
-                        {{form_widget(form.completedStatus, {'attr': {'class': dnone}}) }} #}
-                        <div class="form-group">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    {{ form_label(form.deliveryMode, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                </div>
+                            <p class="font-weight-bold"><h5 class="text-center">Reste à payer : <span id="totalRestAmount">0</span> XAF</h5></p>
+
+                            <div class="form-group">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.deliveryMode, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.deliveryMode) }}
+                                    {{ form_widget(form.deliveryMode, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.deliveryMode, null, {'label_attr': {'class': ''}}) }}
                                 {{ form_errors(form.deliveryMode) }}
                                 {{ form_widget(form.deliveryMode, {'attr': {'class': "form-control text-center"}}) }}
-                                
+                                    
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    {{ form_label(form.paymentMode, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                </div>
+
+                            <div class="form-group">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.paymentMode, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.paymentMode) }}
+                                    {{ form_widget(form.paymentMode, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.paymentMode, null, {'label_attr': {'class': ''}}) }}
                                 {{ form_errors(form.paymentMode) }}
                                 {{ form_widget(form.paymentMode, {'attr': {'class': "form-control text-center"}}) }}
-                                
+                                    
                             </div>
-                        </div>
-                        <div class=" {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
-                            {# {{ form_errors(form.periodofvalidity) }}                        #}
+
+                            <div class="text-center {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                                {# {{ form_errors(form.periodofvalidity) }}                        #}
                                 {# {{ form_label(form.paymentStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
                                 {{ form_widget(form.paymentStatus) }}
-                            
-                        </div>
-                        <div class=" {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
-                            {# {{ form_errors(form.periodofvalidity) }}                        #}
-                                {# {{ form_label(form.deliveryStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
-                                {{ form_widget(form.deliveryStatus) }}
-                            
-                        </div>
-                        <div class=" {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
-                            {# {{ form_errors(form.periodofvalidity) }}                        #}
-                                {# {{ form_label(form.completedStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
-                                {{ form_widget(form.completedStatus) }}
-                            
-                        </div>
-                        
-                        <div class="form-group mt-3 {% if commercialSheet.type != 'quote' %}d-none{% endif %}">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    {{ form_label(form.duration, null, {'label_attr': {'class': 'input-group-text'}}) }}
-                                </div>
-                                {{ form_errors(form.duration) }}                       
-                                {{ form_widget(form.duration, {'attr': {'class': "form-control text-center"}}) }}
                                 
                             </div>
+
+                            <div class="text-center {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                                {# {{ form_errors(form.periodofvalidity) }}                        #}
+                                    {# {{ form_label(form.deliveryStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
+                                    {{ form_widget(form.deliveryStatus) }}
+                                
+                            </div>
+
+                            <div class="text-center {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                                {# {{ form_errors(form.periodofvalidity) }}                        #}
+                                    {# {{ form_label(form.completedStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
+                                    {{ form_widget(form.completedStatus) }}
+                                
+                            </div>
+                            
+                            <div class="form-group mt-3 {% if commercialSheet.type != 'quote' %}d-none{% endif %}">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.duration, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.duration) }}                       
+                                    {{ form_widget(form.duration, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.duration, null, {'label_attr': {'class': ''}}) }}
+                                {{ form_errors(form.duration) }}                       
+                                {{ form_widget(form.duration, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                            </div>
                         </div>
-                        
-                    </div>
-                    
-                </div>
-                <!--end card-->
+
+                    </div><!--end /div-->
+                </div> <!--end smartwizard-->
 
                 <div class="text-right mt-4">
-                    <input type="button" onclick="document.location.href='{{ path('business_contacts_index',{'type':commercialSheet.businessContact.type}) }}';" value="Cancel" name="button" class="btn btn-danger mr-2 waves-effect">
+                    <input type="button" onclick="document.location.href='{{ path('commercial_sheet_index',{'type':commercialSheet.type}) }}';" value="Annuler" name="button" class="btn btn-danger mr-2 waves-effect">
                 
                     <button type="submit" class="btn btn-primary waves-effect" id="saveBtn">
                         {# <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span> #}
-                        Save
+                        Enregistrer
                     </button>
-                </div>
-                {# {{ form_widget(form.save, { 'label': 'Save' }) }} #}
+                </div>  
+                {{ form_end(form) }}                              
+            </div><!--end card-body-->
+        </div><!--end card-->
+    </div><!--end col-->
+</div><!--end row-->
 
-                {{ form_end(form) }}
-            </div>
-            <!--end card-body-->
-        </div>
-        <!--end card-->
-    </div>
-</div>
 {% endblock %}
 
 {% block javascripts %}
+<script src="/plugins/form-wizard/js/jquery.smartWizard.min.js"></script>
+<script src="/pages/jquery.form-wizard.init.js"></script>
+
 {# <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script> #}
 <script>
     /*$('#saveBtn').click(function(){
@@ -308,7 +353,7 @@
     $('#commercial_sheet_advancePayment').attr('type', 'number');
     
     $('#add-commercialSheetItems').addClass('d-none');
-    $('#add-servItems').addClass('d-none');
+    //$('#add-servItems').addClass('d-none');
     {# var val = $('#commercial_sheet_duration').val(); #}
     {# if($('#commercial_sheet_duration').val()) console.log('duration val = ' + val);
     else $('#commercial_sheet_duration').val(0); #}
@@ -495,6 +540,7 @@
     //var productPriceId = '#commercial_sheet_commercialSheetItems_' + index + '_productPrice';
     //var priceViewId = '#commercial_sheet_commercialSheetItems_' + index + '_priceView';//
     //
+    var designationId = [];
     var amountBrutHTId = [];
     var remiseId = [];
     var amountNetHTId = [];
@@ -508,7 +554,14 @@
     var precQty = [];
     var initQty = [];
 
+    var productNameTxT = [];
+    var puTxT = [];
+    var amountBrutHTTxT = [];
+    var amountNetHTTxT = [];
+    var dispoTxT = [];
+
     for (let index = 0; index < nbItem; index++) {
+        designationId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_designation';
         productSKUId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_productSku';
         productId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_product';
         {# isChangedIds[index] = '#commercial_sheet_commercialSheetItems_' + index + '_isChanged'; #}
@@ -521,11 +574,29 @@
         itemOfferTypeId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_itemOfferType';
         productType[index] = '#commercial_sheet_commercialSheetItems_' + index + '_productType';
 
+        productNameTxT[index] = '#textProductName_commercial_sheet_commercialSheetItems_' + index;
+        puTxT[index] = '#textpu_commercial_sheet_commercialSheetItems_' + index;
+        amountBrutHTTxT[index] = '#textAmountHTBrut_commercial_sheet_commercialSheetItems_' + index;
+        amountNetHTTxT[index] = '#textAmountHTNet_commercial_sheet_commercialSheetItems_' + index;
+        dispoTxT[index] = '#textDispo_commercial_sheet_commercialSheetItems_' + index;
+
         {# $(isChangedIds[index]).val(0); #}
         $(qtyId[index]).attr('readonly', true);
         $(remiseId[index]).attr('readonly', true);
         initQty[index] = parseInt($(qtyId[index]).val());
         precQty[index] = parseInt($(qtyId[index]).val());
+
+        $(designationId[index]).addClass('d-none');
+
+        Str = String($(productId[index]).val());
+        //console.log('Product  value = ' + $(productId).val());
+        Name = $(productId[index] + ' option[value=\"' + Str + '\"]').text();
+        $(productNameTxT[index]).text(String(Name));
+
+        Str = String($(puId[index]).val());
+        //console.log('Product Price value = ' + $(puId).val());
+        Name = $(puId[index] + ' option[value=\"' + Str + '\"]').text();
+        $(puTxT[index]).text(String(Name));
     
         //console.log('P.U = ' + $(puId[index]).val());
         //console.log('Qty = ' + $(qtyId[index]).val());
@@ -550,6 +621,7 @@
                 qtyMax['' + tabProductIds[index]] = parseInt(availabilitiesTab[tabProductIds[index]]);
                 $(qtyId[index]).attr('max', qtyMax['' + tabProductIds[index]]);
                 $(available[index]).val(+availabilitiesTab[$(productId[index]).val()]);
+                $(dispoTxT[index]).text(+availabilitiesTab[$(productId[index]).val()] + " en stock");
             }
             else {
                 //console.log('OfferTypeS Name = ' + Name);
@@ -558,6 +630,7 @@
                 $(available[index]).val("");
                 $(itemOfferTypeId[index]).val('noStock');
                 tabItemOfferType[index] = $(itemOfferTypeId[index]).val();
+                $(dispoTxT[index]).text("");
             }
         }
         else {
@@ -571,8 +644,10 @@
 
         var tmp = parseFloat($(puId[index]).val()) * parseInt($(qtyId[index]).val());
         $(amountBrutHTId[index]).val(tmp.toFixed(2));
+        $(amountBrutHTTxT[index]).text(tmp.toFixed(2));
         tmp = tmp - ((tmp * parseFloat($(remiseId[index]).val())) / 100.0);
         $(amountNetHTId[index]).val(tmp.toFixed(2));
+        $(amountNetHTTxT[index]).text(tmp.toFixed(2));
 
         //Calcul du montant relatif à ce produit
         computeItemsAmountTab($(puId[index]).val(), qtyId[index], remiseId[index], index);

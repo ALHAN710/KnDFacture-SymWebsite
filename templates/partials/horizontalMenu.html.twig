@@ -38,6 +38,11 @@
                         <li><a href="{{ path('order_index',{'id':inventory.id}) }}">{{inventory.name}}</a></li>
                         {% endfor %} #} 
                         <li>
+                            {# <a href="{{ path('commercial_sheet_index',{'type':'bill'}) }}">Nouveau</a> #}
+                            <a href="{% if subIsActivated == true %}#custom-modal{% else %}#{% endif %}" class="" data-animation="corner" data-plugin="custommodal" data-overlayColor="#38414a" >Nouveau</a>
+                            
+                        </li>
+                        <li>
                             <a href="{{ path('commercial_sheet_index',{'type':'bill'}) }}">Factures</a>
                             {# {% if inventories|length > 0 %}
                             <ul class="submenu">

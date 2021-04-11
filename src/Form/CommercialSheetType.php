@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\BusinessContact;
 use App\Form\ApplicationType;
 use App\Entity\CommercialSheet;
 use Doctrine\ORM\EntityRepository;
@@ -21,6 +22,10 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 class CommercialSheetType extends ApplicationType
 {
     //private $transformer;
+    private $entId;
+    private $hasBC;
+    private $type;
+    private $btype = 'customer';
 
     public function __construct() //FrenchToDateTimeTransformer $transformer
     {
@@ -28,6 +33,10 @@ class CommercialSheetType extends ApplicationType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->entId  = $options['entId'];
+        $this->hasBC = $options['hasBC'];
+        $this->type  = $options['type'];
+
         $builder
             ->add(
                 'commercialSheetItems',
@@ -119,6 +128,144 @@ class CommercialSheetType extends ApplicationType
             // ->add('user')
         ;
 
+        if (!$this->hasBC) {
+            if ($this->type === 'purchaseorder') {
+                $this->btype = 'supplier';
+
+                $builder
+                    ->add(
+                        'niu',
+                        EntityType::class,
+                        [
+                            // looks for choices from this entity
+                            'class' => BusinessContact::class,
+
+                            // uses the User.username property as the visible option string
+                            'choice_label' => 'niu',
+                            'query_builder' => function (EntityRepository $er) {
+                                return $er->createQueryBuilder('b')
+                                    ->innerJoin('b.enterprises', 'e')
+                                    ->where('b.type = :btype')
+                                    ->andWhere('e.id = :entId')
+                                    ->orderBy('b.socialReason', 'ASC')
+                                    ->setParameters(array(
+                                        'entId'   => $this->entId,
+                                        'btype'   => $this->btype,
+                                    ));
+                            },
+
+                            // used to render a select box, check boxes or radios
+                            // 'multiple' => true,
+                            // 'expanded' => true,
+                        ]
+                    )
+                    ->add(
+                        'rccm',
+                        EntityType::class,
+                        [
+                            // looks for choices from this entity
+                            'class' => BusinessContact::class,
+
+                            // uses the User.username property as the visible option string
+                            'choice_label' => 'rccm',
+                            'query_builder' => function (EntityRepository $er) {
+                                return $er->createQueryBuilder('b')
+                                    ->innerJoin('b.enterprises', 'e')
+                                    ->where('b.type = :btype')
+                                    ->andWhere('e.id = :entId')
+                                    ->orderBy('b.socialReason', 'ASC')
+                                    ->setParameters(array(
+                                        'entId'   => $this->entId,
+                                        'btype'   => $this->btype,
+                                    ));
+                            },
+
+                            // used to render a select box, check boxes or radios
+                            // 'multiple' => true,
+                            // 'expanded' => true,
+                        ]
+                    );
+            }
+            $builder
+                ->add(
+                    'socialReason',
+                    EntityType::class,
+                    [
+                        // looks for choices from this entity
+                        'class' => BusinessContact::class,
+
+                        // uses the User.username property as the visible option string
+                        'choice_label' => 'socialReason',
+                        'query_builder' => function (EntityRepository $er) {
+                            return $er->createQueryBuilder('b')
+                                ->innerJoin('b.enterprises', 'e')
+                                ->where('b.type = :btype')
+                                ->andWhere('e.id = :entId')
+                                ->orderBy('b.socialReason', 'ASC')
+                                ->setParameters(array(
+                                    'entId'   => $this->entId,
+                                    'btype'   => $this->btype,
+                                ));
+                        },
+
+                        // used to render a select box, check boxes or radios
+                        // 'multiple' => true,
+                        // 'expanded' => true,
+                    ]
+                )
+                ->add(
+                    'tel',
+                    EntityType::class,
+                    [
+                        // looks for choices from this entity
+                        'class' => BusinessContact::class,
+
+                        // uses the User.username property as the visible option string
+                        'choice_label' => 'phoneNumber',
+                        'query_builder' => function (EntityRepository $er) {
+                            return $er->createQueryBuilder('b')
+                                ->innerJoin('b.enterprises', 'e')
+                                ->where('b.type = :btype')
+                                ->andWhere('e.id = :entId')
+                                ->orderBy('b.socialReason', 'ASC')
+                                ->setParameters(array(
+                                    'entId'   => $this->entId,
+                                    'btype'   => $this->btype,
+                                ));
+                        },
+
+                        // used to render a select box, check boxes or radios
+                        // 'multiple' => true,
+                        // 'expanded' => true,
+                    ]
+                )
+                ->add(
+                    'address',
+                    EntityType::class,
+                    [
+                        // looks for choices from this entity
+                        'class' => BusinessContact::class,
+
+                        // uses the User.username property as the visible option string
+                        'choice_label' => 'address',
+                        'query_builder' => function (EntityRepository $er) {
+                            return $er->createQueryBuilder('b')
+                                ->innerJoin('b.enterprises', 'e')
+                                ->where('b.type = :btype')
+                                ->andWhere('e.id = :entId')
+                                ->orderBy('b.socialReason', 'ASC')
+                                ->setParameters(array(
+                                    'entId'   => $this->entId,
+                                    'btype'   => $this->btype,
+                                ));
+                        },
+
+                        // used to render a select box, check boxes or radios
+                        // 'multiple' => true,
+                        // 'expanded' => true,
+                    ]
+                );
+        }
         //$builder->get('periodofvalidity')->addModelTransformer($this->transformer);
     }
 
@@ -128,6 +275,8 @@ class CommercialSheetType extends ApplicationType
             'data_class' => CommercialSheet::class,
             'entId'      => 0,
             'isEdit'     => false,
+            'hasBC'      => false,
+            'type'       => 'bill',
         ]);
     }
 }

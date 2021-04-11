@@ -12,7 +12,7 @@
             <i class="fas fa-plus-circle mr-2"></i><i class="dripicons-shopping-bag"></i>
         </button>
     
-        <button type="button" id="add-servItems" class="btn btn-primary waves-effect" data-toggle="tooltip" data-placement="top" title="Ajouter par saisie un nouvel article">
+        <button type="button" id="add-servItems" class="btn btn-primary waves-effect d-none" data-toggle="tooltip" data-placement="top" title="Ajouter par saisie un nouvel article">
             <i class="fas fa-plus-circle mr-2"></i><i class="mdi mdi-keyboard"></i>
         </button>
     
@@ -35,30 +35,33 @@
         <td class="coldesignation_{{id}}">
             {{ form_errors(form.designation) }}
             {{ form_widget(form.designation, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
-                                    
+            <p id="textProductName_{{id}}" class="d-block align-middle mb-0"></p>
+            <p class="d-inline-block align-middle mb-0 text-warning pinvi_{{id}}">P.U : <span id="textpu_{{id}}">0</span> XAF, <span id="textDispo_{{id}}"></span></p>
+            <p class="d-block align-middle mb-0 text-info">Montant HT Brut : <span id="textAmountHTBrut_{{id}}">0</span> XAF, Montant HT Net : <span id="textAmountHTNet_{{id}}">0</span> XAF</p>                        
         </td>
         <td class="colproduct_{{id}} d-none">
-            {{ form_widget(form.product, {'attr': {'class': "select2 custom-select"}}) }}
+            {{ form_widget(form.product, {'attr': {'class': "select2 custom-select product-name"}}) }}
+            
         </td>
-        <td class="">
+        <td class="d-none colPU">
             {{ form_errors(form.pu) }}
-            {{ form_widget(form.pu, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+            {{ form_widget(form.pu, {'attr': {'class': "form-control text-center", 'style':'width: 80px;'}}) }}
                                     
         </td>
         <td class="" >
             {{ form_errors(form.quantity) }}
-            {{ form_widget(form.quantity, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+            {{ form_widget(form.quantity, {'attr': {'class': "form-control text-center", 'style':'width: 80px;'}}) }}
                                     
         </td>
-        <td class="">
+        <td class="d-none">
             {{ form_widget(form.amountBrutHT, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
                                     
         </td>
         <td class="">
-            {{ form_widget(form.remise, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
+            {{ form_widget(form.remise, {'attr': {'class': "form-control text-center", 'style':'width: 80px;'}}) }}
                                     
         </td>
-        <td class="">
+        <td class="d-none">
             {{ form_widget(form.amountNetHT, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
                                     
         </td>
@@ -74,7 +77,7 @@
             {{ form_widget(form.itemOfferType, {'attr': {'class': "form-control text-center"}}) }}
                             
         </td>
-        <td class="colavai_{{id}}">
+        <td class="colavai_{{id}} d-none">
             {{ form_errors(form.available) }}
             {{ form_widget(form.available, {'attr': {'class': "form-control text-center", 'style':'min-width: max-content;'}}) }}
                             

@@ -154,6 +154,13 @@ class CommercialSheet
 
     private $itemsRemise = 0.0;
 
+    private $socialReason;
+    private $niu;
+    private $rccm;
+    private $tel;
+    private $address;
+    private $email;
+
     /**
      * @ORM\ManyToOne(targetEntity=Enterprise::class, inversedBy="commercialSheets")
      */
@@ -676,6 +683,126 @@ class CommercialSheet
     public function setEnterprise(?Enterprise $enterprise): self
     {
         $this->enterprise = $enterprise;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of socialReason
+     */
+    public function getSocialReason()
+    {
+        return $this->socialReason;
+    }
+
+    /**
+     * Set the value of socialReason
+     *
+     * @return  self
+     */
+    public function setSocialReason($socialReason)
+    {
+        $this->socialReason = $socialReason;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of niu
+     */
+    public function getNiu()
+    {
+        return $this->niu;
+    }
+
+    /**
+     * Set the value of niu
+     *
+     * @return  self
+     */
+    public function setNiu($niu)
+    {
+        $this->niu = $niu;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of rccm
+     */
+    public function getRccm()
+    {
+        return $this->rccm;
+    }
+
+    /**
+     * Set the value of rccm
+     *
+     * @return  self
+     */
+    public function setRccm($rccm)
+    {
+        $this->rccm = $rccm;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of tel
+     */
+    public function getTel()
+    {
+        return $this->tel;
+    }
+
+    /**
+     * Set the value of tel
+     *
+     * @return  self
+     */
+    public function setTel($tel)
+    {
+        $this->tel = $tel;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of address
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * Set the value of address
+     *
+     * @return  self
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of email
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set the value of email
+     *
+     * @return  self
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
 
         return $this;
     }

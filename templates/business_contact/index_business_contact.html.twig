@@ -4,8 +4,6 @@
 
 {% block stylesheets %}
 
-<link href="/plugins/custombox/custombox.min.css" rel="stylesheet" type="text/css">
-
 <!-- DataTables -->
 <link href="/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 <link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
@@ -205,7 +203,7 @@
                                                 {% if iconStock == true %}
                                                 {% if inventories|length > 0 %}
                                                 <div class="form-group row my-2 inventory-select ">
-                                                    <label class="col-sm-4 col-form-label text-left mt-2">Select PF stock provider</label>
+                                                    <label class="col-sm-4 col-form-label text-left mt-2">Choisir l'inventaire</label>
                                                     <div class="col-sm-8 mt-2">
                                                         <select class="custom-select" id="stockId{{businessContact.id}}">
                                                             {% for inventory in inventories %}
@@ -226,7 +224,7 @@
                                             </div>
                                         </div> <!--end custom modal--> 
                                         {% elseif type == 'supplier' %}
-                                        <a href="{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'purchaseorder'}) }}" class="btn btn-secondary btn-xs rounded text-right mr-2" data-toggle="tooltip" data-placement="top" title="Editer une facture d'achat ?"><i class="mdi mdi-file-table-outline"></i></a>
+                                        <a href="{% if subIsActivated == true %}{{ path('commercial_sheet_create', {'id':businessContact.id,'type':'purchaseorder'}) }}{% else %}#{% endif %}" class="btn btn-secondary btn-xs rounded text-right mr-2" data-toggle="tooltip" data-placement="top" title="Editer une facture d'achat ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="mdi mdi-file-table-outline"></i></a>
                                         {% endif %}
                                         <a href="{{path('business_contact_delete', {'id':businessContact.id})}}" class="btn btn-danger btn-xs rounded" data-toggle="tooltip" data-placement="top" title="Supprimez {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}"><i class="fas fa-trash"></i> </a>
                                     
@@ -261,12 +259,6 @@
 <script src="/plugins/datatables/dataTables.responsive.min.js"></script>
 <script src="/plugins/datatables/responsive.bootstrap4.min.js"></script>
 <script src="/pages/jquery.datatable.init.js"></script>    
-
-<script src="/plugins/custombox/custombox.min.js"></script>
-<script src="/plugins/custombox/custombox.legacy.min.js"></script>
-
-<script src="/pages/jquery.modal-animation.js"></script>
-<script src="/js/jquery.redirect.js"></script> 
 
 <script>
     {# var table = $('#datatable').DataTable( {

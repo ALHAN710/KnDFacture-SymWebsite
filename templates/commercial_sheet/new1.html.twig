@@ -1,0 +1,837 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Edition de {{commercialSheet.type|capitalize}} {% endblock %}
+
+{% block smartwizardstylesheets %}
+<link href="/plugins/form-wizard/css/smart_wizard.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/form-wizard/css/smart_wizard_theme_arrows.css" rel="stylesheet" type="text/css" />
+<link href="/plugins/form-wizard/css/smart_wizard_theme_circles.css" rel="stylesheet" type="text/css" />
+
+
+{% endblock %}
+
+{% block stylesheets %}
+{# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" /> #}
+<link href="/plugins/select2/select2.min.css" rel="stylesheet" type="text/css" />
+
+<style>
+    .datepicker table tr td.disabled, .datepicker table tr td.disabled:hover{
+        color: firebrick;
+    }
+</style>
+{% endblock %}
+
+{% set docType = '' %}
+{% if commercialSheet.type == 'bill' %}
+    {% set docType = 'Facture' %}
+{% elseif commercialSheet.type == 'quote' %}
+    {% set docType = 'Devis' %}
+{% elseif commercialSheet.type == 'purchaseorder' %}
+    {% set docType = "Facture d'Achat" %}
+{% endif %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="mdi mdi-cart-outline mr-2"></i>
+
+</h4>  
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">{% if docType != 'Devis' %}Nouvelle{% else %}Nouveau{% endif %}</li>
+            <li class="breadcrumb-item active">
+            {{ docType }}
+            </li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% form_theme form 'commercial_sheet/_collection.html.twig' %}
+
+{% block body %}
+{# {{dump(app.user.enterprise.subscription.tarifs['' ~ app.user.enterprise.subscriptionDuration])}} #}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {{ form_start(form) }}
+                {# <h4 class="mt-0 header-title">Form Wizard Rounded</h4> #}
+                {# <p class="text-muted mb-4">Basic example to demonstrate smart wizard rounded styles.</p>  #}
+                <div id="smart_wizard_circles">
+                    <ul>
+                        <li class="mt-5"><a href="#customer" id="customerLi"><i class="far fa-user d-block"></i><small>Détails du {% if docType != "Facture d'Achat" %}Client{% else %}Fournisseur{% endif %}</small></a></li>
+                        <li class="mt-5"><a href="#chart"><i class="mdi mdi-cart-outline d-block"></i><small>Commande</small></a></li>
+                        <li class="mt-5"><a href="#promo"><i class="fas fa-cart-arrow-down d-block"></i><small>Détail Promotion</small></a></li>
+                        <li class="mt-5"><a href="#payment"><i class="mdi mdi-credit-card d-block"></i><small>Paiement</small></a></li>
+                    </ul>
+                    
+                    <div class="p-3 sw-circle-content mb-3">
+                        <div class="d-none sym mb-0">
+                            <h5 class="card-title"></h5>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        {% if hasBC %}
+                                        <label>Raison Soaciale ou Nom  <small class="text-danger font-13">*</small></label>
+                                        <input type="text" class="form-control" name="socialReason" id="socialReason" placeholder="" readonly value="{{commercialSheet.businessContact.socialReason}}" required="">
+                                        {% else %}
+                                        {{ form_label(form.socialReason, 'Raison Soaciale ou Nom *', {'label_attr': {'class': ''}}) }}
+                                        {{ form_errors(form.socialReason) }}
+                                        {{ form_widget(form.socialReason, {'attr': {'class': "form-control text-center select2"}}) }}
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                                {# <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Last Name <small class="text-danger font-13">*</small></label>
+                                        <input type="email" class="form-control" id="lastname" >
+                                    </div>
+
+                                    <div class="form-group">
+                                                                                    
+                                        {{ form_label(form.socialReason, null, {'label_attr': {'class': ''}}) }}
+                                        {{ form_errors(form.socialReason) }}
+                                        {{ form_widget(form.socialReason, {'attr': {'class': "form-control text-center"}}) }}
+                                            
+                                        
+                                    </div>
+                                </div>                                                 #}
+                            </div>
+
+                            {% if commercialSheet.type == 'purchaseorder' %}
+                            <div class="row row2">
+                                {% if hasBC %}
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>NIU</label>
+                                        <input type="text" class="form-control" name="niu" id="niu" placeholder="" readonly value="{{commercialSheet.businessContact.niu}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label pt-0">RCCM</label>
+                                        <input type="text" class="form-control" name="rccm" id="rccm" placeholder="" readonly value="{{commercialSheet.businessContact.rccm}}">
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                    {{ form_label(form.niu, null, {'label_attr': {'class': ''}}) }}
+                                    {{ form_errors(form.niu) }}
+                                    {{ form_widget(form.niu, {'attr': {'class': "form-control text-center select2"}}) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                    {{ form_label(form.rccm, null, {'label_attr': {'class': ''}}) }}
+                                    {{ form_errors(form.rccm) }}
+                                    {{ form_widget(form.rccm, {'attr': {'class': "form-control text-center select2"}}) }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                    
+                                                                                
+                            </div>
+                            {% endif %}
+
+                            <div class="row row2">
+                                <div class="col-md-6">                            
+                                    <div class="form-group">
+                                        {# <label>Tél <small class="text-danger font-13">*</small></label>
+                                        <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required=""> #}
+                                        {% if hasBC %}
+                                        <label>Tél <small class="text-danger font-13">*</small></label>
+                                        <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required="" readonly>
+                                        {% else %}
+                                        {{ form_label(form.tel, 'Tél *', {'label_attr': {'class': ''}}) }}
+                                        {{ form_errors(form.tel) }}
+                                        {{ form_widget(form.tel, {'attr': {'class': "form-control text-center select2"}}) }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">                            
+                                    <div class="form-group">
+                                        {# <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
+                                        <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required=""> #}
+                                        {% if hasBC %}
+                                        <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
+                                        <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required="" readonly>
+                                        {% else %}
+                                        {% if commercialSheet.type != 'purchaseorder' %}
+                                        {% set label = 'Adresse de Livraison *' %}
+                                        {# {% autoescape %}
+                                            {{ label|e }} 
+                                        {% endautoescape %} #}
+                                        {{ form_label(form.address, label, {'label_attr': {'class': ''}}) }}
+                                        {% else %}
+                                        {{ form_label(form.address, 'Adresse', {'label_attr': {'class': ''}}) }}
+                                        {% endif %}
+                                        {{ form_errors(form.address) }}
+                                        {{ form_widget(form.address, {'attr': {'class': "form-control text-center select2"}}) }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                            </div>
+                                                                
+                        </div> 
+                        <div id="customer" class="">
+                           
+
+                        </div>
+
+                        <div id="chart" class="">
+                            <div class="table-responsive shopping-cart">
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            {# <th>Product</th>
+                                            <th>Quantity</th>                                                        
+                                            <th>Total</th> #}
+                                            <th scope="col" class="text-center">Désignation</th>
+                                            <th scope="col" class="{% if commercialSheet.type != 'purchaseorder'  %}d-none{% endif %} colPU">P.U (XAF)</th>
+                                            <th scope="col">Qté</th>
+                                            {# <th scope="col">Montant HT Brut</th> #}
+                                            <th scope="col">Remise(%)</th>
+                                            {# <th scope="col">Montant HT Net</th> #}
+                                            {# <th class="mx-4 {% if commercialSheet.type == 'quote' or iconStock == false %}d-none{% endif %}">Dispo</th> #}
+                                            <th class=""></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tbody id="tableRow">
+                                                                                    
+                                            {{form_widget(form.commercialSheetItems)}}
+                            </div>
+
+                            <div class="total-payment mt-2">
+                                <table class="table mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="payment-title">Quantité Totale</td>
+                                            <td><span id="itemsqtytotal">0</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="payment-title">Montant Total HT Brut</td>
+                                            <td><span id="itemsAmountBrutHT">0</span> XAF</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="payment-title">Montant Total Remise</td>
+                                            <td><span id="itemsAmountRemise">0</span> XAF</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="payment-title">Montant Total HT Net</td>
+                                            <td><span id="itemsAmountNetHT">0</span> XAF</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="payment-title">TVA ({{app.user.enterprise.tva}}%)</td>
+                                            <td><span id="taxes">0</span> XAF</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">Montant TTC</td>
+                                            <td class="font-weight-bold"><span id="amountTTC">0</span> XAF</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="promo" class="">
+                            <div class="form-group">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.fixReduction, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.fixReduction) }}
+                                    {{ form_widget(form.fixReduction, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                
+                                {{ form_label(form.fixReduction, null, {'label_attr': {'class': ''}}) }}
+                                {{ form_errors(form.fixReduction) }}
+                                {{ form_widget(form.fixReduction, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                
+                            </div>
+                            </br>
+                            <p class="font-weight-bold"><h5 class="text-center">Montant des Remises Forfaitaires : <span id="totalPromoAmount">0</span> XAF</h5></p>
+                            
+                        </div>
+
+                        <div id="payment" class="">
+                            <p class="font-weight-bold"><h5 class="text-center">Montant Net à payer : <span id="totalAmount">0</span> XAF</h5></p>
+                            <div class="form-group {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.advancePayment, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.advancePayment) }}
+                                    {{ form_widget(form.advancePayment, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.advancePayment, null, {'label_attr': {'class': ''}}) }}
+                                {{ form_errors(form.advancePayment) }}
+                                {{ form_widget(form.advancePayment, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                            </div>
+                            <p class="font-weight-bold"><h5 class="text-center">Reste à payer : <span id="totalRestAmount">0</span> XAF</h5></p>
+
+                            <div class="form-group">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.deliveryMode, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.deliveryMode) }}
+                                    {{ form_widget(form.deliveryMode, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.deliveryMode, null, {'label_attr': {'class': ''}}) }}
+                                {{ form_errors(form.deliveryMode) }}
+                                {{ form_widget(form.deliveryMode, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                            </div>
+
+                            <div class="form-group">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.paymentMode, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.paymentMode) }}
+                                    {{ form_widget(form.paymentMode, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.paymentMode, null, {'label_attr': {'class': ''}}) }}
+                                {{ form_errors(form.paymentMode) }}
+                                {{ form_widget(form.paymentMode, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                            </div>
+
+                            <div class="text-center {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                                {# {{ form_errors(form.periodofvalidity) }}                        #}
+                                {# {{ form_label(form.paymentStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
+                                {{ form_widget(form.paymentStatus) }}
+                                
+                            </div>
+
+                            <div class="text-center {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                                {# {{ form_errors(form.periodofvalidity) }}                        #}
+                                    {# {{ form_label(form.deliveryStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
+                                    {{ form_widget(form.deliveryStatus) }}
+                                
+                            </div>
+
+                            <div class="text-center {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
+                                {# {{ form_errors(form.periodofvalidity) }}                        #}
+                                    {# {{ form_label(form.completedStatus, null, {'label_attr': {'class': 'input-group-text'}}) }} #}
+                                    {{ form_widget(form.completedStatus) }}
+                                
+                            </div>
+                            
+                            <div class="form-group mt-3 {% if commercialSheet.type != 'quote' %}d-none{% endif %}">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.duration, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.duration) }}                       
+                                    {{ form_widget(form.duration, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.duration, null, {'label_attr': {'class': ''}}) }}
+                                {{ form_errors(form.duration) }}                       
+                                {{ form_widget(form.duration, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                            </div>
+                        </div>
+
+                    </div><!--end /div-->
+                </div> <!--end smartwizard-->
+
+                <div class="text-right mt-4">
+                    <input type="button" onclick="document.location.href='{{ path('commercial_sheet_index',{'type':commercialSheet.type}) }}';" value="Annuler" name="button" class="btn btn-danger mr-2 waves-effect">
+                
+                    <button type="submit" class="btn btn-primary waves-effect" id="saveBtn">
+                        {# <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span> #}
+                        Enregistrer
+                    </button>
+                </div>  
+                {{ form_end(form) }}                              
+            </div><!--end card-body-->
+        </div><!--end card-->
+    </div><!--end col-->
+</div><!--end row-->
+
+{% endblock %}
+
+{% block javascripts %}
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script> #}
+<!-- Plugins js -->
+<script src="/plugins/select2/select2.min.js"></script>
+
+<script src="/plugins/form-wizard/js/jquery.smartWizard.min.js"></script>
+<script src="/pages/jquery.form-wizard.init.js"></script>
+
+{% if hasBC == false %}
+<script>
+    var $sym = $('.sym').clone();
+    //console.log($sym);//.replace(/commercial_sheet_/g, '')
+    $('#customer').append($sym);
+    $('#customer>div.sym').removeClass('d-none').removeClass('sym');
+    $('#customer').html(function(){
+        return $(this).html().replace(/commercial_sheet_/g,'');
+    });
+    $('#customer').html(function(){
+        return $(this).html().replace(/commercial_sheet\[/g,'');
+    });
+    $('#customer').html(function(){
+        return $(this).html().replace(/\]/g,'');
+    });
+        
+    //$('.row2').addClass('d-none');
+        
+    var socialReasonId = '#socialReason';
+        
+    var telId = '#tel';
+    var addressId = '#address';
+    {% if commercialSheet.type == 'purchaseorder' %}
+        var niuId = '#niu';
+        var rccmId = '#rccm';
+    {% endif %}
+    $( document ).ready(function() {
+        //console.log( "ready!" );
+        $(window).on('hashchange', function(e){
+            // Your Code goes here
+            if($(socialReasonId).val() === '-1' || $(telId).val() === '-1' || $(addressId).val() === '-1'){
+                $('.sw-btn-next').addClass('disabled').attr('disabled', true);
+                $('#customerLi')[0].click();
+                $('.nav-item').removeClass('done');
+            }
+        });
+        // Select2
+        
+        $(".select2").select2({
+            width: '100%',
+            tags: true,
+        });
+        
+        
+
+        //Ajout de l'option fictive de gestion des options à retire des autres select list
+        var Opt = new Option("Entrer le nom", "-1");
+        $(socialReasonId).append(Opt);
+        $(socialReasonId).val("-1");
+
+        {% if commercialSheet.type == 'purchaseorder' %}
+        
+        Opt = new Option("Entrer le NIU", "-1");
+        $(niuId).append(Opt);
+        $(niuId).val("-1");
+
+        Opt = new Option("Entrer le RCCM", "-1");
+        $(rccmId).append(Opt);
+        $(rccmId).val("-1");
+        {% endif %}
+
+        Opt = new Option("Entrer le numéro de téléphone", "-1");
+        $(telId).append(Opt);
+        $(telId).val("-1");
+
+        Opt = new Option("Entrer l'adresse", "-1");
+        $(addressId).append(Opt);
+        $(addressId).val("-1");
+
+        if($(socialReasonId).val() === '-1' || $(telId).val() === '-1' || $(addressId).val() === '-1'){
+            $('.sw-btn-next').addClass('disabled').attr('disabled', true);
+            $('#customerLi')[0].click();
+            $('.nav-item').removeClass('done');
+        }
+
+        /*$('.select2').change(() => {
+            
+            console.log('id = ' + $(this).attr('id'));
+            $(socialReasonId + " option[value='-1']").remove();
+            if( $.isNumeric( parseInt( $(socialReasonId).val() ) ) ){
+                var Str = String($(socialReasonId).val());
+                {# console.log('Name  value = ' + $(socialReasonId).val());
+                var Name = $(socialReasonId + ' option[value=\"' + Str + '\"]').text();
+                var str = String(Name); #}
+
+                {# $(telId).val(Str); // Select the option with a value of '1'
+                $(telId).trigger('change'); // Notify any JS components that the value changed #}
+                $(telId).select2("val", Str); //set the value
+                //$(telId).off('change') // désactivation de l'évènement change sur cette entrée
+
+                {# $(addressId).val(Str); // Select the option with a value of '1'
+                $(addressId).trigger('change'); // Notify any JS components that the value changed #}
+                $(addressId).select2("val", Str); //set the value
+                //$(addressId).off('change') // désactivation de l'évènement change sur cette entrée
+
+                {% if commercialSheet.type == 'purchaseorder' %}
+                //$(niuId + " option[value='-1']").remove();
+                //$(rccmId + " option[value='-1']").remove();
+                
+                {# $(niuId).val(Str); // Select the option with a value of '1'
+                $(niuId).trigger('change'); // Notify any JS components that the value changed #}
+                $(niuId).select2("val", Str); //set the value
+                //$(niuId).off('change') // désactivation de l'évènement change sur cette entrée
+
+                {# $(rccmId).val(Str); // Select the option with a value of '1'
+                $(rccmId).trigger('change'); // Notify any JS components that the value changed #}
+                $(rccmId).select2("val", Str); //set the value
+                //$(rccmId).off('change') // désactivation de l'évènement change sur cette entrée
+                {% endif %}
+
+            }
+            if($(socialReasonId).val() !== '-1' && $(telId).val() !== '-1' && $(addressId).val() !== '-1'){
+                $('.sw-btn-next').removeClass('disabled').attr('disabled', false);
+            }
+        });*/
+
+        $(socialReasonId).change(() => {
+            
+            $(socialReasonId + " option[value='-1']").remove();
+            //$(telId + " option[value='-1']").remove();
+            //$(addressId + " option[value='-1']").remove();
+            if( $.isNumeric( parseInt( $(socialReasonId).val() ) ) ){
+                var Str = String($(socialReasonId).val());
+                //console.log('Name  value = ' + Str);
+                {# var Name = $(socialReasonId + ' option[value=\"' + Str + '\"]').text();
+                var str = String(Name); #}
+
+                $(telId).val(Str); // Select the option with a value of '1'
+                $(telId).trigger('change'); // Notify any JS components that the value changed 
+                
+                //$(telId).select2("val", $(socialReasonId).val()); //set the value
+                //console.log('Tel  value = ' + $(telId).val());
+                //$(telId).off('change') // désactivation de l'évènement change sur cette entrée
+
+                $(addressId).val(Str); // Select the option with a value of '1'
+                $(addressId).trigger('change'); // Notify any JS components that the value changed 
+                
+                //$(addressId).select2("val", $(socialReasonId).val()); //set the value
+                //console.log('Address  value = ' + $(addressId).val());
+                //$(addressId).off('change') // désactivation de l'évènement change sur cette entrée
+
+                {% if commercialSheet.type == 'purchaseorder' %}
+                //$(niuId + " option[value='-1']").remove();
+                //$(rccmId + " option[value='-1']").remove();
+                
+                $(niuId).val(Str); // Select the option with a value of '1'
+                $(niuId).trigger('change'); // Notify any JS components that the value changed 
+                
+                //$(niuId).select2("val", Str); //set the value
+                //$(niuId).off('change') // désactivation de l'évènement change sur cette entrée
+
+                $(rccmId).val(Str); // Select the option with a value of '1'
+                $(rccmId).trigger('change'); // Notify any JS components that the value changed 
+                
+                //$(rccmId).select2("val", Str); //set the value
+                //$(rccmId).off('change') // désactivation de l'évènement change sur cette entrée
+                {% endif %}
+
+            }
+            {% if commercialSheet.type == 'purchaseorder' %}
+            $(niuId + " option[value='-1']").remove();
+            $(rccmId + " option[value='-1']").remove();
+            
+            {% endif %}
+            if($(socialReasonId).val() !== '-1' && $(telId).val() !== '-1' && $(addressId).val() !== '-1'){
+                $('.sw-btn-next').removeClass('disabled').attr('disabled', false);
+            }
+            
+            $('.row2').removeClass('d-none');
+        });
+
+        {# $(telId).change(() => {
+            $(telId + " option[value='-1']").remove();
+            if( $.isNumeric( parseInt( $(telId).val() ) ) ){
+                var Str = String($(telId).val());
+                
+                $(socialReasonId).select2("val", Str); //set the value
+
+                $(addressId).select2("val", Str); //set the value
+
+                {% if commercialSheet.type == 'purchaseorder' %}
+                //$(niuId + " option[value='-1']").remove();
+                //$(rccmId + " option[value='-1']").remove();
+                
+                $(niuId).select2("val", Str); //set the value
+
+                $(rccmId).select2("val", Str); //set the value
+                {% endif %}
+
+            }
+            if($(socialReasonId).val() !== '-1' && $(telId).val() !== '-1' && $(addressId).val() !== '-1'){
+                $('.sw-btn-next').removeClass('disabled').attr('disabled', false);
+            }
+            
+        });
+
+        $(addressId).change(() => {
+            $(addressId + " option[value='-1']").remove();
+            if( $.isNumeric( parseInt( $(addressId).val() ) ) ){
+                var Str = String($(addressId).val());
+                
+                $(socialReasonId).select2("val", Str); //set the value
+
+                $(telId).select2("val", Str); //set the value
+
+                {% if commercialSheet.type == 'purchaseorder' %}
+                //$(niuId + " option[value='-1']").remove();
+                //$(rccmId + " option[value='-1']").remove();
+                
+                $(niuId).select2("val", Str); //set the value
+
+                $(rccmId).select2("val", Str); //set the value
+                {% endif %}
+
+            }
+            if($(socialReasonId).val() !== '-1' && $(telId).val() !== '-1' && $(addressId).val() !== '-1'){
+                $('.sw-btn-next').removeClass('disabled').attr('disabled', false);
+            }
+        });
+
+        {% if commercialSheet.type == 'purchaseorder' %}
+        $(niuId).change(() => {
+            $(niuId + " option[value='-1']").remove();
+            if( $.isNumeric( parseInt( $(niuId).val() ) ) ){
+                var Str = String($(niuId).val());
+                
+                $(socialReasonId).select2("val", Str); //set the value
+
+                $(telId).select2("val", Str); //set the value
+
+                
+                //$(niuId + " option[value='-1']").remove();
+                //$(rccmId + " option[value='-1']").remove();
+                
+                $(addressId).select2("val", Str); //set the value
+
+                $(rccmId).select2("val", Str); //set the value
+                
+
+            }
+            
+        });
+
+        $(rccmId).change(() => {
+            $(rccmId + " option[value='-1']").remove();
+            if( $.isNumeric( parseInt( $(rccmId).val() ) ) ){
+                var Str = String($(rccmId).val());
+                
+                $(socialReasonId).val(Str); // Select the option with a value of '1'
+                $(socialReasonId).trigger('change'); // Notify any JS components that the value changed
+
+                $(telId).val(Str); // Select the option with a value of '1'
+                $(telId).trigger('change'); // Notify any JS components that the value changed
+
+                
+                //$(niuId + " option[value='-1']").remove();
+                //$(rccmId + " option[value='-1']").remove();
+                
+                $(addressId).val(Str); // Select the option with a value of '1'
+                $(addressId).trigger('change'); // Notify any JS components that the value changed
+
+                $(niuId).val(Str); // Select the option with a value of '1'
+                $(niuId).trigger('change'); // Notify any JS components that the value changed
+                
+
+            }
+            
+        });
+        {% endif %}  #}
+
+        
+    });
+
+    
+    $( "select" ).change(function () {
+        if($(socialReasonId).val() !== '-1' && $(telId).val() !== '-1' && $(addressId).val() !== '-1'){
+            $('.sw-btn-next').removeClass('disabled').attr('disabled', false);
+        }
+    });
+</script>
+{% endif %}
+
+<script>
+    
+    /*$('#saveBtn').click(function(){
+        //block of code that runs when the click event triggers
+        $(this).children('i').addClass('d-none');
+        $(this).children('span').removeClass('d-none');
+        //$('#saveBtn').prop('disabled', true);
+    });*/
+    $('#commercial_sheet_itemsReduction').attr('type', 'number');
+    $('#commercial_sheet_deliveryFees').attr('type', 'number');
+    $('#commercial_sheet_fixReduction').attr('type', 'number');
+    $('#commercial_sheet_advancePayment').attr('type', 'number');
+    
+    {# var val = $('#commercial_sheet_duration').val(); #}
+    {# if($('#commercial_sheet_duration').val()) console.log('duration val = ' + val);
+    else $('#commercial_sheet_duration').val(0); #}
+    
+    {# var availabilities = {{availabilities}}; #}
+    {# $('.form-check').addClass('radio-info form-check-inline'); #}
+    var availabilities = JSON.parse('{{ availabilities | json_encode | raw }}');
+    var availabilitiesTab = JSON.parse('{{ availabilities | json_encode | raw }}');
+    {# $(document).ready(function(){
+        $('#commercial_sheet_periodofvalidity').datepicker({
+            format: 'dd/mm/yyyy',
+            startDate: '+0d',
+            todayBtn: "linked",
+            todayHighlight: true,
+            clearBtn: true,
+        });
+
+    }); #}
+    //$('#saveBtn').attr('disabled', true);
+    var isEdit = false;
+    var tva = {{ app.user.enterprise.tva }}/100.0;
+    //console.log(availabilities);
+    var type = '{{commercialSheet.type}}';
+    if (type !== 'quote'){
+        $('#commercial_sheet_duration').attr('required', false); 
+        console.log('type = '+type);
+        if(type === 'purchaseorder'){
+            $('#add-commercialSheetItems').addClass('d-none');
+            $('#add-servItems').removeClass('d-none');
+        }
+    }
+    else{
+        $('#commercial_sheet_advancePayment').attr('required', false); 
+        if (isNaN(parseFloat($('#commercial_sheet_advancePayment').val())) || parseFloat($('#commercial_sheet_advancePayment').val()) < 0 || !$('#commercial_sheet_advancePayment').val() == true) {
+            $('#commercial_sheet_advancePayment').val(0.0);
+        }
+    }
+
+    function computeItemsAmountTab(puId, qtyId, remiseId, index) {
+        var price = parseFloat(puId);
+        amountBrutHT[index] = price * parseFloat($(qtyId).val());
+        //$(amountId).val(amount);
+        itemReductionTab[index] = ( ( amountBrutHT[index] * parseFloat( $(remiseId).val() ) )/100.0 );
+
+        itemsAmount[index] = amountBrutHT[index] - itemReductionTab[index];
+        //console.log('itemsAmount[' + index + '] = ' + itemsAmount[index]);
+
+        
+        //Calcul du sous montant Total des items
+        computeItemsAmountSubTotal();
+    }
+
+    //Procédure de calcul du sous montant Total des items
+    function computeItemsAmountSubTotal() {
+        itemsAmountNetHT  = 0;
+        itemsReduction    = 0;
+        totalAmountBrutHT = 0;
+        itemsAmount.forEach(function (item, index) {
+            itemsAmountNetHT  += item;
+            itemsReduction    += itemReductionTab[index];
+            totalAmountBrutHT += amountBrutHT[index];
+        });
+        //console.log(itemsAmountNetHT);
+        itemsAmountNetHT = itemsAmountNetHT - fixReductions;
+        $('#itemsAmountNetHT').text(itemsAmountNetHT.toFixed(2));
+        $('#itemsAmountRemise').text(itemsReduction.toFixed(2));
+        $('#itemsAmountBrutHT').text(totalAmountBrutHT.toFixed(2));
+        //MAJ du montant de taxes sur les items
+        taxes = itemsAmountNetHT * tva;
+        $('#taxes').text(taxes.toFixed(2));
+
+        amountTTC = itemsAmountNetHT + taxes;
+        $('#amountTTC').text(amountTTC.toFixed(2));
+
+        //Calcul du montant total de la promo
+        computeTotalPromoAmount();
+
+    }
+
+    //Procédure de calcul du montant total de la promo
+    function computeTotalPromoAmount() {
+        //totalPromoAmount = itemsReduction + fixReductions;
+        totalPromoAmount = fixReductions;
+        $('#totalPromoAmount').text(totalPromoAmount.toFixed(2));
+
+        //Calcul du montant Total Net à payer
+        computeTotalAmount();
+    }
+
+    //Procédure de calcul du montant Total Net à payer
+    function computeTotalAmount() {
+        totalAmount = amountTTC;// - totalPromoAmount;
+        if ($('#commercial_sheet_paymentStatus').is(':checked') || $('#commercial_sheet_completedStatus').is(':checked')) {
+            $('#commercial_sheet_advancePayment').val(totalAmount.toFixed(2));
+            totalRestAmount = 0;
+        }
+        else {
+            var val = $('#commercial_sheet_advancePayment').val();
+            if (val && $.isNumeric(val)) totalRestAmount = totalAmount - parseFloat(val);
+            else {
+                $('#commercial_sheet_advancePayment').val(0);
+                totalRestAmount = totalAmount;
+            }
+        }
+
+        $('#totalAmount').text(totalAmount.toFixed(2));
+        $('#totalRestAmount').text(totalRestAmount.toFixed(2));
+    }
+    
+    var tabproductSKUIds = [];
+    var tabHideSKU = [];
+    var tabHideProduct = [];
+    var tabProductIds = [];
+    var tabPriceIds = [];
+    var tabProductQtyIds = [];
+
+    var tabQty = [];
+    var tabItemOfferType = [];
+    var qtyTotal = 0;
+    var tabError = [];
+    var tabQtyError = [];
+    var itemsAmount = [];
+    var itemsAmountSubTotal = 0;
+    var taxes = 0.0;
+
+    var totalAmountBrutHT = 0;
+    var amountBrutHT = [];
+    // var reductionsAmount = [];
+    // var reductionsAmountSubtotal = 0;
+
+    var deliveryReduction = 0;
+
+    var totalPromoAmount = 0;
+
+    var totalAmount = 0;
+    var totalRestAmount = 0.0;
+    var amountTTC = 0.0;
+
+    //console.log(availabilities);
+    //var availabilitiesTab = availabilities;
+    var itemsReduction = 0.0;
+    var itemReductionTab = [];
+    var fixReductions = 0;
+
+    if (isNaN(parseFloat($('#commercial_sheet_fixReduction').val())) || parseFloat($('#commercial_sheet_fixReduction').val()) < 0 || !$('#commercial_sheet_fixReduction').val() == true) {
+        $('#commercial_sheet_fixReduction').val(0.0);
+    }
+    fixReductions = parseFloat($('#commercial_sheet_fixReduction').val());
+    //Gestion des évènements de modification sur l'entrée numérique du montant 
+    //de réduction fixe
+    $('#commercial_sheet_fixReduction').change(function () {
+        if (isNaN(parseFloat($(this).val())) || parseFloat($(this).val()) < 0 || !$(this).val() == true) {
+            $(this).val(0.0);
+        }
+
+        fixReductions = parseFloat($(this).val());
+
+        //Calcul du sous montant Total des items
+        computeItemsAmountSubTotal();
+
+    });
+</script>
+<script src="/js/commercial_sheet7.js" type="text/javascript"></script>
+
+
+{% endblock %}
