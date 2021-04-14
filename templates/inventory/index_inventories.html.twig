@@ -59,7 +59,7 @@
                                     <td>{{inventory.orderingFreq}}</td>
                                     <td>{{inventory.txOfService}}</td>
                                     <td>
-                                        <a href="{{path('inventory_edit', {'id':inventory.id})}}" class="btn btn-soft-info btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Modifier l'inventaire"><i class="far fa-edit"></i></a>
+                                        <a href="{{path('inventory_edit', {'id':inventory.id})}}" class="btn btn-soft-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Modifier l'inventaire"><i class="far fa-edit"></i></a>
                                         {# <a href="{% if iconStock == true %}{{path('lot_create', {'prod':0, 'inv':inventory.id})}}{% else %}#{% endif %}"  class="btn btn-soft-purple btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Ajouter un nouveau lot{% if iconStock == false %} Veuillez souscrire à un abonnement avec Gestion de Stock pour utiliser cette fonctionnalité{% endif %}"><i class="fa fa-plus-circle"></i></a> #}
                                                 
                                         <a href="{{path('inventory_delete', {'id':inventory.id})}}" class="btn btn-danger btn-xs rounded waves-effect" data-toggle="tooltip" data-placement="top" title="Supprimer l'inventaire"><i class="fas fa-trash"></i> </a>
