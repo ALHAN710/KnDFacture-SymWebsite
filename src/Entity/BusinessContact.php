@@ -15,12 +15,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass=BusinessContactRepository::class)
  * @ORM\HasLifecycleCallbacks()
  * @UniqueEntity(
- *  fields={"phoneNumber"},
- *  message="Another business contact is already registered with this phone number, please change it"
+ *  fields={"socialReason","phoneNumber","address"},
+ *  message="Another business contact is already registered with this informations, please change its"
  * )
  */
 class BusinessContact
-{
+{ //  
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -29,7 +29,7 @@ class BusinessContact
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Please enter the BusinessContact's phone number")
      */
     private $phoneNumber;
