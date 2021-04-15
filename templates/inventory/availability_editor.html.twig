@@ -1,0 +1,218 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Gestion du Stock de {{ inventory.name|capitalize }} {% endblock %}
+
+{% block smartwizardstylesheets %}
+<link href="/plugins/footable/css/footable.bootstrap.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block stylesheets %}
+<!-- Sweet Alert -->
+<link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block pageTitle %}
+<h4 class="page-title mb-2"><i class="mdi mdi-buffer mr-2"></i>Stock</h4>  
+{% endblock %}
+
+{% set iconStock = true %}
+
+{% block breadcrumb %}
+    <div class="">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Gestion</li>
+            <li class="breadcrumb-item active">Stock</li>
+            <li class="breadcrumb-item active">{{ (inventory.name)|capitalize }}</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                {# {{ dump(available) }} #}
+                    <table id="footable-3" class="table mb-0" data-paging="true" data-filtering="true" data-sorting="true">
+                        <thead>
+                            <tr>
+                                <th class="text-center" data-name="sku">SKU</th>
+                                <th data-name="name">Nom</th>
+                                <th class="text-center" data-name="qty" data-breakpoints="xs" data-type="number">Quantité</th>
+                                <th class="d-none" data-name="prod" data-breakpoints="xs" data-type="number">Id</th>
+                                {# <th data-name="jobTitle" data-breakpoints="xs">Job Title</th>
+                                <th data-name="startedOn" data-breakpoints="xs sm" data-type="date" data-format-string="MMMM Do YYYY">Started On</th>
+                                <th data-name="dob" data-breakpoints="xs sm md" data-type="date" data-format-string="MMMM Do YYYY">Date of Birth</th> #}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}                    
+                            <tr {% if loop.first %}data-expanded="true"{% endif %}>
+                                <td class="text-center">{{ product.sku }}</td>
+                                <td>{{ product.name }}</td>
+                                {# <td>0</td> #}
+                                <td class="text-center">{{ available['' ~ product.id] }}</td>
+                                <td class="d-none text-center">{{ product.id }}</td>
+                                
+                            </tr>
+                            {% endfor %}
+                            {# <tr data-expanded="true">
+                                <td>1</td>
+                                <td>Dennise</td>
+                                <td>Fuhrman</td>
+                                <td>High School History Teacher</td>
+                                <td>November 8th 2011</td>
+                                <td>July 25th 1960</td>
+                            </tr> #}
+                            
+                        </tbody>
+                    </table><!--end table-->
+
+                    <!--Editor-->
+                    <div class="modal fade" id="editor-modal" tabindex="-1" role="dialog" aria-labelledby="editor-title">
+                    
+                        <div class="modal-dialog" role="document">
+                            <form class="modal-content form-horizontal" id="editor">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editor-title">Add Row</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>                                                            
+                                </div>
+                                <div class="modal-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="sku" class="col-sm-3 control-label">SKU</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="sku" name="firstName" placeholder="SKU" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="name" class="col-sm-3 control-label">Nom</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="Nom" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="qty" class="col-sm-3 control-label">Quantité Disponible</label>
+                                        <div class="col-sm-9">
+                                            <input type="number" step="1" class="form-control" id="qty" name="qty" placeholder="Quantité Disponible">
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="prod">
+                                    {# <div class="form-group required row">
+                                        <label for="startedOn" class="col-sm-3 control-label">Started On</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="startedOn" name="startedOn" placeholder="Started On" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="dob" class="col-sm-3 control-label">Date of Birth</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="dob" name="dob" placeholder="Date of Birth">
+                                        </div>
+                                    </div> #}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="saveAVBtn" class="btn btn-light">Enregistrer</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!--end modal-->
+                </div><!--end card-body-->
+            </div><!--end card-->
+        </div><!--end col-->
+    </div><!--end row-->
+    
+{% endblock %}
+
+{% block javascripts %}
+<script src="/plugins/footable/js/footable.js"></script>
+{# <script src="/plugins/moment/moment.js"></script>  #}
+<script src="/pages/jquery.footable.init.js"></script>
+<!-- Sweet-Alert  -->
+<script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
+<script>
+var inv = {{ inventory.id }};
+$(document).ready(function(){
+    var $modal = $('#editor-modal'),
+		$editor = $('#editor');
+    $('#saveAVBtn').click(function(){
+        //console.log($('#prod').val());
+        
+        var $data = JSON.stringify({
+            /* "SKU": $editor.find('#sku').val(),
+            "Name": $editor.find('#name').val(), */
+            "prod": $editor.find('#prod').val(),
+            "available": $editor.find('#qty').val(),
+            "inv": inv
+        });   
+
+        swal.queue([{
+            title: 'Modification de la quantité du produit "' + $('#name').val() + '" dans le Stock de ' + "{{ inventory.name|capitalize }}",
+            confirmButtonText: 'Confirmez',
+            text: 'Qté = ' + $('#qty').val(),
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            confirmButtonClass: 'btn btn-primary',
+            cancelButtonClass: 'btn btn-info ml-2',
+            preConfirm: function () {
+                return new Promise(function (resolve) {
+                    
+                    $.ajax({
+                        type: "POST",//method type
+                        contentType: "application/json; charset=utf-8",
+                        url: "{{ path('update_product_availability') }}",///Target function that will be return result
+                        data: $data,//parameter pass data is parameter name param is value 
+                        dataType: "json",
+                        timeout: 120000,//64241
+                        success: function (data) {
+                            //console.log(data)   ;
+                            swal({
+                                type: 'success',
+                                title: 'La disponibilité a été mis à jour avec succès !',
+                                //html: 'Submitted email: ' + email
+                            });
+
+                            setTimeout(function () {
+                                resolve();
+                                //Fermer le modal d'édition
+                                var row = $modal.data('row'),
+                                    values = {
+                                        sku: $editor.find('#sku').val(),
+                                        name: $editor.find('#name').val(),
+                                        qty: $editor.find('#qty').val(),
+                                        prod: $editor.find('#prod').val(),
+                                        
+                                    };
+                                
+                                if (row instanceof FooTable.Row) {
+                                    row.val(values);
+                                } 
+                                $modal.modal('hide'); 
+
+                            }, 2000);
+                        },
+                        error: function (result) {
+                            //console.log("Error");
+                            //console.log(result);
+                            swal(
+                                'Oops...',
+                                "Une erreur s'est produite !",
+                                'error'
+                                //footer: '<a href>Why do I have this issue?</a>'
+                            );
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 5000);
+                        }
+                    });
+                })
+            },
+            allowOutsideClick: false
+        }]);
+
+    });
+});
+</script>
+{% endblock %}

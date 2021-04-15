@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repository\InventoryAvailabilityRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +26,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class InventoryController extends ApplicationController
 {
     /**
-     * @Route("/inventory/dashboard", name="inventories_index")
+     * @Route("/inventory/home", name="inventories_index")
      * 
      * @IsGranted("ROLE_STOCK_MANAGER")
      * 
@@ -534,6 +535,55 @@ class InventoryController extends ApplicationController
             'message' => 'Empty Array or Not existss !',
         ], 200);
     }
+
+    /**
+     * Permet de gérer le stock des produits par inventaire ou boutique
+     *
+     * @Route("/inventory/availability/{id<\d+>}", name = "availability_editor")
+     * 
+     * @Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_STOCK_MANAGER') and inventory.getEnterprise() === user.getEnterprise() )" )
+     * 
+     * @return Response
+     */
+    public function availabilityHome(Inventory $inventory, EntityManagerInterface $manager, InventoryRepository $inventoryRepo)
+    { //
+        $productStats          = [];
+        //$Stats          = [];
+        $inventoryAvailability = [];
+        $products = $manager->createQuery("SELECT p
+                                           FROM App\Entity\Product p, App\Entity\InventoryAvailability invAv
+                                           JOIN invAv.inventory inv
+                                           WHERE inv.id = :invId
+                                           AND p.hasStock = 1
+                                           AND invAv.product = p.id
+        ")
+            ->setParameters(array(
+                'invId'   => $inventory->getId(),
+            ))
+            ->getResult();
+
+        foreach ($products as $product) {
+            $inventoryAvailabilityRepo = $manager->getRepository("App:InventoryAvailability");
+            $inventoryAvailability['' . $product->getId()] = $inventoryAvailabilityRepo->findOneBy(['inventory' => $inventory, 'product' => $product])->getAvailable();
+        }
+        //dump($Stats);
+
+        //dd($productStats);
+        //dump($inventoryAvailability);
+        //dd($productStats);
+
+        $inventories = $inventoryRepo->findAll();
+
+        return $this->render('inventory/availability_editor.html.twig', [
+            'inventory'    => $inventory,
+            'available'    => $inventoryAvailability,
+            'productStats' => $productStats,
+            'products'     => $products,
+
+        ]);
+    }
+
+
     /**
      * Permet de mettre à jour la disponibilité en stock des produits en stock
      * 
