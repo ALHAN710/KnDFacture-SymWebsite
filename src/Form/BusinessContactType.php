@@ -17,26 +17,6 @@ class BusinessContactType extends ApplicationType
     {
         $builder
             ->add(
-                'socialReason',
-                TextType::class,
-                $this->getConfiguration("Raison Sociale ou Nom (*)", "Entrer la raison sociale ou le nom...")
-            )
-            ->add(
-                'niu',
-                TextType::class,
-                $this->getConfiguration("NIU", "Entrer le numéro d'identification unique...", [
-                    'required' => false,
-                ])
-            )
-            ->add(
-                'rccm',
-                TextType::class,
-                $this->getConfiguration("RCCM", "Entrer le numéro du registre du commerce...", [
-                    'required' => false,
-                ])
-
-            )
-            ->add(
                 'phoneNumber',
                 TextType::class,
                 $this->getConfiguration("Tél (*)", "Entrer le numéro de téléphone...")
@@ -44,7 +24,7 @@ class BusinessContactType extends ApplicationType
             ->add(
                 'address',
                 TextType::class,
-                $this->getConfiguration("Adresse (*)", "Entrer l'adresse...")
+                $this->getConfiguration("Adresse", "Entrer l'adresse...")
             )
             ->add(
                 'email',
@@ -63,6 +43,35 @@ class BusinessContactType extends ApplicationType
                     'allow_delete' => true
                 ]
             )*/;
+        if ($options['type'] == 'supplier') {
+            $builder
+                ->add(
+                    'niu',
+                    TextType::class,
+                    $this->getConfiguration("NIU", "Entrer le numéro d'identification unique...", [
+                        'required' => false,
+                    ])
+                )
+                ->add(
+                    'rccm',
+                    TextType::class,
+                    $this->getConfiguration("RCCM", "Entrer le numéro du registre du commerce...", [
+                        'required' => false,
+                    ])
+
+                )
+                ->add(
+                    'socialReason',
+                    TextType::class,
+                    $this->getConfiguration("Raison Sociale ou Nom (*)", "Entrer la raison sociale...")
+                );
+        } else {
+            $builder->add(
+                'socialReason',
+                TextType::class,
+                $this->getConfiguration("Raison Sociale ou Nom (*)", "Entrer le nom et le prénom...")
+            );
+        }
         //->add('createdAt')
     }
 
@@ -70,6 +79,7 @@ class BusinessContactType extends ApplicationType
     {
         $resolver->setDefaults([
             'data_class' => BusinessContact::class,
+            'type'  => 'customer'
         ]);
     }
 }

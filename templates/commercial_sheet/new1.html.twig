@@ -76,10 +76,14 @@
                                 <div class="col">
                                     <div class="form-group">
                                         {% if hasBC == true %}
-                                        <label>Raison Soaciale ou Nom  <small class="text-danger font-13">*</small></label>
+                                        <label>{% if commercialSheet.type == 'purchaseorder' %}Raison Sociale{% else %}Nom{% endif %}  <small class="text-danger font-13">*</small></label>
                                         <input type="text" class="form-control" name="socialReason" id="socialReason" placeholder="" readonly value="{{commercialSheet.businessContact.socialReason}}" required="">
                                         {% else %}
-                                        {{ form_label(form.socialReason, 'Raison Soaciale ou Nom *', {'label_attr': {'class': ''}}) }}
+                                        {% if commercialSheet.type == 'purchaseorder' %}
+                                        {{ form_label(form.socialReason, 'Raison Sociale *', {'label_attr': {'class': ''}}) }}
+                                        {% else %}
+                                        {{ form_label(form.socialReason, 'Nom *', {'label_attr': {'class': ''}}) }}
+                                        {% endif %}
                                         {{ form_errors(form.socialReason) }}
                                         {{ form_widget(form.socialReason, {'attr': {'class': "form-control text-center select2"}}) }}
                                         {% endif %}

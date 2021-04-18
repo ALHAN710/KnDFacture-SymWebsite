@@ -59,7 +59,9 @@ class BusinessContactController extends AbstractController
 
         //dump($request);
         //  instancier un form externe
-        $form = $this->createForm(BusinessContactType::class, $businessContact);
+        $form = $this->createForm(BusinessContactType::class, $businessContact, [
+            'type' => $type
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
