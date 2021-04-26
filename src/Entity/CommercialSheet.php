@@ -166,6 +166,11 @@ class CommercialSheet
      */
     private $enterprise;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $shippingFees;
+
     public function getTotalAmountBrutHT(): float
     {
         $this->totalAmountNetHT = 0.0;
@@ -247,9 +252,10 @@ class CommercialSheet
         // $totalAmountReduction = $this->getAmountReduction();
         // $totalAmountNetToPaid = $totalTTC - $totalAmountReduction;
         //$totalAmountNetToPaid = number_format((float) $totalAmountNetToPaid, 2, '.', ' ');
-
+        $fees = 0.0;
+        if ($this->getShippingFees()) $fees = $this->getShippingFees();
         // return $totalAmountNetToPaid;
-        return $this->getAmountTTC();
+        return $this->getAmountTTC() + $fees;
     }
 
     public function getAmountRestToPaid(): float
@@ -803,6 +809,18 @@ class CommercialSheet
     public function setEmail($email)
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getShippingFees(): ?float
+    {
+        return $this->shippingFees;
+    }
+
+    public function setShippingFees(?float $shippingFees): self
+    {
+        $this->shippingFees = $shippingFees;
 
         return $this;
     }

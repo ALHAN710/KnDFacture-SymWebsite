@@ -357,6 +357,21 @@
                             </div>
                             <p class="font-weight-bold"><h5 class="text-center">Reste à payer : <span id="totalRestAmount">0</span> XAF</h5></p>
 
+                            <div class="form-group ">
+                                {# <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        {{ form_label(form.advancePayment, null, {'label_attr': {'class': 'input-group-text'}}) }}
+                                    </div>
+                                    {{ form_errors(form.advancePayment) }}
+                                    {{ form_widget(form.advancePayment, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                                </div> #}
+                                {{ form_label(form.shippingFees, null, {'label_attr': {'class': ''}}) }}
+                                {{ form_errors(form.shippingFees) }}
+                                {{ form_widget(form.shippingFees, {'attr': {'class': "form-control text-center"}}) }}
+                                    
+                            </div>
+
                             <div class="form-group">
                                 {# <div class="input-group">
                                     <div class="input-group-prepend">
@@ -742,6 +757,7 @@
         //$('#saveBtn').prop('disabled', true);
     });*/
     $('#commercial_sheet_itemsReduction').attr('type', 'number');
+    $('#commercial_sheet_shippingFees').attr('type', 'number');
     $('#commercial_sheet_deliveryFees').attr('type', 'number');
     $('#commercial_sheet_fixReduction').attr('type', 'number');
     $('#commercial_sheet_advancePayment').attr('type', 'number');
@@ -837,7 +853,7 @@
 
     //Procédure de calcul du montant Total Net à payer
     function computeTotalAmount() {
-        totalAmount = amountTTC;// - totalPromoAmount;
+        totalAmount = amountTTC + shippingFees;// - totalPromoAmount;
         if ($('#commercial_sheet_paymentStatus').is(':checked') || $('#commercial_sheet_completedStatus').is(':checked')) {
             $('#commercial_sheet_advancePayment').val(totalAmount.toFixed(2));
             totalRestAmount = 0;
@@ -889,6 +905,7 @@
     var itemsReduction = 0.0;
     var itemReductionTab = [];
     var fixReductions = 0;
+    var shippingFees = 0.0;
 
     if (isNaN(parseFloat($('#commercial_sheet_fixReduction').val())) || parseFloat($('#commercial_sheet_fixReduction').val()) < 0 || !$('#commercial_sheet_fixReduction').val() == true) {
         $('#commercial_sheet_fixReduction').val(0.0);
@@ -905,6 +922,24 @@
 
         //Calcul du sous montant Total des items
         computeItemsAmountSubTotal();
+
+    });
+    
+    if (isNaN(parseFloat($('#commercial_sheet_shippingFees').val())) || parseFloat($('#commercial_sheet_shippingFees').val()) < 0 || !$('#commercial_sheet_shippingFees').val() == true) {
+        $('#commercial_sheet_shippingFees').val(0.0);
+    }
+    shippingFees = parseFloat($('#commercial_sheet_shippingFees').val());
+    //Gestion des évènements de modification sur l'entrée numérique du montant 
+    //de livraison
+    $('#commercial_sheet_shippingFees').change(function () {
+        if (isNaN(parseFloat($(this).val())) || parseFloat($(this).val()) < 0 || !$(this).val() == true) {
+            $(this).val(0.0);
+        }
+
+        shippingFees = parseFloat($(this).val());
+
+        //Calcul du montant Total Net TTC
+        computeTotalAmount();
 
     });
 </script>

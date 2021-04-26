@@ -52,6 +52,16 @@ class CommercialSheetType extends ApplicationType
                 ]
             )
             ->add(
+                'shippingFees',
+                NumberType::class,
+                $this->getConfiguration("Frais de Livraison (XAF)", "Veuillez spécifier le montant de livraison...", [
+                    'attr' => [
+                        'min'   => '0',
+                        //'value' => '0'
+                    ]
+                ])
+            )
+            ->add(
                 'fixReduction',
                 NumberType::class,
                 $this->getConfiguration("Réductions Fixes (XAF)", "Veuillez spécifier le montant des réductions fixes...", [
