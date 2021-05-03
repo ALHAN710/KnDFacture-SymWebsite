@@ -88,7 +88,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                         </div>
                                         <h2 class="font-weight-bold text-white">
                                             <span id="outstandingClaim">0</span>
-                                            XAF</h2>
+                                            {{app.user.enterprise.currency}}</h2>
                                         <p class="text-white mb-0 font-16">Créances en cours</p>
                                     </div>
                                 </div>
@@ -112,7 +112,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                         </div>
                                         <h2 class="font-weight-bold text-white">
                                             <span id="DFHT">0</span>
-                                            XAF</h2>
+                                            {{app.user.enterprise.currency}}</h2>
                                         <p class="text-white mb-0 font-16">Dettes fournisseurs TTC en cours</p>
                                     </div>
                                 </div>
@@ -164,7 +164,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                             <h4 class="mt-0 header-title">Chiffre d'affaire HT</h4>
                             <h2 class="mt-0 font-weight-bold text-dark">
                                 <span id="turnOver">0</span>
-                                XAF</h2>
+                                {{app.user.enterprise.currency}}</h2>
                             {# <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> #}
                         </div>
                     </div>
@@ -207,7 +207,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
             <div class="col-8 align-self-center">
                 <div class="">
                     <h4 class="mt-0 header-title">Recettes</h4>
-                    <h2 class="mt-0 font-weight-bold text-dark"><span id="amountRecettes">0</span> XAF</h2> 
+                    <h2 class="mt-0 font-weight-bold text-dark"><span id="amountRecettes">0</span> {{app.user.enterprise.currency}}</h2> 
                     <!-- <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> -->
                 </div>
             </div><!--end col-->
@@ -240,7 +240,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
             <div class="col-8 align-self-center">
                 <div class="">
                     <h4 class="mt-0 header-title">Dépenses Fournisseurs TTC</h4>
-                    <h2 class="mt-0 font-weight-bold text-dark"><span id="expenses">0</span> XAF</h2> 
+                    <h2 class="mt-0 font-weight-bold text-dark"><span id="expenses">0</span> {{app.user.enterprise.currency}}</h2> 
                     <!-- <p class="mb-0 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>14.5%</span> Up from yesterday</p> -->
                 </div>
             </div><!--end col-->
@@ -287,7 +287,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                             <i class="dripicons-cart bg-soft-danger"></i>
                                         </div>
                                         <h2 class="mt-0 font-weight-bold text-dark">
-                                            <span id="minBasket">0</span> XAF
+                                            <span id="minBasket">0</span> {{app.user.enterprise.currency}}
                                         </h2>
                                         {#<p class="mb-1 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>35.5%</span> Last 100 Subscriptions</p> #}
                                     </div>
@@ -307,7 +307,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                             <i class="dripicons-cart bg-soft-success"></i>
                                         </div>
                                         <h2 class="mt-0 font-weight-bold text-dark">
-                                            <span id="maxBasket">0</span> XAF
+                                            <span id="maxBasket">0</span> {{app.user.enterprise.currency}}
                                         </h2>
                                         {# <p class="mb-1 text-muted"><span class="text-danger"><i class="mdi mdi-arrow-down"></i>1.5%</span> Down From Last week</p> #}
                                     </div>
@@ -327,7 +327,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                             <i class="dripicons-cart bg-soft-primary"></i>
                                         </div>
                                         <h2 class="mt-0 font-weight-bold text-dark">
-                                            <span id="moyBasket">0</span> XAF
+                                            <span id="moyBasket">0</span> {{app.user.enterprise.currency}}
                                         </h2>
                                         {# <p class="mb-1 text-muted"><span class="text-success"><i class="mdi mdi-arrow-up"></i>11.1%</span> Up from Last Month</p> #}
                                     </div>
@@ -394,15 +394,15 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
 
                                     <tbody>
                                         <tr>
-                                            <td>Panier Min (XAF)</td>
+                                            <td>Panier Min ({{app.user.enterprise.currency}})</td>
                                             <td class="text-center">0</td>
                                         </tr>
                                         <tr>
-                                            <td>Panier Max (XAF)</td>
+                                            <td>Panier Max ({{app.user.enterprise.currency}})</td>
                                             <td class="text-center">0</td>
                                         </tr>
                                         <tr>
-                                            <td>Panier Moy (XAF)</td>
+                                            <td>Panier Moy ({{app.user.enterprise.currency}})</td>
                                             <td class="text-center">0</td>
                                         </tr>
                                         <tr>
@@ -533,7 +533,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                             <i class="dripicons-cart bg-soft-info"></i>
                                         </div>
                                         <h2 class="mt-0 font-weight-bold text-dark">
-                                            <span id="liveTimeValueMin">0</span> XAF
+                                            <span id="liveTimeValueMin">0</span> {{app.user.enterprise.currency}}
                                         </h2>
                                         {# <p class="mb-1 text-muted">All International Brands</p> #}
                                     </div>
@@ -553,7 +553,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                             <i class="dripicons-cart bg-soft-info"></i>
                                         </div>
                                         <h2 class="mt-0 font-weight-bold text-dark">
-                                            <span id="liveTimeValueMax">0</span> XAF
+                                            <span id="liveTimeValueMax">0</span> {{app.user.enterprise.currency}}
                                         </h2>
                                         {# <p class="mb-1 text-muted">All International Brands</p> #}
                                     </div>
@@ -573,7 +573,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                             <i class="dripicons-cart bg-soft-info"></i>
                                         </div>
                                         <h2 class="mt-0 font-weight-bold text-dark">
-                                            <span id="liveTimeValueMoy">0</span> XAF
+                                            <span id="liveTimeValueMoy">0</span> {{app.user.enterprise.currency}}
                                         </h2>
                                         {# <p class="mb-1 text-muted">All International Brands</p> #}
                                     </div>
@@ -676,15 +676,15 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                                 <td class="text-center">0</td>
                                             </tr>
                                             <tr>
-                                                <td>Live Time Value Min (XAF)</td>
+                                                <td>Live Time Value Min ({{app.user.enterprise.currency}})</td>
                                                 <td class="text-center">0</td>
                                             </tr>
                                             <tr>
-                                                <td>Live Time Value Max (XAF)</td>
+                                                <td>Live Time Value Max ({{app.user.enterprise.currency}})</td>
                                                 <td class="text-center">0</td>
                                             </tr>
                                             <tr>
-                                                <td>Live Time Value Moy (XAF)</td>
+                                                <td>Live Time Value Moy ({{app.user.enterprise.currency}})</td>
                                                 <td class="text-center">0</td>
                                             </tr>
                                             <tr>
@@ -748,12 +748,12 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                     <p class="font-12 text-muted">
                                         <span id="designation_{{ i }}"></span>
                                     </p>
-                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{ i }}">0</span> XAF</p>
+                                    <p class="font-12 text-muted">Prix unitaire : <span id="pu_{{ i }}">0</span> {{app.user.enterprise.currency}}</p>
                                     <p class="font-12 text-muted">Total des ventes : <span id="totalSale_{{ i }}">0</span></p>
                                     {# <p class="mb-0 text-muted">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin.</p> #}
                                     <div class="mt-2 align-item-center">
                                         <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center">
-                                            <span id="amount_{{ i }}">0</span> XAF
+                                            <span id="amount_{{ i }}">0</span> {{app.user.enterprise.currency}}
                                         </h5>
                                         {# <a class="btn btn-sm btn-primary text-light mb-2"><i class="mdi mdi-email-outline mr-1"></i>Message</a> #}
                                     </div>
@@ -858,7 +858,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                 </p>
                                 <div class="mt-2 align-item-center">
                                     <h5 class="font-20 d-inline-block mb-0 mr-3 align-self-center">
-                                        <span id="amountCat_{{ i }}">0</span> XAF
+                                        <span id="amountCat_{{ i }}">0</span> {{app.user.enterprise.currency}}
                                     </h5>
 
                                 </div>
@@ -897,7 +897,7 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                                 <th>#</th>
                                                 <th>Nom</th>
                                                 <th>Qtés Vendues</th>
-                                                <th>Revenus Nets Générés(XAF)</th>
+                                                <th>Revenus Nets Générés({{app.user.enterprise.currency}})</th>
                                             </tr>
                                         </thead>
 
@@ -1648,8 +1648,8 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                     parseFloat(data['flux_tresorerie'][1])
                                 ];
                                 updateDonutChart(fluxTresorerieDonutChart, [
-                                    String("Recettes : " + String(data['flux_tresorerie'][0]) + " XAF"),
-                                    String("Dépenses : " + data['flux_tresorerie'][1] + " XAF")
+                                    String("Recettes : " + String(data['flux_tresorerie'][0]) + " {{app.user.enterprise.currency}}"),
+                                    String("Dépenses : " + data['flux_tresorerie'][1] + " {{app.user.enterprise.currency}}")
                                 ], dataArray);
 
                                 swal({
@@ -1755,15 +1755,15 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
 
                                 tablekPIBasket.clear().draw();
                                 tablekPIBasket.row.add([
-                                    String('Panier Min (XAF)'),
+                                    String('Panier Min ({{app.user.enterprise.currency}})'),
                                     data['minBasket']
                                 ]).draw();
                                 tablekPIBasket.row.add([
-                                    String('Panier Max (XAF)'),
+                                    String('Panier Max ({{app.user.enterprise.currency}})'),
                                     data['maxBasket']
                                 ]).draw();
                                 tablekPIBasket.row.add([
-                                    String('Panier Moyen (XAF)'),
+                                    String('Panier Moyen ({{app.user.enterprise.currency}})'),
                                     data['moyBasket']
                                 ]).draw();
                                 tablekPIBasket.row.add([
@@ -1800,15 +1800,15 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                     data['txFidelisation']
                                 ]).draw();
                                 tablekPICustomer.row.add([
-                                    String('Live Time Value Min (XAF)'),
+                                    String('Live Time Value Min ({{app.user.enterprise.currency}})'),
                                     data['liveTimeValueMin']
                                 ]).draw();
                                 tablekPICustomer.row.add([
-                                    String('Live Time Value Max (XAF)'),
+                                    String('Live Time Value Max ({{app.user.enterprise.currency}})'),
                                     data['liveTimeValueMax']
                                 ]).draw();
                                 tablekPICustomer.row.add([
-                                    String('Live Time Value Moy (XAF)'),
+                                    String('Live Time Value Moy ({{app.user.enterprise.currency}})'),
                                     data['liveTimeValueMoy']
                                 ]).draw();
                                 tablekPICustomer.row.add([
@@ -1900,8 +1900,8 @@ href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
                                     parseFloat(data['flux_tresorerie'][1])
                                 ];
                                 updateDonutChart(fluxTresorerieDonutChart, [
-                                    String("Recettes : " + data['flux_tresorerie'][0] + " XAF"),
-                                    String("Dépenses : " + data['flux_tresorerie'][1] + " XAF")
+                                    String("Recettes : " + data['flux_tresorerie'][0] + " {{app.user.enterprise.currency}}"),
+                                    String("Dépenses : " + data['flux_tresorerie'][1] + " {{app.user.enterprise.currency}}")
                                 ], dataArray);
 
                                 swal({

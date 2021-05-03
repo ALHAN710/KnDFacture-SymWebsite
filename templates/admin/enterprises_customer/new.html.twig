@@ -103,6 +103,12 @@
                                 </div>
 
                                 <div class="form-group">
+                                    {{ form_label(form.currency, null, {'label_attr': {'class': ''}}) }}
+                                    {{ form_widget(form.currency, {'attr': {'class': "form-control"}}) }}
+                                    <small class="form-text text-muted">Devise utilisée dans les documents (* Obligatoire)</small>
+                                </div>
+                                
+                                <div class="form-group">
                                     {{ form_label(form.tva, null, {'label_attr': {'class': ''}}) }}
                                     {{ form_widget(form.tva, {'attr': {'class': "form-control"}}) }}
                                     <small class="form-text text-muted">TVA(en %) à appliquer dans les factures (* Obligatoire)</small>

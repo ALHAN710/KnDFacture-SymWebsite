@@ -54,7 +54,7 @@ class CommercialSheetType extends ApplicationType
             ->add(
                 'shippingFees',
                 NumberType::class,
-                $this->getConfiguration("Frais de Livraison (XAF)", "Veuillez spécifier le montant de livraison...", [
+                $this->getConfiguration("Frais de Livraison", "Veuillez spécifier le montant de livraison...", [
                     'attr' => [
                         'min'   => '0',
                         //'value' => '0'
@@ -64,7 +64,7 @@ class CommercialSheetType extends ApplicationType
             ->add(
                 'fixReduction',
                 NumberType::class,
-                $this->getConfiguration("Réductions Fixes (XAF)", "Veuillez spécifier le montant des réductions fixes...", [
+                $this->getConfiguration("Réductions Fixes", "Veuillez spécifier le montant des réductions fixes...", [
                     'attr' => [
                         'min'   => '0',
                         //'value' => '0'
@@ -121,7 +121,7 @@ class CommercialSheetType extends ApplicationType
             ->add(
                 'advancePayment',
                 NumberType::class,
-                $this->getConfiguration("Avance (XAF)", "Veuillez spécifier le montant avancé...", [
+                $this->getConfiguration("Avance", "Veuillez spécifier le montant avancé...", [
                     'attr' => [
                         'min'   => '0',
                         //'value' => '0'

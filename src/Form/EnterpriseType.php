@@ -102,6 +102,23 @@ class EnterpriseType extends ApplicationType
                 ]
             )
             ->add(
+                'currency',
+                ChoiceType::class,
+                [
+                    'choices' => [
+                        'F CFA(XAF)' => 'XAF',
+                        'EUR(€)' => '€',
+                        'USD($)' => '$',
+                        'CAD(C$)' => 'C$',
+                        'GBP(£)' => '£',
+                        'JPY(¥)' => '¥',
+                        'NGN(₦)' => '₦',
+
+                    ],
+                    'label'    => 'Devise'
+                ]
+            )
+            ->add(
                 'description',
                 TextareaType::class,
                 $this->getConfiguration("Description", "Brève Description de l'entreprise...", ['required' => false])

@@ -157,6 +157,11 @@ class Enterprise
      */
     private $registerBy;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $currency;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -764,6 +769,18 @@ class Enterprise
     public function setRegisterBy(?User $registerBy): self
     {
         $this->registerBy = $registerBy;
+
+        return $this;
+    }
+
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(?string $currency): self
+    {
+        $this->currency = $currency;
 
         return $this;
     }

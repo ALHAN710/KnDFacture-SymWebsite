@@ -105,8 +105,8 @@
                                                 <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
                                                 <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                                 {# <th>Payment Date</th> #}
-                                                <th>Avance(XAF)</th>
-                                                <th>Reste(XAF)</th>
+                                                <th>Avance({{app.user.enterprise.currency}})</th>
+                                                <th>Reste({{app.user.enterprise.currency}})</th>
                                                 <th>Livré ?</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -170,8 +170,8 @@
                                                 <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
                                                 <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                                 {# <th>Delivery Date</th> #}
-                                                <th>Avance(XAF)</th>
-                                                <th>Reste(XAF)</th>
+                                                <th>Avance({{app.user.enterprise.currency}})</th>
+                                                <th>Reste({{app.user.enterprise.currency}})</th>
                                                 <th>Payé ?</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -220,7 +220,7 @@
                                                 <th>{% if type == 'bill' %}Date de Facturation{% else %}Date d'émission{% endif %}</th>
                                                 <th>Date de Livraison</th>
                                                 <th>Date de Paiement</th>
-                                                <th>Montant (XAF)</th>
+                                                <th>Montant ({{app.user.enterprise.currency}})</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -280,7 +280,7 @@
                                     <th>Date d'émission</th>
                                     <th>Date limite de validité</th>
                                     <th>Alerte Invalidité</th>
-                                    <th>Montant (XAF)</th>
+                                    <th>Montant ({{app.user.enterprise.currency}})</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>

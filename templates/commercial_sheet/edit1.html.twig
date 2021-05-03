@@ -162,7 +162,7 @@
                                             <th>Quantity</th>                                                        
                                             <th>Total</th> #}
                                             <th scope="col" class="text-center">Désignation</th>
-                                            {# <th scope="col">P.U (XAF)</th> #}
+                                            {# <th scope="col">P.U ({{app.user.enterprise.currency}})</th> #}
                                             <th scope="col">Qté</th>
                                             {# <th scope="col">Montant HT Brut</th> #}
                                             <th scope="col">Remise(%)</th>
@@ -186,23 +186,23 @@
                                         </tr>
                                         <tr>
                                             <td class="payment-title">Montant Total HT Brut</td>
-                                            <td><span id="itemsAmountBrutHT">0</span> XAF</td>
+                                            <td><span id="itemsAmountBrutHT">0</span> {{app.user.enterprise.currency}}</td>
                                         </tr>
                                         <tr>
                                             <td class="payment-title">Montant Total Remise</td>
-                                            <td><span id="itemsAmountRemise">0</span> XAF</td>
+                                            <td><span id="itemsAmountRemise">0</span> {{app.user.enterprise.currency}}</td>
                                         </tr>
                                         <tr>
                                             <td class="payment-title">Montant Total HT Net</td>
-                                            <td><span id="itemsAmountNetHT">0</span> XAF</td>
+                                            <td><span id="itemsAmountNetHT">0</span> {{app.user.enterprise.currency}}</td>
                                         </tr>
                                         <tr>
                                             <td class="payment-title">TVA ({{app.user.enterprise.tva}}%)</td>
-                                            <td><span id="taxes">0</span> XAF</td>
+                                            <td><span id="taxes">0</span> {{app.user.enterprise.currency}}</td>
                                         </tr>
                                         <tr>
                                             <td class="font-weight-bold">Montant TTC</td>
-                                            <td class="font-weight-bold"><span id="amountTTC">0</span> XAF</td>
+                                            <td class="font-weight-bold"><span id="amountTTC">0</span> {{app.user.enterprise.currency}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -227,12 +227,12 @@
                                 
                             </div>
                             </br>
-                            <p class="font-weight-bold"><h5 class="text-center">Montant des Remises Forfaitaires : <span id="totalPromoAmount">0</span> XAF</h5></p>
+                            <p class="font-weight-bold"><h5 class="text-center">Montant des Remises Forfaitaires : <span id="totalPromoAmount">0</span> {{app.user.enterprise.currency}}</h5></p>
                             
                         </div>
 
                         <div id="payment" class="">
-                            <p class="font-weight-bold"><h5 class="text-center">Montant Net à payer : <span id="totalAmount">0</span> XAF</h5></p>
+                            <p class="font-weight-bold"><h5 class="text-center">Montant Net à payer : <span id="totalAmount">0</span> {{app.user.enterprise.currency}}</h5></p>
                             <div class="form-group {% if commercialSheet.type == 'quote' %}d-none{% endif %}">
                                 {# <div class="input-group">
                                     <div class="input-group-prepend">
@@ -247,7 +247,7 @@
                                 {{ form_widget(form.advancePayment, {'attr': {'class': "form-control text-center"}}) }}
                                     
                             </div>
-                            <p class="font-weight-bold"><h5 class="text-center">Reste à payer : <span id="totalRestAmount">0</span> XAF</h5></p>
+                            <p class="font-weight-bold"><h5 class="text-center">Reste à payer : <span id="totalRestAmount">0</span> {{app.user.enterprise.currency}}</h5></p>
 
                             <div class="form-group">
                                 {# <div class="input-group">
