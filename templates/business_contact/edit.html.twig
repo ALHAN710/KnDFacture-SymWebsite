@@ -43,7 +43,7 @@
                     {{ form_widget(form.socialReason, {'attr': {'class': "form-control"}}) }}
                     <small class="form-text text-muted">* Obligatoire</small>
                 </div>
-
+                {% if type == 'supplier' %}
                 <div class="form-group">
                     {{ form_label(form.niu, null, {'label_attr': {'class': ''}}) }}
                     {{ form_widget(form.niu, {'attr': {'class': "form-control"}}) }}
@@ -55,6 +55,7 @@
                     {{ form_widget(form.rccm, {'attr': {'class': "form-control"}}) }}
                     <small class="form-text text-muted">Numéro du Registre du Commerce</small>
                 </div>
+                {% endif %}
 
                 <div class="form-group">
                     {{ form_label(form.phoneNumber, null, {'label_attr': {'class': ''}}) }}
