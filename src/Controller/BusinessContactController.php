@@ -108,7 +108,9 @@ class BusinessContactController extends AbstractController
         //$businessContact = $businessContactRepo->findOneBy(['id' => $id]);
         $inventories = $inventoryRepo->findBy(['enterprise' => $this->getUser()->getEnterprise()]);
         //  instancier un form externe
-        $form = $this->createForm(BusinessContactType::class, $businessContact);
+        $form = $this->createForm(BusinessContactType::class, $businessContact, [
+            'type' => $businessContact->getType()
+        ]);
 
         $form->handleRequest($request);
 

@@ -26,7 +26,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body mx-5">        
-                <h4 class="mt-2 mb-4 header-title">Modifier {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournnnnnnnnnnnnnnnnnnniur{% endif %}</h4>
+                <h4 class="mt-2 mb-4 header-title">Modifier {% if type == 'customer' %}Client{% elseif type == 'supplier' %}Fournisseur{% endif %}</h4>
                 {{ form_start(form) }}
                 {#{{ form_widget(form) }}#}
                 {# <div class="form-group">
@@ -37,9 +37,13 @@
                         {{ form_widget(form.socialReason, {'attr': {'class': "form-control"}}) }}
                         
                     </div>
-                </div> #}
+                </div> #} 
                 <div class="form-group">
-                    {{ form_label(form.socialReason, null, {'label_attr': {'class': ''}}) }}
+                    {% if type == 'supplier' %}
+                    {{ form_label(form.socialReason, 'Raison Sociale (*)', {'label_attr': {'class': ''}}) }}
+                    {% else %}
+                    {{ form_label(form.socialReason, 'Nom et Prénom (*)', {'label_attr': {'class': ''}}) }}
+                    {% endif %}
                     {{ form_widget(form.socialReason, {'attr': {'class': "form-control"}}) }}
                     <small class="form-text text-muted">* Obligatoire</small>
                 </div>
