@@ -9,6 +9,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class BusinessContactType extends ApplicationType
@@ -33,6 +34,11 @@ class BusinessContactType extends ApplicationType
                     'required' => false,
                 ])
 
+            )
+            ->add(
+                'moreInfos',
+                TextareaType::class,
+                $this->getConfiguration("Plus d'informations", "Plus d'informations...", ['required' => false])
             )
             /*->add(
                 'deliveryAddress',

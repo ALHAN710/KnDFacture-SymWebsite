@@ -81,6 +81,11 @@ class BusinessContact
     private $type;
 
     /**
+     * @ORM\Column(type="string", length=500, nullable=true)
+     */
+    private $moreInfos;
+
+    /**
      * Permet d'initialiser la date de création de l'utilisateur
      *
      * @ORM\PrePersist
@@ -278,6 +283,18 @@ class BusinessContact
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getMoreInfos(): ?string
+    {
+        return $this->moreInfos;
+    }
+
+    public function setMoreInfos(?string $moreInfos): self
+    {
+        $this->moreInfos = $moreInfos;
 
         return $this;
     }
