@@ -416,6 +416,7 @@ class CommercialSheetController extends ApplicationController
                         //$commercialSheetItem->setProduct($service); 
                         //dump($commercialSheetItem);
                     }
+                    $manager->persist($commercialSheetItem);
                 } else {
                     $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
                 }
