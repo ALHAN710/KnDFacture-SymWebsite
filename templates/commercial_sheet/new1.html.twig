@@ -75,10 +75,10 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
-                                        {% if hasBC == true %}
-                                        <label>{% if commercialSheet.type == 'purchaseorder' %}Raison Sociale{% else %}Nom{% endif %}  <small class="text-danger font-13">*</small></label>
+                                        {# {% if hasBC == true %}
+                                        <label>{% if commercialSheet.type == 'purchaseorder' %}Raison Sociale{% elseif commercialSheet.type == 'bill' %}Nom{% endif %}  <small class="text-danger font-13">*</small></label>
                                         <input type="text" class="form-control" name="socialReason" id="socialReason" placeholder="" readonly value="{{commercialSheet.businessContact.socialReason}}" required="">
-                                        {% else %}
+                                        {% else %} #}
                                         {% if commercialSheet.type == 'purchaseorder' %}
                                         {{ form_label(form.socialReason, 'Raison Sociale *', {'label_attr': {'class': ''}}) }}
                                         {% else %}
@@ -86,7 +86,7 @@
                                         {% endif %}
                                         {{ form_errors(form.socialReason) }}
                                         {{ form_widget(form.socialReason, {'attr': {'class': "form-control text-center select2"}}) }}
-                                        {% endif %}
+                                        {# {% endif %} #}
                                     </div>
 
                                 </div>
@@ -193,8 +193,8 @@
                                 <div class="row">
                                     <div class="col">
                                         <div class="form-group">
-                                            <label>Raison Soaciale ou Nom  <small class="text-danger font-13">*</small></label>
-                                            <input type="text" class="form-control" name="socialReason" id="socialReason" placeholder="" readonly value="{{commercialSheet.businessContact.socialReason}}" required="">
+                                            <label>{% if commercialSheet.type == 'purchaseorder' %}Raison Sociale{% elseif commercialSheet.type == 'bill' %}Nom{% endif %}  <small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="socialReason" id="socialReason" placeholder="" {% if duplicateCMS == false %}readonly{% endif %} value="{{commercialSheet.businessContact.socialReason}}" required="">
                                             
                                         </div>
 
@@ -221,13 +221,13 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>NIU</label>
-                                            <input type="text" class="form-control" name="niu" id="niu" placeholder="" readonly value="{{commercialSheet.businessContact.niu}}">
+                                            <input type="text" class="form-control" name="niu" id="niu" placeholder="" {% if duplicateCMS == false %}readonly{% endif %} value="{{commercialSheet.businessContact.niu}}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="col-form-label pt-0">RCCM</label>
-                                            <input type="text" class="form-control" name="rccm" id="rccm" placeholder="" readonly value="{{commercialSheet.businessContact.rccm}}">
+                                            <input type="text" class="form-control" name="rccm" id="rccm" placeholder="" {% if duplicateCMS == false %}readonly{% endif %} value="{{commercialSheet.businessContact.rccm}}">
                                         </div>
                                     </div>
                                                                                                                         
@@ -240,7 +240,7 @@
                                             {# <label>Tél <small class="text-danger font-13">*</small></label>
                                             <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required=""> #}
                                             <label>Tél <small class="text-danger font-13">*</small></label>
-                                            <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required="" readonly>
+                                            <input type="text" class="form-control" name="tel" id="tel" placeholder="" value="{{commercialSheet.businessContact.phoneNumber}}" required="" {% if duplicateCMS == false %}readonly{% endif %}>
                                             
                                         </div>
                                     </div>
@@ -248,8 +248,8 @@
                                         <div class="form-group">
                                             {# <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
                                             <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required=""> #}
-                                            <label>{% if commercialSheet.type != 'purchaseorder' %}Adresse de Livraison {% else %}Adresse {% endif %}<small class="text-danger font-13">*</small></label>
-                                            <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required="" readonly>
+                                            <label>Adresse {% if commercialSheet.type != 'purchaseorder' %}de Livraison {% endif %}<small class="text-danger font-13">*</small></label>
+                                            <input type="text" class="form-control" name="address" id="address" placeholder="" value="{{commercialSheet.businessContact.address}}" required="" {% if duplicateCMS == false %}readonly{% endif %}>
                                             
                                         </div>
                                     </div>
@@ -942,6 +942,475 @@
         computeTotalAmount();
 
     });
+
+    {% if duplicateCMS == true %}
+    var nbItem = +$('button[data-action="delete"]').length;
+    //console.log('Total Btn delete = ' + nbItem);
+
+    //var productPriceId = '#commercial_sheet_commercialSheetItems_' + index + '_productPrice';
+    //var priceViewId = '#commercial_sheet_commercialSheetItems_' + index + '_priceView';//
+    //
+    var designationId = [];
+    var amountBrutHTId = [];
+    var remiseId = [];
+    var amountNetHTId = [];
+    var productId = [];
+    var productSKUId = [];
+    var qtyId = [];
+    var available = [];
+    var puId = [];
+    var itemOfferTypeId = [];
+    var productType = [];
+    var precQty = [];
+    var initQty = [];
+
+    var productNameTxT = [];
+    var puTxT = [];
+    var amountBrutHTTxT = [];
+    var amountNetHTTxT = [];
+    var dispoTxT = [];
+
+    var refId = [];
+    var designationId = [];
+    var productSKUId = [];
+    var productId = [];
+    var productType = [];
+    var productPriceId = [];
+        
+
+    for (let index = 0; index < nbItem; index++) {
+        refId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_reference';
+        designationId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_designation';
+        productSKUId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_productSku';
+        productId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_product';
+        productType[index] = '#commercial_sheet_commercialSheetItems_' + index + '_productType';
+        productPriceId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_productPrice';
+        
+        designationId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_designation';
+        productSKUId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_productSku';
+        productId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_product';
+        {# isChangedIds[index] = '#commercial_sheet_commercialSheetItems_' + index + '_isChanged'; #}
+        qtyId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_quantity';
+        amountBrutHTId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_amountBrutHT';
+        remiseId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_remise';
+        amountNetHTId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_amountNetHT';
+        available[index] = '#commercial_sheet_commercialSheetItems_' + index + '_available';
+        puId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_pu';
+        itemOfferTypeId[index] = '#commercial_sheet_commercialSheetItems_' + index + '_itemOfferType';
+        productType[index] = '#commercial_sheet_commercialSheetItems_' + index + '_productType';
+
+        productNameTxT[index] = '#textProductName_commercial_sheet_commercialSheetItems_' + index;
+        puTxT[index] = '#textpu_commercial_sheet_commercialSheetItems_' + index;
+        amountBrutHTTxT[index] = '#textAmountHTBrut_commercial_sheet_commercialSheetItems_' + index;
+        amountNetHTTxT[index] = '#textAmountHTNet_commercial_sheet_commercialSheetItems_' + index;
+        dispoTxT[index] = '#textDispo_commercial_sheet_commercialSheetItems_' + index;
+
+        $(qtyId[index]).attr('type', 'number');
+        {# $('#commercial_sheet_commercialSheetItems_' + index + '_pu').attr('type', 'number'); #}
+        $(remiseId[index]).attr('type', 'number');
+
+
+        {# $(isChangedIds[index]).val(0); #}
+        {# $(qtyId[index]).attr('readonly', true);
+        $(remiseId[index]).attr('readonly', true); #}
+        initQty[index] = parseInt($(qtyId[index]).val());
+        precQty[index] = parseInt($(qtyId[index]).val());
+
+        $(designationId[index]).addClass('d-none');
+
+        Str = String($(productId[index]).val());
+        //console.log('Product  value = ' + $(productId).val());
+        Name = $(productId[index] + ' option[value=\"' + Str + '\"]').text();
+        $(productNameTxT[index]).text(String(Name));
+
+        Str = String($(puId[index]).val());
+        //console.log('Product Price value = ' + $(puId[index]).val());
+        Name = $(puId[index] + ' option[value=\"' + Str + '\"]').text();
+        $(puTxT[index]).text(String($(puId[index]).val()));
+    
+        //console.log('P.U = ' + $(puId[index]).val());
+        //console.log('Qty = ' + $(qtyId[index]).val());
+        //console.log('Product ' + $(itemOfferTypeId[index]).val());
+        //var Str = String($(productPriceId).val());
+        //var Name = $(productPriceId + ' option[value=\"' + Str + '\"]').text();
+        //var puId_ = String(Name); 
+        //$(puId).val(puId_);
+        tabproductSKUIds[index] = $(productSKUId[index]).val();
+        tabProductIds[index] = $(productId[index]).val();
+        tabQtyError[index] = 0;
+        tabQty[index] = parseInt($(qtyId[index]).val());
+
+        if (type === 'bill') {
+            Str = String($(productType[index]).val());
+            Name = parseInt($(productType[index] + ' option[value=\"' + Str + '\"]').text());
+            if (Name == true) { //Si le produit a un stock
+                $(itemOfferTypeId[index]).val('hasStock');
+                tabItemOfferType[index] = $(itemOfferTypeId[index]).val();
+                availabilitiesTab[tabProductIds[index]] += parseInt($(qtyId[index]).val());
+                //console.log('OfferType Name = ' + Name);
+                qtyMax['' + tabProductIds[index]] = parseInt(availabilitiesTab[tabProductIds[index]]);
+                $(qtyId[index]).attr('max', qtyMax['' + tabProductIds[index]]);
+                $(available[index]).val(+availabilitiesTab[$(productId[index]).val()]);
+                $(dispoTxT[index]).text(+availabilitiesTab[$(productId[index]).val()] + " en stock");
+            }
+            else {
+                //console.log('OfferTypeS Name = ' + Name);
+                $(qtyId[index]).attr('min', '0');
+                $(qtyId[index]).attr('max', '');
+                $(available[index]).val("");
+                $(itemOfferTypeId[index]).val('noStock');
+                tabItemOfferType[index] = $(itemOfferTypeId[index]).val();
+                $(dispoTxT[index]).text("");
+            }
+        }
+        else {
+            $(available[index]).val(0);
+            $(itemOfferTypeId[index]).val('noStock');
+            tabItemOfferType[index] = $(itemOfferTypeId[index]).val();
+            //console.log('ItemOfferTypeId = ' + $(itemOfferTypeId[index]).val());
+        }
+        qtyTotal += parseInt($(qtyId[index]).val());
+        $('#itemsqtytotal').text(Math.abs(qtyTotal));
+
+        var tmp = parseFloat($(puId[index]).val()) * parseInt($(qtyId[index]).val());
+        $(amountBrutHTId[index]).val(tmp.toFixed(2));
+        $(amountBrutHTTxT[index]).text(tmp.toFixed(2));
+        tmp = tmp - ((tmp * parseFloat($(remiseId[index]).val())) / 100.0);
+        $(amountNetHTId[index]).val(tmp.toFixed(2));
+        $(amountNetHTTxT[index]).text(tmp.toFixed(2));
+
+        //Calcul du montant relatif à ce produit
+        computeItemsAmountTab($(puId[index]).val(), qtyId[index], remiseId[index], index);
+
+        $(remiseId[index]).change(() => {
+            var tmp = parseFloat($(puId[index]).val()) * parseInt($(qtyId[index]).val());
+            if (!$(remiseId[index]).val() == false && $.isNumeric($(remiseId[index]).val())) {
+                if (!isNaN(parseInt($(remiseId[index]).val()))) {
+                    if ($(remiseId[index]).val() >= 0) {
+                        //console.log('P.U = ' + $(puId[index]).val());
+                        $(amountBrutHTId[index]).val(tmp.toFixed(2));
+                        $(amountBrutHTTxT[index]).text(tmp.toFixed(2));
+                        tmp = tmp - ((tmp * parseFloat($(remiseId[index]).val())) / 100.0);
+                        $(amountNetHTId[index]).val(tmp.toFixed(2));
+                        $(amountNetHTTxT[index]).text(tmp.toFixed(2));
+                        //Calcul du montant relatif à ce produit
+                        computeItemsAmountTab($(puId[index]).val(), qtyId[index], remiseId[index], index);
+                    }
+                }
+            }
+            else {
+                $(remiseId[index]).val(0);
+                $(amountBrutHTId[index]).val(tmp);
+                $(amountBrutHTTxT[index]).text(tmp.toFixed(2));
+                tmp = tmp - ((tmp * parseFloat($(remiseId[index]).val())) / 100.0);
+                $(amountNetHTId[index]).val(tmp);
+                $(amountNetHTTxT[index]).text(tmp.toFixed(2));
+                //Calcul du montant relatif à ce produit
+                computeItemsAmountTab($(puId[index]).val(), qtyId[index], remiseId[index], index);
+            }
+
+            puIdTab[index] = $(puId[index]).val();
+            qtyIdTab[index] = qtyId[index];
+            remiseIdTab[index] = remiseId[index];
+        });
+
+        //Gestion de l'évènement de changement de valeur de la quantité du produit 
+        //pour mettre à jour les montants
+        $(qtyId[index]).change(() => {
+
+            var add = false;
+            var diff = 0;
+            //console.log('old precQty = ' + parseInt(precQty));
+
+            if (!$(qtyId[index]).val() == false && $.isNumeric($(qtyId[index]).val())) {
+                if (!isNaN(parseInt($(qtyId[index]).val()))) {
+                    if ($(qtyId[index]).val() >= 0) {
+                        //console.log('Qty = ' + parseInt($(qtyId[index]).val()));
+                        if (parseInt(precQty[index]) < parseInt($(qtyId[index]).val())) add = false;
+                        else add = true;
+                        diff = Math.abs(parseInt(precQty[index]) - parseInt($(qtyId[index]).val()));
+                        //console.log('diff = ' + diff);
+                        if ($(itemOfferTypeId[index]).val() === 'hasStock') {
+                            // if (availabilities[$(productSKUId[index]).val()] >= $(qtyId[index]).val()) {
+                            if (availabilities[$(productId[index]).val()] >= $(qtyId[index]).val()) {
+                                if (!add) {
+                                    //console.log('add = ' + add);
+                                    // availabilitiesTab[$(productSKUId[index]).val()] -= diff;
+                                    availabilitiesTab[$(productId[index]).val()] -= diff;
+                                    qtyTotal += diff;
+                                    // availabilitiesTab[$(productSKUId[index]).val()] = Math.abs(availabilitiesTab[$(productSKUId[index]).val()]);
+                                    availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                                    $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                    //qtyMax['' + $(productSKUId[index]).val()] -= diff;
+                                }
+                                else {
+                                    //console.log('add = ' + add);
+                                    // availabilitiesTab[$(productSKUId[index]).val()] += (diff);
+                                    availabilitiesTab[$(productId[index]).val()] += (diff);
+                                    qtyTotal -= diff;
+                                    $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                    //qtyMax['' + $(productSKUId[index]).val()] += diff;
+                                }
+                            }
+                            else {
+                                // $(qtyId[index]).val(availabilities[$(productSKUId[index]).val()]);
+                                // availabilitiesTab[$(productSKUId[index]).val()] = 0;
+                                // qtyTotal += parseInt(availabilities[$(productSKUId[index]).val()]);
+                                $(qtyId[index]).val(availabilities[$(productId[index]).val()]);
+                                availabilitiesTab[$(productId[index]).val()] = 0;
+                                qtyTotal += parseInt(availabilities[$(productId[index]).val()]);
+                                $('#itemsqtytotal').text(Math.abs(qtyTotal));
+
+                            }
+                        }
+                        else {
+
+                            if (!add) {
+                                //console.log('add = ' + add);
+                                // availabilitiesTab[$(productSKUId[index]).val()] -= diff;
+                                //availabilitiesTab[$(productId[index]).val()] -= diff;
+                                qtyTotal += diff;
+                                // availabilitiesTab[$(productSKUId[index]).val()] = Math.abs(availabilitiesTab[$(productSKUId[index]).val()]);
+                                //availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                                $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                //qtyMax['' + $(productSKUId[index]).val()] -= diff;
+                            }
+                            else {
+                                console.log('add = ' + add);
+                                // availabilitiesTab[$(productSKUId[index]).val()] += (diff);
+                                //availabilitiesTab[$(productId[index]).val()] += (diff);
+                                qtyTotal -= diff;
+                                $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                //qtyMax['' + $(productSKUId[index]).val()] += diff;
+                            }
+
+
+                        }
+
+                        //$(qtyId[index]).attr('max', qtyMax['' + $(productSKUId[index]).val()]);
+                        // $(available).val(+availabilitiesTab[$(productSKUId[index]).val()]);
+
+                        //console.log(availabilities[$(productSKUId[index]).val()]);
+
+                    }
+                    else {
+                        $(qtyId[index]).val(0);
+                        if ($(itemOfferTypeId[index]).val() === 'hasStock') availabilitiesTab[$(productId[index]).val()] -= parseInt(precQty[index]);
+                        // availabilitiesTab[$(productSKUId[index]).val()] = Math.abs(availabilitiesTab[$(productSKUId[index]).val()]);
+                        availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                        qtyTotal -= parseInt(precQty[index]);
+                        $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                    }
+                }
+                else {
+
+                    $(qtyId[index]).val(0);
+                    if ($(itemOfferTypeId[index]).val() === 'hasStock') {
+                        availabilitiesTab[$(productId[index]).val()] -= parseFloat(precQty[index]);
+                        // availabilitiesTab[$(productSKUId[index]).val()] = Math.abs(availabilitiesTab[$(productSKUId[index]).val()]);
+                        availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                    }
+                    qtyTotal -= parseFloat(precQty[index]);
+                    $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                }
+            }
+            else {
+                $(qtyId[index]).val(0);
+                if ($(itemOfferTypeId[index]).val() === 'hasStock') {
+                    availabilitiesTab[$(productId[index]).val()] = availabilitiesTab[$(productId[index]).val()] + parseInt(precQty[index]);
+                    // availabilitiesTab[$(productSKUId[index]).val()] = Math.abs(availabilitiesTab[$(SKUId[index]).val()]);
+                    availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                }
+                qtyTotal = qtyTotal - parseInt(precQty[index]);
+                $('#itemsqtytotal').text(Math.abs(qtyTotal));
+            }
+
+            if ($(itemOfferTypeId[index]).val() === 'hasStock') {
+                $(available).val(+availabilitiesTab[$(productId[index]).val()]);
+                $(dispoTxT[index]).text(+availabilitiesTab[$(productId[index]).val()]);
+
+            }
+            tabQty[index] = parseInt($(qtyId[index]).val());
+            tabQtyError[index] = (tabError[index] - 1) * tabQty[index];
+            $(productPriceId[index]).val($(productId[index]).val());
+
+            Str = String($(productPriceId[index]).val());
+            //console.log('Product Price value = ' + $(productPriceId[index]).val());
+            Name = $(productPriceId[index] + ' option[value=\"' + Str + '\"]').text();
+            puId_ = String(Name);
+            $(puId[index]).val(puId_);
+
+            if (parseInt(qtyTotal) >= 1) $('#saveBtn').attr('disabled', false);
+            else $('#saveBtn').attr('disabled', true);
+
+            //console.log('Option selected : ' + String(Name));
+            var tmp = parseFloat(puId_) * parseInt($(qtyId[index]).val());
+            $(amountBrutHTId[index]).val(tmp.toFixed(2));
+            $(amountBrutHTTxT[index]).text(tmp.toFixed(2));
+
+            tmp = tmp - ((tmp * parseFloat($(remiseId[index]).val())) / 100.0);
+            $(amountNetHTId[index]).val(tmp.toFixed(2));
+            $(amountNetHTTxT[index]).text(tmp.toFixed(2));
+
+            puIdTab[index] = $(puId[index]).val();
+            qtyIdTab[index] = qtyId[index];
+            remiseIdTab[index] = remiseId[index];
+            //Calcul du montant relatif à ce produit
+            computeItemsAmountTab(puId_, qtyId[index], remiseId[index], index);
+            precQty[index] = $(qtyId[index]).val();
+            //console.log('new precQty = ' + parseInt(precQty));
+            //console.log('precQty = ' + precQty);
+        });
+    }
+    
+    {# //Masque les Boutons
+    $('.btn_delete_row').addClass('d-none') #}
+    {# //Gestion de l'évènement de changement de vleur de la quantité du produit 
+    //pour mettre à jour les montants #}
+    {# qtyId.forEach(function (value, index) {
+        $(value).change(() => {
+
+            var add = false;
+            var diff = 0;
+            //console.log('old precQty = ' + parseInt(precQty));
+
+            if (!$(value).val() == false && $.isNumeric($(value).val())) {
+                if (!isNaN(parseInt($(value).val()))) {
+                    if ($(value).val() >= 0) {
+                        //console.log('Qty = ' + parseInt($(value).val()));
+                        if (parseInt(precQty[index]) < parseInt($(value).val())) add = false;
+                        else add = true;
+                        diff = Math.abs(parseInt(precQty[index]) - parseInt($(value).val()));
+                        //console.log('diff = ' + diff);
+                        if ($(itemOfferTypeId[index]).val() === 'hasStock') {
+                            // if (availabilities[$(productSKUId).val()] >= $(value).val()) {
+                            if (availabilities[$(productId[index]).val()] >= parseInt($(value).val())) {
+                                if (!add) {
+                                    //console.log('add = ' + add);
+                                    // availabilitiesTab[$(productSKUId).val()] -= diff;
+                                    availabilitiesTab[$(productId[index]).val()] -= diff;
+                                    qtyTotal += diff;
+                                    // availabilitiesTab[$(productSKUId).val()] = Math.abs(availabilitiesTab[$(productSKUId).val()]);
+                                    availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                                    $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                    //qtyMax['' + $(productSKUId).val()] -= diff;
+                                }
+                                else {
+                                    //console.log('add = ' + add);
+                                    // availabilitiesTab[$(productSKUId).val()] += (diff);
+                                    availabilitiesTab[$(productId[index]).val()] += (diff);
+                                    qtyTotal -= diff;
+                                    $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                    //qtyMax['' + $(productSKUId).val()] += diff;
+                                }
+                            }
+                            else {
+                                // $(value).val(availabilities[$(productSKUId).val()]);
+                                // availabilitiesTab[$(productSKUId).val()] = 0;
+                                // qtyTotal += parseInt(availabilities[$(productSKUId).val()]);
+                                $(value).val(parseInt(availabilitiesTab[$(productId[index]).val()]));
+                                availabilitiesTab[$(productId[index]).val()] = 0;
+                                availabilities[$(productId[index]).val()] = 0;
+                                qtyTotal += parseInt(availabilitiesTab[$(productId[index]).val()]);
+                                $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                $(value).attr('readonly', true);
+
+                            }
+                        }
+                        else {
+
+                            if (!add) {
+                                //console.log('add = ' + add);
+                                // availabilitiesTab[$(productSKUId).val()] -= diff;
+                                //availabilitiesTab[$(productId).val()] -= diff;
+                                qtyTotal += diff;
+                                // availabilitiesTab[$(productSKUId).val()] = Math.abs(availabilitiesTab[$(productSKUId).val()]);
+                                //availabilitiesTab[$(productId).val()] = Math.abs(availabilitiesTab[$(productId).val()]);
+                                $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                //qtyMax['' + $(productSKUId).val()] -= diff;
+                            }
+                            else {
+                                console.log('add = ' + add);
+                                // availabilitiesTab[$(productSKUId).val()] += (diff);
+                                //availabilitiesTab[$(productId).val()] += (diff);
+                                qtyTotal -= diff;
+                                $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                                //qtyMax['' + $(productSKUId).val()] += diff;
+                            }
+
+
+                        }
+
+                        //$(value).attr('max', qtyMax['' + $(productSKUId).val()]);
+                        // $(available).val(+availabilitiesTab[$(productSKUId).val()]);
+
+                        //console.log(availabilities[$(productSKUId).val()]);
+
+                    }
+                    else {
+                        $(value).val(0);
+                        if ($(itemOfferTypeId[index]).val() === 'hasStock') availabilitiesTab[$(productId[index]).val()] -= parseInt(precQty[index]);
+                        // availabilitiesTab[$(productSKUId).val()] = Math.abs(availabilitiesTab[$(productSKUId).val()]);
+                        availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                        qtyTotal -= parseInt(precQty[index]);
+                        $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                    }
+                }
+                else {
+
+                    $(value).val(0);
+                    if ($(itemOfferTypeId[index]).val() === 'hasStock') {
+                        availabilitiesTab[$(productId[index]).val()] -= parseFloat(precQty[index]);
+                        // availabilitiesTab[$(productSKUId[index]).val()] = Math.abs(availabilitiesTab[$(productSKUId[index]).val()]);
+                        availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                    }
+                    qtyTotal -= parseFloat(precQty[index]);
+                    $('#itemsqtytotal').text(Math.abs(qtyTotal));
+                }
+            }
+            else {
+                $(value).val(0);
+                if ($(itemOfferTypeId[index]).val() === 'hasStock') {
+                    availabilitiesTab[$(productId[index]).val()] = availabilitiesTab[$(productId[index]).val()] + parseInt(precQty[index]);
+                    // availabilitiesTab[$(productSKUId[index]).val()] = Math.abs(availabilitiesTab[$(SKUId[index]).val()]);
+                    availabilitiesTab[$(productId[index]).val()] = Math.abs(availabilitiesTab[$(productId[index]).val()]);
+                }
+                qtyTotal = qtyTotal - parseInt(precQty[index]);
+                $('#itemsqtytotal').text(Math.abs(qtyTotal));
+            }
+
+            if ($(itemOfferTypeId[index]).val() === 'hasStock') {
+                $(available[index]).val(+availabilitiesTab[$(productId[index]).val()]);
+
+            }
+            if(parseInt($(value).val()) === initQty[index]){
+                $(isChangedIds[index]).val(0);
+            }
+            else $(isChangedIds[index]).val(1);
+
+            tabQty[index] = parseInt($(value).val());
+            tabQtyError[index] = (tabError[index] - 1) * tabQty[index];
+            //$(productPriceId[index]).val($(productId[index]).val());
+
+            Str = String($(puId[index]).val());
+            //console.log('Product Price value = ' + $(puId).val());
+            Name = $(puId[index] + ' option[value=\"' + Str + '\"]').text();
+            puId_ = String(Name);
+            $(puId).val(puId_);
+
+            if (parseInt(qtyTotal) >= 1) $('#saveBtn').attr('disabled', false);
+            else $('#saveBtn').attr('disabled', true);
+
+            //console.log('Option selected : ' + String(Name));
+            $(amountId[index]).val(parseFloat($(puId[index]).val()) * parseInt($(value).val()));
+            //Calcul du montant relatif à ce produit
+            computeItemsAmountTab($(puId[index]).val(), value, index);
+            precQty[index] = $(value).val();
+            //console.log('new precQty[index] = ' + parseInt(precQty[index]));
+            //console.log('precQty[index] = ' + precQty[index]);
+        });
+    }); #}
+    {% endif %}
 </script>
 <script src="/js/commercial_sheet7.js" type="text/javascript"></script>
 

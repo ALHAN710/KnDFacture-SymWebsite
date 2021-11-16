@@ -300,9 +300,9 @@
                     {% if iconStock == true and app.user.enterprise.inventories|length > 0 %}
                     var stockId = '#stock_id';
                     var stock = $(stockId).val();
-                    var _url = "/commercial/sheet/new/0/" + type + "/" + stock;
+                    var _url = "/commercial/sheet/new/0/0/" + type + "/" + stock;
                     {% else %}
-                    var _url = "/commercial/sheet/new/0/" + type;
+                    var _url = "/commercial/sheet/new/0/0/" + type;
                     {% endif %}
                     //console.log('Url = ' + _url);
                     

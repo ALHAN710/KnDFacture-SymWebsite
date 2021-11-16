@@ -380,7 +380,7 @@ class CommercialSheet
         return $this->paymentStatus;
     }
 
-    public function setPaymentStatus(bool $paymentStatus): self
+    public function setPaymentStatus(?bool $paymentStatus): self
     {
         $this->paymentStatus = $paymentStatus;
 
@@ -392,7 +392,7 @@ class CommercialSheet
         return $this->completedStatus;
     }
 
-    public function setCompletedStatus(bool $completedStatus): self
+    public function setCompletedStatus(?bool $completedStatus): self
     {
         $this->completedStatus = $completedStatus;
 
@@ -404,7 +404,7 @@ class CommercialSheet
         return $this->deliveryStatus;
     }
 
-    public function setDeliveryStatus(bool $deliveryStatus): self
+    public function setDeliveryStatus(?bool $deliveryStatus): self
     {
         $this->deliveryStatus = $deliveryStatus;
 
@@ -416,7 +416,7 @@ class CommercialSheet
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
