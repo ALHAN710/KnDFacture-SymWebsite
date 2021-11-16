@@ -1229,7 +1229,7 @@ class CommercialSheetController extends ApplicationController
     {
         //$inventories = $inventoryRepo->findAll();
         //$date = $commercialSheet->getCreatedAt();
-        dump($commercialSheet);
+        //dump($commercialSheet);
         $cms = $manager->createQuery("SELECT cms
                                      FROM App\Entity\CommercialSheet cms
                                      JOIN cms.user u
