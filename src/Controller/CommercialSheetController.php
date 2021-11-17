@@ -226,9 +226,9 @@ class CommercialSheetController extends ApplicationController
                         if ($type === 'bill') {
                             $commercialSheetItem_ = $commercialSheetItemRepo->findOneBy([
                                 'designation' => $commercialSheetItem->getDesignation(),
-                                'pu' => $commercialSheetItem->getPU(),
-                                'quantity' => $commercialSheetItem->getQuantity(),
-                                'remise'   => $commercialSheetItem->getRemise()
+                                'pu'          => $commercialSheetItem->getPU(),
+                                'quantity'    => $commercialSheetItem->getQuantity(),
+                                'remise'      => $commercialSheetItem->getRemise()
                             ]);
                             //dump($commercialSheetItem->getAvailable());
                             if (empty($commercialSheetItem_)) {
@@ -243,7 +243,7 @@ class CommercialSheetController extends ApplicationController
                                     ->setItemOfferType($commercialSheetItem->getItemOfferType())
                                     ->addCommercialSheet($commercialSheet);
                                 $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
-                                //$commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                                $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
                                 $commercialSheetItem = $commercialSheetItem_;
                             }
                             //dd($iconStock);
@@ -406,7 +406,7 @@ class CommercialSheetController extends ApplicationController
                                 ->setItemOfferType($commercialSheetItem->getItemOfferType())
                                 ->addCommercialSheet($commercialSheet);
                             $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
-                            //$commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                            $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
                             $commercialSheetItem = $commercialSheetItem_;
                             //dump($commercialSheetItem_);
                         }
@@ -414,9 +414,8 @@ class CommercialSheetController extends ApplicationController
 
                         $manager->persist($commercialSheetItem);
                         //$commercialSheetItem->setProduct($service); 
-                        //dump($commercialSheetItem);
+                        dump($commercialSheetItem);
                     }
-                    $manager->persist($commercialSheetItem);
                 } else {
                     $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
                 }
