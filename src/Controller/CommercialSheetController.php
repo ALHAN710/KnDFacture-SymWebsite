@@ -242,8 +242,8 @@ class CommercialSheetController extends ApplicationController
                                     ->setAvailable($commercialSheetItem->getAvailable())
                                     ->setItemOfferType($commercialSheetItem->getItemOfferType())
                                     ->addCommercialSheet($commercialSheet);
-                                $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
                                 $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+                                $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
                                 $commercialSheetItem = $commercialSheetItem_;
                             }
                             //dd($iconStock);
@@ -405,8 +405,10 @@ class CommercialSheetController extends ApplicationController
                             $commercialSheetItem_->setRemise($commercialSheetItem->getRemise())
                                 ->setItemOfferType($commercialSheetItem->getItemOfferType())
                                 ->addCommercialSheet($commercialSheet);
-                            $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
+
                             $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
+
+                            $commercialSheet->addCommercialSheetItem($commercialSheetItem_);
                             $commercialSheetItem = $commercialSheetItem_;
                             //dump($commercialSheetItem_);
                         }
@@ -414,7 +416,7 @@ class CommercialSheetController extends ApplicationController
 
                         $manager->persist($commercialSheetItem);
                         //$commercialSheetItem->setProduct($service); 
-                        dump($commercialSheetItem);
+                        //dump($commercialSheetItem);
                     }
                 } else {
                     $commercialSheet->removeCommercialSheetItem($commercialSheetItem);
@@ -441,7 +443,7 @@ class CommercialSheetController extends ApplicationController
                 $reduction->addOrder($commercialSheet);
                 $manager->persist($reduction);
             }*/
-
+            //dump($commercialSheet);
             //die();
             //dump(date('Y-m'));
             if ($sheetNumber && ($isActivated == true)) { //Si l'un des abonnements KnB Bill est activé pour le client Entreprise actuel
