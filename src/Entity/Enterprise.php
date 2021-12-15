@@ -229,7 +229,8 @@ class Enterprise
             if ($interval) {
                 //return gettype($interval->format('d'));
                 //return $interval->format('%R%a days'); // '+29 days'
-                return $interval->days; //Nombre de jour total de différence entre les dates 
+                return intval($interval->format('%R%a')); // '+29 days'
+                //return $interval->days; //Nombre de jour total de différence entre les dates 
                 //return !$interval->invert; // 
                 //return $this->isActivated;
             }
@@ -283,7 +284,7 @@ class Enterprise
         }
 
         if (!($end instanceof DateTime)) {
-            $end = new DateTime($start);
+            $end = new DateTime($end);
         }
 
         $interval = $end->diff($start);

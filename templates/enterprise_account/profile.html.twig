@@ -74,7 +74,7 @@
                                             <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Date de souscription : {{ app.user.enterprise.subscribeAt|date('d-m-Y') }}</li>
                                             <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Nombre de documents max : {% if sheetNumber == 7102020 %}Illimités{% else %}{{ sheetNumber }}{% endif %}</li>
                                             {% if hasStockModule %}
-                                            <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Ref produits en stock max : {{ productRefNumber }}</li>
+                                            <li class="mb-2 list-inline-item font-13"><i class="mdi mdi-label text-info mr-2"></i>Ref produits en stock max : {% if productRefNumber == 7102020 %}Illimités{% else %}{{ productRefNumber }}{% endif %}</li>
                                             {% endif %}
                                         </ul>
                                         <h5 class="seling-data-detail {% if app.user.enterprise.isActivated == true %}text-warning{% else %}text-danger{% endif %}">{% if app.user.enterprise.isActivated == true %}Fin d'abonnement dans : {{app.user.enterprise.subscriptionDeadLine}}{% else %}Abonnement Expiré{% endif %}</h5>
