@@ -5,10 +5,25 @@ namespace App\Message;
 class UserNotificationMessage
 {
 
-    private int $userId;
-    private string $message;
-    private string $media;
-    private string $object;
+    /**
+     * @var int
+     */
+    private $userId;
+
+    /**
+     * @var string
+     */
+    private $message;
+
+    /**
+     * @var string
+     */
+    private $media;
+
+    /**
+     * @var string
+     */
+    private $object;
 
     public function __construct(int $userId, string $message, string $media, string $object)
     {
