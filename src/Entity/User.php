@@ -143,7 +143,6 @@ class User implements UserInterface, \Serializable
      * Permet d'initialiser l'état de vérification !
      *
      * @ORM\PrePersist
-     * @ORM\PreUpdate
      * 
      * @return void
      */

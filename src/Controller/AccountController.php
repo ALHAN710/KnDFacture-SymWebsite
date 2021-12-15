@@ -16,6 +16,7 @@ use App\Repository\UserRepository;
 use Symfony\Component\Form\FormError;
 use App\Repository\InventoryRepository;
 //use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Message\UserNotificationMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -439,7 +441,7 @@ class AccountController extends ApplicationController
      * @return JsonResponse
      * 
      */
-    public function userVerification(Request $request, MailerInterface $mailer, UserRepository $userRepo, EntityManagerInterface $manager): JsonResponse
+    public function userVerification(Request $request, MailerInterface $mailer, UserRepository $userRepo, EntityManagerInterface $manager, MessageBusInterface $messageBus): JsonResponse
     {
         $paramJSON = $this->getJSONRequest($request->getContent());
         $email = $paramJSON['email'];
@@ -452,19 +454,21 @@ class AccountController extends ApplicationController
             $codeVerification = $faker->randomNumber($nbDigits = 5, $strict = false);
             $user->setVerificationcode($codeVerification)
                 ->setVerified(false);
+            //dump($user);
             $manager->persist($user);
             $manager->flush();
             $code = 'KnD Facts-' . $codeVerification . $user->getId();
             //dump($code);
             $object = "PASSWORD RESET";
-            $message = 'Your verification code is ' . $code;
-            $message += "We heard that you lost your LBF password. Sorry about that !
+            $message = 'Your verification code is ' . $code . "
+We heard that you lost your LBF password. Sorry about that !
 
-But don’t worry! You can use the following code to reset your password: " . $code . "
+But don’t worry! You can use the following code to reset your password : " . $code . "
 
 Thanks,
 The KnD Factures Team";
-            $this->sendEmail($mailer, $email, $object, $message);
+            // $this->sendEmail($mailer, $email, $object, $message);
+            $messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'Reset', ''));
         } else if ($paramJSON['codeVerif'] != null) {
             $Verificationcode = $paramJSON['codeVerif'];
             $id = substr($Verificationcode, 5);
