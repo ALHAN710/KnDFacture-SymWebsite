@@ -100,10 +100,6 @@ class EndSubscriptionNotificationCommand extends Command
                     //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
                     $this->addNotifToQueue($enterprise, false);
                 }
-            } else {
-
-                //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
-                $this->addNotifToQueue($enterprise, false);
             }
         }
 
@@ -179,12 +175,12 @@ Merci de votre compréhension.
 L'équipe KnD Factures";
         }
 
-        /*foreach ($enterprise->getUsers() as $user) {
+        foreach ($enterprise->getUsers() as $user) {
             if ($user->getRoles()[0] === 'ROLE_ADMIN') {
                 $this->messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'Email', $object));
             }
             //$messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'SMS', ''));
-        }*/
+        }
 
         $adminUsers = [];
         $Users = $this->manager->getRepository('App:User')->findAll();
