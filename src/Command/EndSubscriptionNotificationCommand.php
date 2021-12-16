@@ -37,7 +37,7 @@ class EndSubscriptionNotificationCommand extends Command
     {
         // ... put here the code to create the user
         // outputs multiple lines to the console (adding "\n" at the end of each line)
-        $str = '====================';
+        $str = '=============================';
         /*$output->writeln([
             $str,
             '',
@@ -62,29 +62,29 @@ class EndSubscriptionNotificationCommand extends Command
         $enterprises = $this->manager->getRepository(Enterprise::class)->findAll();
         foreach ($enterprises as $enterprise) {
             $isActivated = $enterprise->getIsActivated() == true ? 1 : 0;
-            $output->writeln($str);
-            $output->write($enterprise->getSocialReason() . ' | ');
-            $output->write($enterprise->getDeadLine() . ' | ');
-            $output->writeln($isActivated);
             if ($isActivated) { //Si le compte client entreprise est actif
 
                 if ($enterprise->getDeadLine() > 0) { //On teste si le nombre de jour d'abonnement restant est positif
+                    $output->writeln($str);
+                    $output->write($enterprise->getSocialReason() . ' | ');
+                    $output->write($enterprise->getDeadLine() . ' | ');
+                    $output->writeln($isActivated);
                     //On teste si le nombre de jour d'abonnement restant correspond à certaines valeurs prédéfinies
                     //pour envoyer la notification
                     switch ($enterprise->getDeadLine()) {
-                        case 10:
+                        case 11:
                             //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
                             $this->addNotifToQueue($enterprise, true);
                             break;
-                        case 7:
+                        case 8:
+                            //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
+                            $this->addNotifToQueue($enterprise, true);
+                            break;
+                        case 3:
                             //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
                             $this->addNotifToQueue($enterprise, true);
                             break;
                         case 2:
-                            //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
-                            $this->addNotifToQueue($enterprise, true);
-                            break;
-                        case 1:
                             //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
                             $this->addNotifToQueue($enterprise, true);
                             break;
