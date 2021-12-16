@@ -37,15 +37,15 @@ class EndSubscriptionNotificationCommand extends Command
     {
         // ... put here the code to create the user
         // outputs multiple lines to the console (adding "\n" at the end of each line)
-        //$str = '====================';
+        $str = '====================';
         /*$output->writeln([
             $str,
             '',
         ]);*/
-        // $output->writeln($str);
-        // $output->write('Name | ');
-        // $output->write('Remaining days | ');
-        // $output->writeln('State');
+        $output->writeln($str);
+        $output->write('Name | ');
+        $output->write('Remaining days | ');
+        $output->writeln('State');
 
         // the value returned by someMethod() can be an iterator (https://secure.php.net/iterator)
         // that generates and returns the messages with the 'yield' PHP keyword
@@ -62,10 +62,10 @@ class EndSubscriptionNotificationCommand extends Command
         $enterprises = $this->manager->getRepository(Enterprise::class)->findAll();
         foreach ($enterprises as $enterprise) {
             $isActivated = $enterprise->getIsActivated() == true ? 1 : 0;
-            // $output->writeln($str);
-            // $output->write($enterprise->getSocialReason() . ' | ');
-            // $output->write($enterprise->getDeadLine() . ' | ');
-            // $output->writeln($isActivated);
+            $output->writeln($str);
+            $output->write($enterprise->getSocialReason() . ' | ');
+            $output->write($enterprise->getDeadLine() . ' | ');
+            $output->writeln($isActivated);
             if ($isActivated) { //Si le compte client entreprise est actif
 
                 if ($enterprise->getDeadLine() > 0) { //On teste si le nombre de jour d'abonnement restant est positif
