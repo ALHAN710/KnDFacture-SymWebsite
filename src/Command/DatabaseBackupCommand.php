@@ -119,7 +119,8 @@ class DatabaseBackupCommand extends Command
             $databasePort,
             '--user', // -u
             $databaseUsername,
-            '--password' . $databasePassword, // -p
+            '--password',
+            $databasePassword, // -p
             $databaseName,
             '--databases', // If you want to create a CREATE DATABASE statement for an import via PHPMYADMIN for example
             $filePathTarget
