@@ -189,6 +189,24 @@ class DatabaseBackupCommand extends Command
             throw new ProcessFailedException($process);
         }
 
+        $command = [
+            'sudo',
+            'chmod',
+            'a+x',
+            "{$this->projectDirectory}/var/backup/",
+
+        ];
+
+        $process = new Process($command);
+
+        $process->setTimeout(90);
+
+        $process->run();
+
+        if ($process->isSuccessful() === false) {
+            throw new ProcessFailedException($process);
+        }
+
         $this->io->success("Backup is generated !");
 
         if (file_exists($backupFilePath) === true) {
