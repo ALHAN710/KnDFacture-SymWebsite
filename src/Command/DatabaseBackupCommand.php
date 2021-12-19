@@ -106,8 +106,8 @@ class DatabaseBackupCommand extends Command
             'dbname'   => $databaseName
         ] = $databaseConnection->getParams();
 
-        $currentDatetimeString = (new \DateTimeImmutable('now'))->format('d_m_Y_H_i_s');
-        $backupFilePath = "{$backupDirectory}/backup-{$currentDatetimeString}.sql";
+        $currentDatetimeString = (new \DateTimeImmutable('now'))->format('d-m-Y-H-i-s');
+        $backupFilePath = "{$backupDirectory}/{$databaseName}-backup-{$currentDatetimeString}.sql";
         $filePathTarget = "--result-file={$backupFilePath}";
 
         $command = [
