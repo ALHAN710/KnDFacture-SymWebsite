@@ -119,14 +119,13 @@ class DatabaseBackupCommand extends Command
             $databasePort,
             '--user', // -u
             $databaseUsername,
-            '--password',
-            $databasePassword, // -p
+            '-p' . $databasePassword, // -p
             $databaseName,
             '--databases', // If you want to create a CREATE DATABASE statement for an import via PHPMYADMIN for example
             $filePathTarget
         ];
 
-        if ($databasePassword === '') {
+        /*if ($databasePassword === '') {
             $command = [
                 //'C:\wamp64\bin\mysql\mysql8.0.18\bin\mysqldump.exe',
                 'mysqldump',
@@ -140,7 +139,7 @@ class DatabaseBackupCommand extends Command
                 '--databases', // If you want to create a CREATE DATABASE statement for an import via PHPMYADMIN for example
                 $filePathTarget
             ];
-        }
+        }*/
 
         $process = new Process($command);
 
