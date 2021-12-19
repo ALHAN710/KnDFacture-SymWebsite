@@ -89,7 +89,7 @@ class DatabaseBackupCommand extends Command
         }
 
         try {
-            $fileSystem->mkdir($backupDirectory, 777);
+            $fileSystem->mkdir($backupDirectory, 0000);
         } catch (IOException $error) {
             throw new IOException($error);
         }
@@ -140,6 +140,44 @@ class DatabaseBackupCommand extends Command
                 $filePathTarget
             ];
         }*/
+
+        $process = new Process($command);
+
+        $process->setTimeout(90);
+
+        $process->run();
+
+        if ($process->isSuccessful() === false) {
+            throw new ProcessFailedException($process);
+        }
+
+        $command = [
+            'sudo',
+            'chown',
+            '-R',
+            'www-data.www-data',
+            "{$this->projectDirectory}/var/backup/",
+
+        ];
+
+        $process = new Process($command);
+
+        $process->setTimeout(90);
+
+        $process->run();
+
+        if ($process->isSuccessful() === false) {
+            throw new ProcessFailedException($process);
+        }
+
+        $command = [
+            'sudo',
+            'chmod',
+            '-R',
+            'a+rw',
+            "{$this->projectDirectory}/var/backup/",
+
+        ];
 
         $process = new Process($command);
 
