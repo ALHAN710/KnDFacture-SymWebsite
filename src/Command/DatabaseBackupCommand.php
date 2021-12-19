@@ -89,7 +89,7 @@ class DatabaseBackupCommand extends Command
         }
 
         try {
-            $fileSystem->mkdir($backupDirectory, 0700);
+            $fileSystem->mkdir($backupDirectory, 777);
         } catch (IOException $error) {
             throw new IOException($error);
         }
