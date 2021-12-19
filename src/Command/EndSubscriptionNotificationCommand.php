@@ -14,7 +14,19 @@ class EndSubscriptionNotificationCommand extends Command
 {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'app:end-subscription-notif';
+
+    /**
+     * EntityManagerInterface variable
+     *
+     * @var EntityManagerInterface
+     */
     private $manager;
+
+    /**
+     * MessageBusInterface variable
+     *
+     * @var MessageBusInterface
+     */
     private $messageBus;
 
     public function __construct(EntityManagerInterface $manager, MessageBusInterface $messageBus)
@@ -22,10 +34,10 @@ class EndSubscriptionNotificationCommand extends Command
         // best practices recommend to call the parent constructor first and
         // then set your own properties. That wouldn't work in this case
         // because configure() needs the properties set in this constructor
+        parent::__construct();
+
         $this->manager = $manager;
         $this->messageBus = $messageBus;
-
-        parent::__construct();
     }
 
     protected function configure(): void
@@ -37,15 +49,15 @@ class EndSubscriptionNotificationCommand extends Command
     {
         // ... put here the code to create the user
         // outputs multiple lines to the console (adding "\n" at the end of each line)
-        $str = '=============================';
+        // $str = '=============================';
         /*$output->writeln([
             $str,
             '',
         ]);*/
-        $output->writeln($str);
-        $output->write('Name | ');
-        $output->write('Remaining days | ');
-        $output->writeln('State');
+        // $output->writeln($str);
+        // $output->write('Name | ');
+        // $output->write('Remaining days | ');
+        // $output->writeln('State');
 
         // the value returned by someMethod() can be an iterator (https://secure.php.net/iterator)
         // that generates and returns the messages with the 'yield' PHP keyword
@@ -62,37 +74,47 @@ class EndSubscriptionNotificationCommand extends Command
         $enterprises = $this->manager->getRepository(Enterprise::class)->findAll();
         foreach ($enterprises as $enterprise) {
             $isActivated = $enterprise->getIsActivated() == true ? 1 : 0;
-            if ($isActivated) { //Si le compte client entreprise est actif
+            // $output->writeln($str);
+            // $output->write($enterprise->getSocialReason() . ' | ');
+            // $output->write($enterprise->getDeadLine() . ' | ');
+            // $output->writeln($isActivated);
 
-                if ($enterprise->getDeadLine() > 0) { //On teste si le nombre de jour d'abonnement restant est positif
-                    $output->writeln($str);
-                    $output->write($enterprise->getSocialReason() . ' | ');
-                    $output->write($enterprise->getDeadLine() . ' | ');
-                    $output->writeln($isActivated);
-                    //On teste si le nombre de jour d'abonnement restant correspond à certaines valeurs prédéfinies
-                    //pour envoyer la notification
-                    switch ($enterprise->getDeadLine()) {
-                        case 11:
-                            //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
-                            $this->addNotifToQueue($enterprise, true);
-                            break;
-                        case 8:
-                            //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
-                            $this->addNotifToQueue($enterprise, true);
-                            break;
-                        case 3:
-                            //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
-                            $this->addNotifToQueue($enterprise, true);
-                            break;
-                        case 2:
-                            //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
-                            $this->addNotifToQueue($enterprise, true);
-                            break;
+            //if ($isActivated) { //Si le compte client entreprise est actif
 
-                        default:
-                            break;
-                    }
-                } else {
+            if ($enterprise->getDeadLine() >= 0) { //On teste si le nombre de jour d'abonnement restant est positif
+                //On teste si le nombre de jour d'abonnement restant correspond à certaines valeurs prédéfinies
+                //pour envoyer la notification
+                switch ($enterprise->getDeadLine()) {
+                    case 11:
+                        //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
+                        $this->addNotifToQueue($enterprise, true);
+                        break;
+                    case 8:
+                        //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
+                        $this->addNotifToQueue($enterprise, true);
+                        break;
+                    case 3:
+                        //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
+                        $this->addNotifToQueue($enterprise, true);
+                        break;
+                    case 2:
+                        //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
+                        $this->addNotifToQueue($enterprise, true);
+                        break;
+                    case 0:
+                        $enterprise->setIsActivated(false);
+                        $this->manager->persist($enterprise);
+                        $persist = true;
+
+                        //Envoi de mail de notification de fin d'abonnement aux admin du compte clients et superAdmin
+                        $this->addNotifToQueue($enterprise, false);
+                        break;
+
+                    default:
+                        break;
+                }
+            } else {
+                if ($isActivated) { //Si le compte client entreprise est actif
                     $enterprise->setIsActivated(false);
                     $this->manager->persist($enterprise);
                     $persist = true;
@@ -101,6 +123,7 @@ class EndSubscriptionNotificationCommand extends Command
                     $this->addNotifToQueue($enterprise, false);
                 }
             }
+            //}
         }
 
         if ($persist) { //S'il existe au moins un objet à persister
@@ -141,7 +164,7 @@ Cher(e) Client(e),
 
 Votre nom de compte " . $enterprise->getSocialReason() . " est actuellement enregistré chez KnD Factures.
 
-Votre abonnement expire dans : " . $enterprise->subscriptionDeadLine() . ".
+Votre abonnement expire le : " . $enterprise->endSubscription()->format('d/m/Y') . ".
 
 Pour toute information complémentaire, notre support reste à votre disposition.
 
@@ -182,14 +205,13 @@ L'équipe KnD Factures";
             //$messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'SMS', ''));
         }
 
-        $adminUsers = [];
+        //$adminUsers = [];
         $Users = $this->manager->getRepository('App:User')->findAll();
         foreach ($Users as $user) {
-            if ($user->getRoles()[0] === 'ROLE_SUPER_ADMIN') $adminUsers[] = $user;
-        }
-
-        foreach ($adminUsers as $user) {
-            $this->messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'Email', $object));
+            if ($user->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                //$adminUsers[] = $user;
+                $this->messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'Email', $object));
+            }
         }
     }
 }
