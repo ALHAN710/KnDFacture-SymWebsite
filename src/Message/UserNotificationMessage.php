@@ -25,12 +25,20 @@ class UserNotificationMessage
      */
     private $object;
 
-    public function __construct(int $userId, string $message, string $media, string $object)
+    /**
+     * Path File variable
+     *
+     * @var string
+     */
+    private $pathFile;
+
+    public function __construct(int $userId, string $message, string $media, string $object, string $pathFile = '')
     {
         $this->userId = $userId;
         $this->message = $message;
         $this->media = $media;
         $this->object = $object;
+        $this->pathFile = $pathFile;
     }
 
     /**
@@ -63,5 +71,29 @@ class UserNotificationMessage
     public function getObject()
     {
         return $this->object;
+    }
+
+    /**
+     * Get path File variable
+     *
+     * @return  string
+     */
+    public function getPathFile()
+    {
+        return $this->pathFile;
+    }
+
+    /**
+     * Set path File variable
+     *
+     * @param  string  $pathFile  Path File variable
+     *
+     * @return  self
+     */
+    public function setPathFile(string $pathFile)
+    {
+        $this->pathFile = $pathFile;
+
+        return $this;
     }
 }

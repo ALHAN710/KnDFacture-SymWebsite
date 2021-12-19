@@ -133,6 +133,33 @@ class UserNotificationHandler implements MessageHandlerInterface
                     'from' => $this->fromNumber,
                     'body' => "Hi $toName! Test async send sms"
                 ]);*/
+            } else if ($notifMessage->getMedia() === 'Backup') {
+                $object = $notifMessage->getObject();
+                $to = $contact->getEmail();
+                //if ($to) {
+                // $email = (new TemplatedEmail())
+                $email = (new Email())
+                    ->from('noreply.kndfactures@gmail.com')
+                    ->to($to)
+                    //->addTo('cabrelmbakam@gmail.com')
+                    //->cc('cabrelmbakam@gmail.com')
+                    //->bcc('bcc@example.com')
+                    //->replyTo('fabien@example.com')
+                    //->priority(Email::PRIORITY_HIGH)
+                    ->subject($object)
+                    ->text($notifMessage->getMessage())
+                    // ->attach(fopen('{$notifMessage->getPathFile()}', 'r'))
+                    ->attachFromPath('{$notifMessage->getPathFile()}', 'Privacy Policy')
+                    //->html('<p>See Twig integration for better HTML integration!</p>');
+                    /*->htmlTemplate('email/email_base.html.twig')
+                    ->context([
+                        // You can pass whatever data you want
+                        'message' => $notifMessage->getMessage(),
+                        'user'    => $contact->getFirstName(),
+                    ])*/;
+
+                //sleep(10);
+                $this->mailer->send($email);
             }
         }
     }
