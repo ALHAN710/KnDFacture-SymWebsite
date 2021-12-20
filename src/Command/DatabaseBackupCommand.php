@@ -210,7 +210,25 @@ class DatabaseBackupCommand extends Command
         $this->io->success("Backup is generated !");
 
         if (file_exists($backupFilePath) === true) {
-            $this->addNotifToQueue($backupFilePath);
+            //"/var/www/KnDFacture-SymWebsite/var/backup/kndfactures-backup-20-12-2021-00-00-02.sql"
+            $command = [
+                'sudo',
+                '/home/debian/sendEmail_DatabaseBackup.sh',
+                "{$backupFilePath}",
+
+            ];
+
+            $process = new Process($command);
+
+            $process->setTimeout(90);
+
+            $process->run();
+
+            if ($process->isSuccessful() === false) {
+                throw new ProcessFailedException($process);
+            }
+
+            //$this->addNotifToQueue($backupFilePath);
         }
 
         // this method must return an integer number with the "exit status code"
