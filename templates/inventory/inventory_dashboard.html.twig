@@ -103,7 +103,7 @@
                                         {% for product in products %}                    
                                         <tr class="text-center">
                                             <td>{{ product.sku }}</td>
-                                            <td><a href="#" class="editAV" data-prod="{{product.id}}" data-row={{loop.index0}} data-av=0 data-name="{{ product.name }}" data-toggle="modal" data-target=".editAV-modal-xl" data-toggle="tooltip" data-placement="top" title="Modifier la Disponibilité ?">{{ product.name }}</a></td>
+                                            <td><a href="#" class="editAV" data-prod="{{product.id}}" data-row={{loop.index0}} data-av=0 data-name="{{ product.name }}" data-price="{{ product.price }}" data-toggle="modal" data-target=".editAV-modal-xl" data-toggle="tooltip" data-placement="top" title="Modifier la Disponibilité ?">{{ product.name }}</a></td>
                                             <td>{{ product.price }}</td>
                                             <td><span id="qtyAVG_{{product.id}}">0</span></td>
                                             <td><span id="ET_{{product.id}}">0</span></td>
@@ -218,6 +218,14 @@
                                                             <span class="input-group-text">Nom</span>
                                                         </div>
                                                         <input type="text" id="productName" class="form-control" disabled placeholder="Nom"></input>
+                                                    </div>                                                    
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">Prix Unitaire</span>
+                                                        </div>
+                                                        <input type="text" id="productPrice" class="form-control" disabled placeholder="Prix Unitaire"></input>
                                                     </div>                                                    
                                                 </div>
                                                 <div class="form-group">
@@ -694,6 +702,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
 
             $('#sku').val(statsTable.cell($(this).data('row'),0).data());
             $('#productName').val($(this).data('name'));
+            $('#productPrice').val($(this).data('price'));
             $('#available').val(statsTable.cell($(this).data('row'),5).data());
             $('#tableRow').val($(this).data('row'));
             $('#prod').val($(this).data('prod'));
