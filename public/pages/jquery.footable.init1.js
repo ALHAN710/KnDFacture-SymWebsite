@@ -28,6 +28,7 @@ $(function () {
 					var values = row.val();
 					$editor.find('#sku').val(values.sku);
 					$editor.find('#name').val(values.name);
+					$editor.find('#price').val(values.price);
 					$editor.find('#qty').val(values.qty);
 					$editor.find('#prod').val(values.prod);
 

@@ -87,6 +87,7 @@
                                         <tr class="text-center">
                                             <th>SKU</th>
                                             <th>Nom</th>
+                                            <th>P.U</th>
                                             <th>Moy Qty</th>
                                             <th>E.T</th>
                                             {# <th>Min Qty</th>
@@ -103,6 +104,7 @@
                                         <tr class="text-center">
                                             <td>{{ product.sku }}</td>
                                             <td><a href="#" class="editAV" data-prod="{{product.id}}" data-row={{loop.index0}} data-av=0 data-name="{{ product.name }}" data-toggle="modal" data-target=".editAV-modal-xl" data-toggle="tooltip" data-placement="top" title="Modifier la Disponibilité ?">{{ product.name }}</a></td>
+                                            <td>{{ product.price }}</td>
                                             <td><span id="qtyAVG_{{product.id}}">0</span></td>
                                             <td><span id="ET_{{product.id}}">0</span></td>
                                             {# <td><span id="qtyMin_{{product.id}}">0</span></td>
@@ -394,7 +396,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
     var now = new Date();
     var jsDate = now.getDate()+'-'+(now.getMonth()+1)+'-'+now.getFullYear();
     var availableFileName = 'Etat | Stock de {{ (inventory.name)|capitalize }} | Date : ' + jsDate.toString();
-    var demandFileName = 'Demande Réapprivisionnement | Stock de {{ (inventory.name)|capitalize }} | Date ' + jsDate.toString();
+    var demandFileName = 'Demande Réapprovisionnement | Stock de {{ (inventory.name)|capitalize }} | Date ' + jsDate.toString();
     console.log(availableFileName);
     {# // Function to convert an img URL to data URL
 	function getBase64FromImageUrl(url) {
@@ -684,7 +686,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
 
         $('.editAV').click(function(){
             {# console.log('row = ' + $(this).data('row'));
-            var av = statsTable.cell($(this).data('row'),4).data();
+            var av = statsTable.cell($(this).data('row'),5).data();
             $(this).data('av', av);
             console.log('av = ' + $(this).data('av')); 
             //statsTable.cell($(this).data('row'),4).data(0); 
@@ -692,7 +694,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
 
             $('#sku').val(statsTable.cell($(this).data('row'),0).data());
             $('#productName').val($(this).data('name'));
-            $('#available').val(statsTable.cell($(this).data('row'),4).data());
+            $('#available').val(statsTable.cell($(this).data('row'),5).data());
             $('#tableRow').val($(this).data('row'));
             $('#prod').val($(this).data('prod'));
             //console.log('tableRow = ' + $('#tableRow').val());
@@ -728,7 +730,7 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                             success: function (data) {
                                 {# console.log(data)   ; #}
 
-                                statsTable.cell($('#tableRow').val(),4).data($('#available').val());
+                                statsTable.cell($('#tableRow').val(),5).data($('#available').val());
 
                                 swal({
                                     type: 'success',
@@ -831,9 +833,9 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                 $('#qtyMax_' + value['id']).text(value['MAX']); 
                                 $('#available_' + value['id']).text(data['available'][index]['av']); #}
 
-                                statsTable.cell(index,2).data(value['AVG']).draw();
-                                statsTable.cell(index,3).data(value['ET']).draw();
-                                statsTable.cell(index,4).data(data['available'][index]['av']).draw();
+                                statsTable.cell(index,3).data(value['AVG']).draw();
+                                statsTable.cell(index,4).data(value['ET']).draw();
+                                statsTable.cell(index,5).data(data['available'][index]['av']).draw();
                                 
                                 /*statsTable
                                     .row.add( [ value['Sku'], String(value['Name']), 
@@ -849,14 +851,14 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                     $('#noAlertRefuel_' + value['id']).addClass('d-none');
                                     var tmp = parseFloat(value['AVG']) * freqReapp;
                                     {# $('#demand_' + value['id']).text(Math.ceil(tmp)); #}
-                                    statsTable.cell(index,6).data(Math.ceil(tmp)).draw();
+                                    statsTable.cell(index,7).data(Math.ceil(tmp)).draw();
                                     //console.log('alert');
                                 }
                                 else {
                                     $('#alertRefuel_' + value['id']).addClass('d-none');
                                     $('#noAlertRefuel_' + value['id']).removeClass('d-none');
                                     {# $('#demand_' + value['id']).text(0); #}
-                                    statsTable.cell(index,6).data("0").draw();
+                                    statsTable.cell(index,7).data("0").draw();
                                     //console.log('no alert');
                                 }
                             });
@@ -976,9 +978,9 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                             $('#qtyMax_' + value['id']).text(value['MAX']); 
                             $('#available_' + value['id']).text(data['available'][index]['av']); #}
                             
-                            statsTable.cell(index,2).data(value['AVG']).draw();
-                            statsTable.cell(index,3).data(value['ET']).draw();
-                            statsTable.cell(index,4).data(data['available'][index]['av']).draw();
+                            statsTable.cell(index,3).data(value['AVG']).draw();
+                            statsTable.cell(index,4).data(value['ET']).draw();
+                            statsTable.cell(index,5).data(data['available'][index]['av']).draw();
 
                             {# statsTable
                                 .rows({ selected: true })
@@ -997,14 +999,14 @@ https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js
                                 $('#noAlertRefuel_' + value['id']).addClass('d-none');
                                 var tmp = parseFloat(value['AVG']) * freqReapp;
                                 $('#demand_' + value['id']).text(Math.ceil(tmp));
-                                statsTable.cell(index,6).data(String(Math.ceil(tmp))).draw();
+                                statsTable.cell(index,7).data(String(Math.ceil(tmp))).draw();
                                 // console.log('alert'); 
                             }
                             else {
                                 $('#alertRefuel_' + value['id']).addClass('d-none');
                                 $('#noAlertRefuel_' + value['id']).removeClass('d-none');
                                 {# $('#demand_' + value['id']).text(0); #}
-                                statsTable.cell(index,6).data("0").draw();
+                                statsTable.cell(index,7).data("0").draw();
                                 // console.log('no alert'); 
                             }
                         });

@@ -38,6 +38,7 @@
                             <tr>
                                 <th class="text-center" data-name="sku">SKU</th>
                                 <th data-name="name">Nom</th>
+                                <th data-name="price">P.U</th>
                                 <th class="text-center" data-name="qty" data-breakpoints="xs" data-type="number">Quantité</th>
                                 <th class="d-none" data-name="prod" data-breakpoints="xs" data-type="number">Id</th>
                                 {# <th data-name="jobTitle" data-breakpoints="xs">Job Title</th>
@@ -50,6 +51,7 @@
                             <tr {% if loop.first %}data-expanded="true"{% endif %}>
                                 <td class="text-center">{{ product.sku }}</td>
                                 <td>{{ product.name }}</td>
+                                <td>{{ product.price }}</td>
                                 {# <td>0</td> #}
                                 <td class="text-center">{{ available['' ~ product.id] }}</td>
                                 <td class="d-none text-center">{{ product.id }}</td>
@@ -92,6 +94,12 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label for="price" class="col-sm-3 control-label">Prix Unitaire</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="price" name="price" placeholder="Prix Unitaire" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label for="qty" class="col-sm-3 control-label">Quantité Disponible</label>
                                         <div class="col-sm-9">
                                             <input type="number" step="1" class="form-control" id="qty" name="qty" placeholder="Quantité Disponible">
@@ -128,7 +136,7 @@
 {% block javascripts %}
 <script src="/plugins/footable/js/footable.js"></script>
 {# <script src="/plugins/moment/moment.js"></script>  #}
-<script src="/pages/jquery.footable.init.js"></script>
+<script src="/pages/jquery.footable.init1.js"></script>
 <!-- Sweet-Alert  -->
 <script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
 <script>
@@ -180,6 +188,7 @@ $(document).ready(function(){
                                     values = {
                                         sku: $editor.find('#sku').val(),
                                         name: $editor.find('#name').val(),
+                                        price: $editor.find('#price').val(),
                                         qty: $editor.find('#qty').val(),
                                         prod: $editor.find('#prod').val(),
                                         
