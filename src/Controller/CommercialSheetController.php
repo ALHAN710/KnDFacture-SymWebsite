@@ -1294,6 +1294,7 @@ class CommercialSheetController extends ApplicationController
     public function changeStatus(Request $request, CommercialSheetRepository $commercialSheetRepo, EntityManagerInterface $manager): JsonResponse
     {
         $paramJSON = $this->getJSONRequest($request->getContent());
+        dump($paramJSON);
         if (array_key_exists("commercialSheetDeliveredIds", $paramJSON) && array_key_exists("commercialSheetPaidIds", $paramJSON)) {
             if (!empty($paramJSON['commercialSheetDeliveredIds']) || !empty($paramJSON['commercialSheetPaidIds'])) {
                 if (!empty($paramJSON['commercialSheetDeliveredIds'])) {
@@ -1336,9 +1337,9 @@ class CommercialSheetController extends ApplicationController
             }
         }
         return $this->json([
-            'code' => 403,
+            'code' => 422,
             'message' => 'Empty Array or Not existss !',
-        ], 200);
+        ], 422);
     }
 
     /**

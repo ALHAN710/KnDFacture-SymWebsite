@@ -8,7 +8,51 @@
 <link href="/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 <!-- Responsive datatable examples -->
 <link href="/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />  
+<link href="/plugins/datatables/dataTables.select.min.css" rel="stylesheet" type="text/css" />  
+{# <link href="https://cdn.datatables.net/select/1.5.0/css/select.dataTables.min.css" rel="stylesheet" type="text/css" />   #}
+<style>
+    .overlay {
+        position: absolute;
+        top: 5%;
+        left: 4%;
+        width: 93%;
+        height: 82%;
+        z-index: 1000;
+        border-radius: 15px;
+        background-color: #6c757d;
+        opacity: 0.75;
+    }
+    .loader-container {
+        position: relative;
+        top: 30%;
+        left: 50%;
+        height: 100%;
+        display: flex;
+        /*margin: auto auto;*/
+    }
+    .dot {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #000;
+        margin: 0 10px;
+    }
+    .d1 {
+        animation: loader infinite 0.3s alternate;
+    }
+    .d2 {
+        animation: loader infinite 0.3s 0.05s alternate;
+    }
+    .d3 {
+        animation: loader infinite 0.3s 0.1s alternate;
+    }
 
+    @keyframes loader {
+        100% {
+            transform: translateY(-30px)
+        }
+    }
+</style>
 {% endblock %}
 
 {% set docType = '' %}
@@ -40,7 +84,13 @@
 {% endblock %}
 
 {% block body %}
-    
+    <div class="overlay d-none">
+        <div class="loader-container">
+            <div class="dot d1"></div>
+            <div class="dot d2"></div>
+            <div class="dot d3"></div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-sm-12">
             <div class="card">
@@ -65,6 +115,8 @@
                         </div>
                     
                     </div>
+                    <div id="error-alert"></div>
+                    
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
@@ -99,7 +151,7 @@
                                         <thead>
                                             <tr class="text-center">
                                                 {% if type == 'bill' %}
-                                                <th style="width:0.5em">À Livrer ?</th>
+                                                <th class="" style="width:0.5em">À Livrer ?</th>
                                                 {% endif %}
                                                 {# <th>N° Facture</th> #}
                                                 <th>{% if type == 'bill' %}Client{% else %}Fournisseur{% endif %}</th>
@@ -120,12 +172,15 @@
                                             {% if commercialSheet.deliveryStatus == false %}
                                             <tr class="text-center">
                                                 {% if type == 'bill' %}
-                                                <td style="width:5px">
+                                                {# <td style="width:5px">
                                                     <div class="checkbox checkbox-primary">
-                                                        <input id="Journal{{commercialSheet.id}}" type="checkbox" name="journal" value="{{commercialSheet.id}}">
+                                                        <input 
+                                                        class="check-journal"
+                                                        id="Journal{{commercialSheet.id}}" type="checkbox" name="journal" value="{{commercialSheet.id}}">
                                                         <label for="Journal{{commercialSheet.id}}"></label>
                                                     </div>
-                                                </td>
+                                                </td> #}
+                                                <td></td>
                                                 {% endif %}
                                                 {# <td>{{commercialSheet.number}}</td> #}
                                                 <td>{{commercialSheet.businessContact.socialReason}}</td>
@@ -143,10 +198,10 @@
                                                 <td>{{commercialSheet.advancePayment}}</td>
                                                 <td>{{commercialSheet.amountRestToPaid}}</td>
                                                 <td>
-                                                    <div class="checkbox checkbox-primary">
+                                                    {# <div class="checkbox checkbox-primary">
                                                         <input id="checkbox{{commercialSheet.id}}" type="checkbox" name="delivered" value="{{commercialSheet.id}}">
                                                         <label for="checkbox{{commercialSheet.id}}"></label>
-                                                    </div>
+                                                    </div> #}
                                                 </td>
                                                 <td>
                                                     <a href="{% if subIsActivated == true %}{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}{% else %}#{% endif %}"  class="btn btn-soft-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Modifier la Commande ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="far fa-edit"></i> </a>
@@ -207,11 +262,11 @@
                                                 {# <td>{{commercialSheet.deliverAt is empty ? "-" : commercialSheet.deliverAt|date("d/m/Y") }}</td> #}
                                                 <td>{{commercialSheet.advancePayment}}</td>
                                                 <td>{{commercialSheet.amountRestToPaid}}</td>
-                                                <td class="align-items-center">
-                                                    <div class="checkbox checkbox-primary">
+                                                <td class="align-items-center {{commercialSheet.id}}">
+                                                    {# <div class="checkbox checkbox-primary">
                                                         <input id="paidCheckbox{{commercialSheet.id}}" type="checkbox" name="paid" value="{{commercialSheet.id}}">
                                                         <label for="paidCheckbox{{commercialSheet.id}}"></label>
-                                                    </div>
+                                                    </div> #}
                                                 </td>
                                                 <td>
                                                     <a href="{% if subIsActivated == true %}{{path('commercial_sheet_edit', {'id':commercialSheet.id})}}{% else %}#{% endif %}"  class="btn btn-soft-info btn-xs rounded waves-effect mr-2" data-toggle="tooltip" data-placement="top" title="Modifier la Commande ?{% if subIsActivated == false %} Veuillez vous réabonner pour utiliser cette fonctionnalité{% endif %}"><i class="far fa-edit"></i> </a>
@@ -383,14 +438,33 @@
 <!-- Responsive examples -->
 <script src="/plugins/datatables/dataTables.responsive.min.js"></script>
 <script src="/plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/dataTables.select.min.js"></script>
 <script src="/pages/jquery.datatable.init.js"></script>   
 <script src="/js/jquery.redirect.js"></script> 
 
 <script>
+    const deliveryIdsTab = [];
+    const payIdsTab = [];
+    {% if type == 'bill' %}
+        {% for commercialSheet in commercialSheets %}
+
+            {% if commercialSheet.deliveryStatus == false %}
+                deliveryIdsTab.push({{commercialSheet.id}});
+            {% endif %}
+            {% if commercialSheet.paymentStatus == false %}
+                payIdsTab.push({{commercialSheet.id}});
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+    {# console.log("deliveryIdsTab", deliveryIdsTab);
+    console.log("payIdsTab", payIdsTab); #}
+
     var datatable = $('#datatable').DataTable( {
         orderCellsTop: true,
         fixedHeader: true
     } );
+
     // Setup - add a text input to each footer cell
     $('#datatable thead tr').clone(true).appendTo( '#datatable thead' );
     $('#datatable thead tr:eq(1) th').each( function (i) {
@@ -409,42 +483,121 @@
  
     var datatableDelivery = $('#datatableDelivery').DataTable( {
         orderCellsTop: true,
-        fixedHeader: true
+        sortable: false,
+        fixedHeader: true,
+        aLengthMenu: [
+            [10, 25, 50, 100, 200, -1],
+            [10, 25, 50, 100, 200, "All"]
+        ],
+        {# iDisplayLength: -1, #}
+        columns: [ 
+            {
+                orderable: false,
+                sortable: false,
+                className: 'select-checkbox ',
+                targets: 1
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 6,
+                
+            },
+            {
+                orderable: false,
+                targets: 7,
+            },
+        ],
+        columnDefs: [ {
+            "targets": [6,0,7], /* column index */
+            "orderable": false, /* true or false */
+        }],
+        select: {
+            style: "multi",
+            items: "row",
+            selector: "td:first-child,td:nth-child(7)", 
+        },
     } );
-    // Setup - add a text input to each footer cell
+    
+    // Setup - add a text input to each header cell
     $('#datatableDelivery thead tr').clone(true).appendTo( '#datatableDelivery thead' );
     $('#datatableDelivery thead tr:eq(1) th').each( function (i) {
-        var title = $(this).text();
-        $(this).html( '<input type="text" placeholder="Search '+ title + '" />' );
- 
-        $( 'input', this ).on( 'keyup change', function () {
-            if ( datatableDelivery.column(i).search() !== this.value ) {
-                datatableDelivery
-                    .column(i)
-                    .search( this.value )
-                    .draw();
-            }
-        } );
+        const excludeHeader = [0, 6, 7];
+        
+        if( !excludeHeader.includes(i) ) {
+        
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Search by '+ title + '" />' );
+    
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( datatableDelivery.column(i).search() !== this.value ) {
+                    datatableDelivery
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } else if ( i === 0 || i === 6) {
+            {# $(this).html('<div class="d-flex justify-content-center align-items-center checkbox checkbox-primary text-center"><input class="" id="demand-all" type="checkbox" name="journal" value="all"><label for="demand-all"></label></div>') #}
+            $(this).html(`<input class="checkbox checkbox-primary all-delivery-column-check" id="all-delivery-check-${i}" type="checkbox" name="journal" value="all"><label for="all-delivery-check-${i}"></label>`)
+        }
     } );
- 
+     
     // Setup - add a text input to each footer cell
     var datatablePayment = $('#datatablePayment').DataTable( {
         orderCellsTop: true,
-        fixedHeader: true
+        fixedHeader: true,
+        aLengthMenu: [
+            [10, 25, 50, 100, 200, -1],
+            [10, 25, 50, 100, 200, "All"]
+        ],
+        columns: [ 
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+                orderable: false,
+                className: 'select-checkbox ',
+                targets: 6
+            },
+            null,
+        ],
+        columnDefs: [ {
+            "targets": [5,6], /* column index */
+            "orderable": false, /* true or false */
+        }],
+        select: {
+            style: "multi",
+            items: "row",
+            selector: "td:nth-child(6)", 
+        },
     } );
     $('#datatablePayment thead tr').clone(true).appendTo( '#datatablePayment thead' );
     $('#datatablePayment thead tr:eq(1) th').each( function (i) {
-        var title = $(this).text();
-        $(this).html( '<input type="text" placeholder="Search '+ title + '" />' );
- 
-        $( 'input', this ).on( 'keyup change', function () {
-            if ( datatablePayment.column(i).search() !== this.value ) {
-                datatablePayment
-                    .column(i)
-                    .search( this.value )
-                    .draw();
-            }
-        } );
+        const excludeHeader = [5,6];
+        
+        if( !excludeHeader.includes(i) ) {
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Search '+ title + '" />' );
+    
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( datatablePayment.column(i).search() !== this.value ) {
+                    datatablePayment
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } else if ( i === 5) {
+            $(this).html(`<input class="checkbox checkbox-primary all-payment-column-check" id="all-payment-check-${i}" type="checkbox" name="pay-status" value="all-mark-pay"><label for="all-payment-check-${i}"></label>`)
+        }
     } );
  
     // Setup - add a text input to each footer cell
@@ -467,23 +620,181 @@
         } );
     } );
  
+    {# {% if type != 'quote' %}
+    $('#completed').click(function(){
+        $('.savebtn').addClass('d-none');
+        console.log('completed tab clicked');
+    });
+    {% endif %} #}
+    
+    let tabJournal = [];
+    let tabPaid    = [];
+
+    {# Handle a click action on check-box button all for marking all delivery check-box as checked #}
+    $('.all-delivery-column-check').click(function() {
+        {# console.log(tabJournal); #}
+        {# console.log($(this).is(':checked'));  #}
+        if ($(this).is(':checked')) { 
+            datatableDelivery.rows().select();
+            {# tabJournal = [...deliveryIdsTab]; #}
+        } else {
+            {# tabJournal = tabJournal.filter(order => order !== $(this).val()) #}
+            tabJournal = []
+            datatableDelivery.rows().deselect();
+        }
+        {# console.log(tabJournal); #}
+    });
+    
+
+    {# Add an event listener on select all datatableDelivery rows event #}
+    datatableDelivery.on( 'select', function ( e, dt, type, indexes ) {
+        {# var count = datatableDelivery.rows( { selected: true } ).count(); #}
+        console.log("============== Delivery Select Indexes ============")
+        console.log(indexes);
+        if(type === "row") {
+            indexes.forEach((item, index) => {
+                console.log(deliveryIdsTab[item]);
+                if(!tabJournal.includes(deliveryIdsTab[item])) tabJournal.push(deliveryIdsTab[item]);
+            });
+            console.table(tabJournal);
+
+        }
+    } );
+
+    {# Add an event listener on deselect all datatableDelivery rows event #}
+    datatableDelivery.on( 'deselect', function ( e, dt, type, indexes ) {
+        {# console.log("============== Delivery DeSelect Indexes ============")
+        console.log(indexes); #}
+        if(type === "row") {
+            if(tabJournal.length > 0) {
+                let tabTemp = []
+                indexes.forEach((item, index) => {
+                    {# console.log(deliveryIdsTab[item]); #}
+                    {# tabTemp = tabJournal.filter(order => order !== deliveryIdsTab[item]); #}
+                    if(tabJournal[index] !== deliveryIdsTab[item]) tabTemp.push(tabJournal[index]);
+                });
+                tabJournal = [...tabTemp];
+                {# console.table(tabJournal); #}
+
+            }
+        }
+    } );
+
+    {# $('.check-journal').click(function() {
+        console.table(tabJournal);
+        console.log($(this).is(':checked')); 
+        if ($(this).is(':checked')) { 
+            tabJournal.push($(this).val())
+        } else {
+            tabJournal = tabJournal.filter(order => order !== $(this).val())
+        }
+        console.table(tabJournal);
+    }); #}
+
+    $('#deliveryJournalBtn').click(function(){
+        {# console.log('Delivery Journal Btn clicked'); #}
+        {# var tabJournal = [];
+        $("input:checkbox[name=journal]:checked").each(function(){
+            tabJournal.push($(this).val());
+        }); #}
+        {# console.log('Tab Journal : ' + tabJournal); #}
+        if (tabJournal.length > 0){
+
+            $.redirect("{{path('print_journal',{'journal':'delivery'})}}",
+                {
+                    commercialSheetIds: {'commercialSheetIds':tabJournal},
+                },
+            "POST", "_blank");
+
+        }
+        else{
+            $('#delivery').
+            prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Aucune Commande n\'est cochée pour le journal de livraison !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
+            
+        }
+    });
+
+    $('#demandJournalBtn').click(function(){
+        {# console.log('Demand Journal Btn clicked'); #}
+        {# var tabJournal = [];
+        $("input:checkbox[name=journal]:checked").each(function(){
+            tabJournal.push($(this).val());
+        }); #}
+        {# console.log('Tab Journal : ' + tabJournal); #}
+        if (tabJournal.length > 0){
+            $.redirect("{{path('print_journal',{'journal':'demand'})}}",
+                {
+                    commercialSheetIds: {'commercialSheetIds':tabJournal},
+                },
+            "POST", "_blank");
+        }
+        else{
+            $('#delivery').
+            prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Aucune Commande n\'est cochée pour le journal de livraison !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
+
+        }
+    }); 
+
+    
+    {# Handle a click action on check-box button all for marking all payment check-box as checked #}
+    $('.all-payment-column-check').click(function() {
+        if ($(this).is(':checked')) { 
+            datatablePayment.rows().select();
+        } else {
+            tabPaid = [];
+            datatablePayment.rows().deselect();
+        }
+    });
+    {# Add an event listener on select all datatablePayment rows event #}
+    datatablePayment.on( 'select', function ( e, dt, type, indexes ) {
+        {# console.log("============== Payment Select Indexes ============")
+        console.log(indexes); #}
+        if(type === "row") {
+            indexes.forEach((item, index) => {
+                {# console.log(payIdsTab[item]); #}
+                if(!tabPaid.includes(payIdsTab[item])) tabPaid.push(payIdsTab[item]);
+            });
+            {# console.table(tabPaid); #}
+
+        }
+    } );
+
+    {# Add an event listener on deselect all datatablePayment rows event #}
+    datatablePayment.on( 'deselect', function ( e, dt, type, indexes ) {
+        {# console.log("============== Payment DeSelect Indexes ============")
+        console.log(indexes); #}
+        if(type === "row") {
+            if(tabPaid.length > 0){
+                let tabPaidTemp = []
+                indexes.forEach((item, index) => {
+                    {# console.log(payIdsTab[item]); #}
+                    if(tabPaid[index] !== payIdsTab[item]) tabPaidTemp.push(tabPaid[index]);
+                });
+                tabPaid = [...tabPaidTemp];
+                {# console.table(tabPaid); #}
+            }
+        }
+    } );
+
     $('#saveBtn').click(function(){
-        var tabDelivered = [];
-        var tabPaid      = [];
+        var tabDelivered = [...tabJournal];
+        {# var tabPaid      = []; #}
         var _url = "{{path('commercial_sheet_change_status')}}";
         //block of code that runs when the click event triggers
-        {# $(this).children('i').addClass('d-none');
-        $(this).children('span').removeClass('d-none'); #}
+        const btn = $(this);
+        {# btn.children('i').addClass('d-none'); #}
         //$('#saveBtn').prop('disabled', true);
-        $("input:checkbox[name=delivered]:checked").each(function(){
+        {# $("input:checkbox[name=delivered]:checked").each(function(){
             tabDelivered.push($(this).val());
         });
         $("input:checkbox[name=paid]:checked").each(function(){
             tabPaid.push($(this).val());
-        });
+        }); #}
         console.log('Tab Mark Delivered : ' + tabDelivered)
         console.log('Tab Mark Paid : ' + tabPaid)
         if (tabDelivered.length > 0 || tabPaid.length > 0){
+            btn.children('span').removeClass('d-none');
+            $(".overlay").removeClass('d-none');
             var $data = JSON.stringify({
                 "commercialSheetDeliveredIds": tabDelivered,//tabGridId,
                 "commercialSheetPaidIds": tabPaid,//tabFuelId,
@@ -502,12 +813,16 @@
                     console.log(data);  
                     function reload_() {
                         //window.location.replace("https://waytolearnx.com");
+                        btn.children('span').addClass('d-none');
                         location.reload(true);
                     }      
-                    setTimeout(reload_, 5000);  
+                    setTimeout(reload_, 3000);  
                     
                 },
                 error: function (result) {
+                    $(".overlay").addClass('d-none');
+                    $("#error-alert").prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Oops, une erreur est survenue lors du changement de statut des factures. Veuillez réessayer s\'il vous plaît !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
+                    btn.children('span').addClass('d-none');
                     console.log("Error");
                     console.log(result);
                 }
@@ -520,55 +835,6 @@
             
         }
     });
-    {# {% if type != 'quote' %}
-    $('#completed').click(function(){
-        $('.savebtn').addClass('d-none');
-        console.log('completed tab clicked');
-    });
-    {% endif %} #}
-    $('#deliveryJournalBtn').click(function(){
-        console.log('Delivery Journal Btn clicked');
-        var tabJournal = [];
-        $("input:checkbox[name=journal]:checked").each(function(){
-            tabJournal.push($(this).val());
-        });
-        console.log('Tab Journal : ' + tabJournal);
-        if (tabJournal.length > 0){
-
-            $.redirect("{{path('print_journal',{'journal':'delivery'})}}",
-                {
-                    commercialSheetIds: {'commercialSheetIds':tabJournal},
-                },
-            "POST", "_blank");
-
-        }
-        else{
-            $('#delivery').
-            prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Aucune Commande n\'est cochée pour le journal de livraison !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
-            
-        }
-    });
-
-    $('#demandJournalBtn').click(function(){
-        console.log('Demand Journal Btn clicked');
-        var tabJournal = [];
-        $("input:checkbox[name=journal]:checked").each(function(){
-            tabJournal.push($(this).val());
-        });
-        console.log('Tab Journal : ' + tabJournal);
-        if (tabJournal.length > 0){
-            $.redirect("{{path('print_journal',{'journal':'demand'})}}",
-                {
-                    commercialSheetIds: {'commercialSheetIds':tabJournal},
-                },
-            "POST", "_blank");
-        }
-        else{
-            $('#delivery').
-            prepend('<div class="alert icon-custom-alert alert-outline-danger alert-danger-shadow alert-dismissible fade show" role="alert"><div class="alert-text"><strong>Aucune Commande n\'est cochée pour le journal de livraison !</strong></div><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close"></i></span></button></div>');
-
-        }
-    }); 
 
     {# $('#inventoryExitJournalBtn').click(function(){
         console.log('Inventory Exit Journal Btn clicked');
