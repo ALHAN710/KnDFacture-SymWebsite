@@ -457,8 +457,8 @@
 
         {% endfor %}
     {% endif %}
-    {# console.log("deliveryIdsTab", deliveryIdsTab);
-    console.log("payIdsTab", payIdsTab); #}
+    {# console.log("deliveryIdsTab", deliveryIdsTab); #}
+    {# console.log("payIdsTab", payIdsTab); #}
 
     var datatable = $('#datatable').DataTable( {
         orderCellsTop: true,
@@ -663,18 +663,21 @@
 
     {# Add an event listener on deselect all datatableDelivery rows event #}
     datatableDelivery.on( 'deselect', function ( e, dt, type, indexes ) {
-        {# console.log("============== Delivery DeSelect Indexes ============")
-        console.log(indexes); #}
+        console.log("============== Delivery DeSelect Indexes ============", type)
+        console.log(indexes);
         if(type === "row") {
             if(tabJournal.length > 0) {
-                let tabTemp = []
+                {# let tabTemp = [] #}
                 indexes.forEach((item, index) => {
-                    {# console.log(deliveryIdsTab[item]); #}
+                    console.log(deliveryIdsTab[item]);
+
+                    const i = tabJournal.indexOf(deliveryIdsTab[item])
+                    if( i > -1 ) tabJournal.splice(i, 1);
+
                     {# tabTemp = tabJournal.filter(order => order !== deliveryIdsTab[item]); #}
-                    if(tabJournal[index] !== deliveryIdsTab[item]) tabTemp.push(tabJournal[index]);
                 });
-                tabJournal = [...tabTemp];
-                {# console.table(tabJournal); #}
+                {# tabJournal = [...tabTemp]; #}
+                console.table(tabJournal);
 
             }
         }
@@ -761,17 +764,22 @@
 
     {# Add an event listener on deselect all datatablePayment rows event #}
     datatablePayment.on( 'deselect', function ( e, dt, type, indexes ) {
-        {# console.log("============== Payment DeSelect Indexes ============")
-        console.log(indexes); #}
+        console.log("============== Payment DeSelect Indexes ============")
+        console.log(indexes);
         if(type === "row") {
             if(tabPaid.length > 0){
-                let tabPaidTemp = []
+                {# let tabPaidTemp = [] #}
                 indexes.forEach((item, index) => {
                     {# console.log(payIdsTab[item]); #}
-                    if(tabPaid[index] !== payIdsTab[item]) tabPaidTemp.push(tabPaid[index]);
+                    
+                    const i = tabPaid.indexOf(payIdsTab[item])
+                    if( i > -1 ) tabPaid.splice(i, 1);
+
+                    {# tabTemp = tabPaid.filter(order => order !== payIdsTab[item]); #}
+
                 });
-                tabPaid = [...tabPaidTemp];
-                {# console.table(tabPaid); #}
+                {# tabPaid = [...tabPaidTemp]; #}
+                console.table(tabPaid);
             }
         }
     } );
