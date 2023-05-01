@@ -107,8 +107,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                         ")
                 ->setParameters(array(
                     'entId'     => $this->getUser()->getEnterprise()->getId(),
-                    'startDate' => $startDate->format('Y-m-d H:m:i'),
-                    'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate'   => $endDate->format('Y-m-d H:i:s'),
                     'type_'     => 'bill',
                 ))
                 ->getResult();
@@ -127,8 +127,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                         ")
                 ->setParameters(array(
                     'entId'     => $this->getUser()->getEnterprise()->getId(),
-                    'startDate' => $startDate->format('Y-m-d H:m:i'),
-                    'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate'   => $endDate->format('Y-m-d H:i:s'),
                     'type_'     => 'bill',
                 ))
                 ->getResult();*/
@@ -150,8 +150,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                         ")
                 ->setParameters(array(
                     'entId'   => $this->getUser()->getEnterprise()->getId(),
-                    'startDate' => $startDate->format('Y-m-d H:m:i'),
-                    'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate'   => $endDate->format('Y-m-d H:i:s'),
                     'type_'   => 'bill',
                 ))
                 ->getResult();*/
@@ -809,8 +809,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'startDate' => $startDate->format('Y-m-d H:i:s'),
+                        'endDate'   => $endDate->format('Y-m-d H:i:s'),
                         'type_'     => 'bill',
                     ))
                     ->getResult();
@@ -829,7 +829,7 @@ class EnterpriseDashboardController1 extends ApplicationController
                 */
 
                 if ($dashType === 0) {
-
+                    
                     $bills = $manager->createQuery("SELECT cms
                                                 FROM App\Entity\CommercialSheet cms
                                                 WHERE cms.user IN (SELECT u.id FROM App\Entity\User u WHERE u.enterprise = :entId)
@@ -841,11 +841,12 @@ class EnterpriseDashboardController1 extends ApplicationController
                                             ")
                         ->setParameters(array(
                             'entId'     => $this->getUser()->getEnterprise()->getId(),
-                            'startDate' => $startDate->format('Y-m-d H:m:i'),
-                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'startDate' => $startDate->format('Y-m-d H:i:s'),
+                            'endDate'   => $endDate->format('Y-m-d H:i:s'),
                             'type_'     => 'bill',
                         ))
                         ->getResult();
+                        
                 } else {
                     $bills = $manager->createQuery("SELECT cms
                                                     FROM App\Entity\CommercialSheet cms
@@ -860,8 +861,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                         ->setParameters(array(
                             'entId'     => $this->getUser()->getEnterprise()->getId(),
                             'invId'     => $dashType,
-                            'startDate' => $startDate->format('Y-m-d H:m:i'),
-                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'startDate' => $startDate->format('Y-m-d H:i:s'),
+                            'endDate'   => $endDate->format('Y-m-d H:i:s'),
                             'type_'     => 'bill',
                         ))
                         ->getResult();
@@ -916,8 +917,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'startDate' => $startDate->format('Y-m-d H:i:s'),
+                        'endDate'   => $endDate->format('Y-m-d H:i:s'),
                         'type_'     => 'bill',
                     ))
                     ->getResult();*/
@@ -936,8 +937,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'startDate' => $startDate->format('Y-m-d H:i:s'),
+                        'endDate'   => $endDate->format('Y-m-d H:i:s'),
                         'type_'     => 'bill',
                     ))
                     ->getResult();
@@ -968,8 +969,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'startDate' => $startDate->format('Y-m-d H:i:s'),
+                        'endDate'   => $endDate->format('Y-m-d H:i:s'),
                         'type_'     => 'bill',
                     ))
                     ->getResult();
@@ -1012,8 +1013,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                         ")
                     ->setParameters(array(
                         'entId'     => $this->getUser()->getEnterprise()->getId(),
-                        'startDate' => $startDate->format('Y-m-d H:m:i'),
-                        'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                        'startDate' => $startDate->format('Y-m-d H:i:s'),
+                        'endDate'   => $endDate->format('Y-m-d H:i:s'),
                         'type_'     => 'purchaseorder',
                     ))
                     ->getResult();
@@ -1043,8 +1044,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                             ")
                         ->setParameters(array(
                             'entId'     => $this->getUser()->getEnterprise()->getId(),
-                            'startDate' => $startDate->format('Y-m-d H:m:i'),
-                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'startDate' => $startDate->format('Y-m-d H:i:s'),
+                            'endDate'   => $endDate->format('Y-m-d H:i:s'),
                             'type_'     => 'purchaseorder',
                         ))
                         ->getResult();
@@ -1062,8 +1063,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                         ->setParameters(array(
                             'entId'     => $this->getUser()->getEnterprise()->getId(),
                             'invId'     => $dashType,
-                            'startDate' => $startDate->format('Y-m-d H:m:i'),
-                            'endDate'   => $endDate->format('Y-m-d H:m:i'),
+                            'startDate' => $startDate->format('Y-m-d H:i:s'),
+                            'endDate'   => $endDate->format('Y-m-d H:i:s'),
                             'type_'     => 'purchaseorder',
                         ))
                         ->getResult();
@@ -1154,8 +1155,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                             ->setParameters(array(
                                 'entId'   => $this->getUser()->getEnterprise()->getId(),
                                 'type_'   => $type,
-                                'startDate' => $startDate->format('Y-m-d H:m:i'),
-                                'endDate' => $endDate->format('Y-m-d H:m:i'),
+                                'startDate' => $startDate->format('Y-m-d H:i:s'),
+                                'endDate' => $endDate->format('Y-m-d H:i:s'),
 
                             ))
                             ->getResult();
@@ -1174,8 +1175,8 @@ class EnterpriseDashboardController1 extends ApplicationController
                                 'entId'   => $this->getUser()->getEnterprise()->getId(),
                                 'invId'   => $dashType,
                                 'type_'   => $type,
-                                'startDate' => $startDate->format('Y-m-d H:m:i'),
-                                'endDate' => $endDate->format('Y-m-d H:m:i'),
+                                'startDate' => $startDate->format('Y-m-d H:i:s'),
+                                'endDate' => $endDate->format('Y-m-d H:i:s'),
 
                             ))
                             ->getResult();
