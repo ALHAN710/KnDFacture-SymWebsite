@@ -47,15 +47,17 @@ class CommercialSheetController extends ApplicationController
                                             JOIN cms.user u
                                             JOIN u.enterprise e
                                             WHERE cms.type = :type_
-                                            AND e.id = :entId                                                              
+                                            AND e.id = :entId    
+                                            ORDER BY cms.createdAt DESC                                                          
                                         ")
             ->setParameters(array(
                 'entId'   => $this->getUser()->getEnterprise()->getId(),
                 'type_'   => $type,
             ))
-            //->setMaxResults(10)
+            ->setMaxResults(7000)
             ->getResult();
-        //dump($commercialSheets_);
+        // dump(count($commercialSheets_));
+        // dump($commercialSheets_);
         foreach ($commercialSheets_ as $commercialSheet) {
             $commercialSheets[] = $commercialSheet;
         }
