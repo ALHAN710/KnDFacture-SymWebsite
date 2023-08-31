@@ -3,7 +3,9 @@
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
+/src/Migrations/
 /public/bundles/
+/public/images/uploads/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
